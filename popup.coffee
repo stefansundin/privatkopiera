@@ -9,6 +9,7 @@ update_cmd = ->
   $("#cmd")[0].value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
 master_callback = ->
+  console.log(this)
   if this.status != 200
     $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
     return
@@ -32,12 +33,17 @@ master_callback = ->
   streams.sort((a,b) -> b.bitrate-a.bitrate).forEach (stream) ->
     kbps = stream.bitrate / 1000
     option = document.createElement("option")
-    option.value = base_url+stream.url
+    if /^https?:\/\//.test(stream.url)
+      url = stream.url
+    else
+      url = base_url+url
+    option.value = url
     option.appendChild document.createTextNode("#{kbps} kbps (#{stream.resolution})")
     dropdown.insertBefore option, default_option
   dropdown.getElementsByTagName("option")[0].selected = true
 
 video_callback = ->
+  console.log(this)
   if this.status != 200
     $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
     return
@@ -69,11 +75,7 @@ document.addEventListener "DOMContentLoaded", ->
     cmd.blur()
 
   $("#filename")[0].addEventListener "input", update_cmd
-
-  $("#streams")[0].addEventListener "input", ->
-    console.log this.value
-    filename = $("#filename")[0].value
-    $("#cmd")[0].value = "ffmpeg -i \"#{this.value}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
+  $("#streams")[0].addEventListener "input", update_cmd
 
   chrome.tabs.query { active: true, lastFocusedWindow: true }, (tabs) ->
     url = tabs[0].url
