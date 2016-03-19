@@ -42,16 +42,55 @@
     <h2 id="install">Installera ffmpeg</h2>
 
     <p>I Debian och Ubuntu:</p>
-{% highlight bash %}
+
+{% highlight shell %}
 sudo apt-get install ffmpeg
 {% endhighlight %}
 
     <p>I Mac OS X (med <a href="http://brew.sh/" target="_blank">Homebrew</a>):</p>
-{% highlight bash %}
+
+{% highlight shell %}
 brew install ffmpeg
 {% endhighlight %}
 
     <p>Windows är som vanligt krångligast. <a href="https://ffmpeg.org/download.html" target="_blank">Ladda ned ffmpeg</a>. Konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>.</p>
+
+
+    <h2 id="socks">SOCKS</h2>
+
+    <p>Du kan använda <tt>tsocks</tt> för att ladda hem med <tt>ffmpeg</tt> via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Om du har en ssh server tillgänglig i Sverige så kan du ladda ned via den.</p>
+
+    <p>Exempel för Ubuntu:</p>
+
+{% highlight shell %}
+sudo apt-get install tsocks
+sudo vim /etc/tsocks.conf
+# Längst ned i filen, ändra detta:
+# server = 127.0.0.1
+# server_port = 1080
+ssh server_i_sverige.se -D 1080
+{% endhighlight %}
+
+    <p>Öppna en till terminal och kör <tt>ffmpeg</tt>-kommandot med <tt>tsocks</tt>:</p>
+
+{% highlight shell %}
+tsocks ffmpeg -i ...
+{% endhighlight %}
+
+    <p>Chrome kan inte hämta listan med strömmar för vissa program om du befinner dig utomlands. Det går bra att använda <tt>master.m3u8</tt>, men du får inte högsta kvalitén. Du kan starta Chrome så här för att gå runt det:</p>
+
+{% highlight shell %}
+google-chrome --proxy-server="socks5://127.0.0.1:1080"
+{% endhighlight %}
+
+
+    <h2 id="other_programs">Andra program</h2>
+
+    <ul>
+      <li><a href="http://www.pirateplay.se/" target="_blank">Pirateplay</a></li>
+      <li><a href="https://github.com/spaam/svtplay-dl" target="_blank">svtplay-dl</a></li>
+      <li><a href="https://github.com/rg3/youtube-dl" target="_blank">youtube-dl</a></li>
+    </ul>
 
     <h2 id="news">Nyheter <a target="_blank" href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
 
