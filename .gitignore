@@ -1,0 +1,12 @@
+Thumbs.db
+.DS_Store
+*.swp
+
+popup.js
+*.min.js
+*.min.css
+*.woff2
+/node_modules
+/*.crx
+/*.zip
+/*.pem

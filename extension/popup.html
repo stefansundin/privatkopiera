@@ -1,0 +1,43 @@
+<!doctype html>
+<html>
+<head>
+  <link rel="stylesheet" href="css/bootstrap.min.css">
+  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
+  <link rel="stylesheet" href="css/main.css">
+  <script src="js/popup.js"></script>
+</head>
+<body>
+  <h2>Privatkopiera</h2>
+
+  <form class="input-group">
+    <div class="input-group-addon"><label for="url">URL</label></div>
+    <input class="form-control" type="search" id="url" placeholder="URL to video on svtplay.se" readonly>
+  </form>
+
+  <form class="input-group">
+    <div class="input-group-addon"><label for="filename">Filnamn</label></div>
+    <input class="form-control" type="search" id="filename" placeholder="output.mp4" pattern='^[^\t:*?"<>|]*$' spellcheck="false">
+  </form>
+
+  <form class="input-group">
+    <div class="input-group-addon"><label for="streams">Kvalité</label></div>
+    <select class="form-control" id="streams">
+      <option>master.m3u8</option>
+    </select>
+  </form>
+
+  <form class="input-group">
+    <div class="input-group-addon"><label for="cmd">Kommando</label></div>
+    <input class="form-control" type="search" id="cmd" placeholder="ffmpeg ..." spellcheck="false" monospace>
+  </form>
+
+  <form class="input-group btns">
+    <a class="btn btn-primary" id="copy">Kopiera kommando</a>
+    <a class="btn btn-default" id="open_json" target="_blank">Öppna JSON</a>
+    <a class="btn btn-default" href="https://stefansundin.github.io/privatkopiera/" target="_blank">Hjälp</a>
+  </form>
+
+  <p id="error"></p>
+  <p id="extension_version">v</p>
+</body>
+</html>
