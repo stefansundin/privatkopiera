@@ -1,0 +1,69 @@
+---
+---
+<!DOCTYPE html>
+<html>
+{% include head.html %}
+<body class="pad">
+  <header>
+    <img src="img/icon128.png" width="150" height="133" alt="{{ site.title }} Icon" itemprop="image">
+    <h1 itemprop="name">{{ site.title }}</h1>
+    <h2 itemprop="description">{{ site.description }}</h2>
+  </header>
+
+  <div class="text-center btn-group-lg">
+    <a class="btn btn-primary" href="https://chrome.google.com/webstore/detail/privatkopiera/{{ site.extension_id }}" target="_blank"><span class="glyphicon glyphicon-download-alt"></span> Installera</a>
+    <a class="btn btn-default" href="{{ site.github.repository_url }}" target="_blank"><span class="glyphicon glyphicon-new-window"></span> Källkod</a>
+  </div>
+
+  <div class="text-center hidden" id="browser-warning">
+    <h3><strong>Observera:</strong> Tillägget fungerar bara med <a href="https://www.google.com/chrome/" target="_blank">Google Chrome</a>!</h3>
+  </div>
+  <script src="js/browser-warning.js"></script>
+
+  <div class="container">
+    <h2 id="intro">Hur fungerar Privatkopiera?</h2>
+
+    <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från SVT Play. Tillägget är inspirerat av <a href="http://www.pirateplay.se/" target="_blank">Pirateplay</a>. Webbappen på Pirateplay-sidan var trasig under en period, så jag bestämde mig för att göra en version som var enklare att använda.</p>
+
+    <p>Privatkopiera kräver att du vet hur man använder <tt>ffmpeg</tt>. Det är egentligen väldigt enkelt. Följ dessa steg:</p>
+
+    <ol>
+      <li>Hitta en video på svtplay.se som du vill ladda ned.</li>
+      <li>Öppna Privatkopiera genom att klicka på VHS-ikonen till höger om addressfältet. <img src="img/launcher.png"></li>
+      <li>Vänta några sekunder tills tillägget hittar strömmen.</li>
+      <li>Klicka på knappen <i>Kopiera kommando</i>.</li>
+      <li>Klistra in kommandot i en terminal (t.ex. <tt>cmd.exe</tt> i Windows). Tryck enter.</li>
+      <li>Förhoppningsvis har du filen nedladdad om någon minut.</li>
+    </ol>
+
+    <p>Om du tycker om tillägget, lämna gärna en recension i <a href="https://chrome.google.com/webstore/detail/privatkopiera/{{ site.extension_id }}" target="_blank">Chrome-butiken</a>. Tack!</p>
+
+
+    <h2 id="install">Installera ffmpeg</h2>
+
+    <p>I Debian och Ubuntu:</p>
+{% highlight bash %}
+sudo apt-get install ffmpeg
+{% endhighlight %}
+
+    <p>I Mac OS X (med <a href="http://brew.sh/" target="_blank">Homebrew</a>):</p>
+{% highlight bash %}
+brew install ffmpeg
+{% endhighlight %}
+
+    <p>Windows är som vanligt krångligast. <a href="https://ffmpeg.org/download.html" target="_blank">Ladda ned ffmpeg</a>. Konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>.</p>
+
+    <h2 id="news">Nyheter <a target="_blank" href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
+
+    {% for post in site.posts limit:3 %}
+    <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
+    <div class="post-body">{{ post.content }}</div>
+    {% endfor %}
+
+    <!-- <p><a href="news/">Läs äldre nyheter...</a></p> -->
+  </div>
+
+
+  <script src="js/analytics.js"></script>
+</body>
+</html>
