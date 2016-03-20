@@ -41,6 +41,7 @@ master_callback = ->
     option.appendChild document.createTextNode("#{kbps} kbps (#{stream.resolution})")
     dropdown.insertBefore option, default_option
   dropdown.getElementsByTagName("option")[0].selected = true
+  update_cmd()
 
 video_callback = ->
   console.log(this)
