@@ -25,7 +25,7 @@
 
     <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från SVT Play. Tillägget är inspirerat av <a href="http://www.pirateplay.se/" target="_blank">Pirateplay</a>. Webbappen på Pirateplay-sidan var trasig under en period, så jag bestämde mig för att göra en version som var enklare att använda.</p>
 
-    <p>Privatkopiera kräver att du vet hur man använder <tt>ffmpeg</tt>. Det är egentligen väldigt enkelt. Följ dessa steg:</p>
+    <p>Privatkopiera kräver att du vet hur man använder FFmpeg. Det är egentligen väldigt enkelt. Följ dessa steg:</p>
 
     <ol>
       <li>Hitta en video på svtplay.se som du vill ladda ned.</li>
@@ -39,7 +39,9 @@
     <p>Om du tycker om tillägget, lämna gärna en recension i <a href="https://chrome.google.com/webstore/detail/privatkopiera/{{ site.extension_id }}" target="_blank">Chrome-butiken</a>. Tack!</p>
 
 
-    <h2 id="install">Installera ffmpeg</h2>
+    <h2 id="install">Installera FFmpeg</h2>
+
+    <p>FFmpeg är ett program för som mest används för konverting av videofiler, men det kan även ladda ned videoströmmar.</p>
 
     <p>I Debian och Ubuntu:</p>
 
@@ -53,12 +55,12 @@ sudo apt-get install ffmpeg
 brew install ffmpeg
 {% endhighlight %}
 
-    <p>Windows är som vanligt krångligast. <a href="https://ffmpeg.org/download.html" target="_blank">Ladda ned ffmpeg</a>. Konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>.</p>
+    <p>Windows är som vanligt krångligast. <a href="https://ffmpeg.zeranoe.com/builds/" target="_blank">Ladda ned FFmpeg</a>, välj static build för enklare installation. Nu kan du antingen konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>, eller alternativt kan du kopiera <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> (som redan finns i <tt>PATH</tt>).</p>
 
 
     <h2 id="socks">SOCKS</h2>
 
-    <p>Du kan använda <tt>tsocks</tt> för att ladda hem med <tt>ffmpeg</tt> via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Om du har en ssh server tillgänglig i Sverige så kan du ladda ned via den.</p>
+    <p>Du kan använda <tt>tsocks</tt> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Om du har en ssh server tillgänglig i Sverige så kan du ladda ned via den.</p>
 
     <p>Exempel för Ubuntu:</p>
 
@@ -71,7 +73,7 @@ sudo vim /etc/tsocks.conf
 ssh server_i_sverige.se -D 1080
 {% endhighlight %}
 
-    <p>Öppna en till terminal och kör <tt>ffmpeg</tt>-kommandot med <tt>tsocks</tt>:</p>
+    <p>Öppna en till terminal och kör FFmpeg-kommandot med <tt>tsocks</tt>:</p>
 
 {% highlight shell %}
 tsocks ffmpeg -i ...
