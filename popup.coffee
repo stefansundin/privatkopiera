@@ -1,23 +1,27 @@
 version = "v#{chrome.runtime.getManifest().version}"
 
 $ = ->
-  document.querySelectorAll.apply(document, arguments)
+  elements = document.querySelectorAll.apply(document, arguments)
+  if arguments[0][0] == "#"
+    elements[0]
+  else
+    elements
 
 update_cmd = ->
-  select = $("#streams")[0]
+  select = $("#streams")
   select.title = select.value.substr(select.value.lastIndexOf("/")+1).replace(/[?#].+/, "")
   url = select.value
-  filename = $("#filename")[0].value
-  $("#cmd")[0].value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
+  filename = $("#filename").value
+  $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
 master_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
     return
 
   data = this.responseText
-  dropdown = $("#streams")[0]
+  dropdown = $("#streams")
 
   streams = []
   re = /^#EXT-X-STREAM-INF:.*BANDWIDTH=(\d+),RESOLUTION=(\d+x\d+).*\n(.+)$/gm
@@ -49,16 +53,16 @@ master_callback = ->
 video_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
     return
 
   data = JSON.parse(this.responseText)
   filename = "#{data.context.title}.mp4"
-  $("#filename")[0].value = filename
+  $("#filename").value = filename
 
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url.replace(/\?.+/, "")
-  option = $("#streams")[0].getElementsByTagName("option")[0]
+  option = $("#streams").getElementsByTagName("option")[0]
   option.value = m3u8_url
 
   update_cmd()
@@ -72,16 +76,16 @@ video_callback = ->
 live_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
     return
 
   data = JSON.parse(this.responseText)
   filename = "#{data.video.title}.mp4"
-  $("#filename")[0].value = filename
+  $("#filename").value = filename
 
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url
-  option = $("#streams")[0].getElementsByTagName("option")[0]
+  option = $("#streams").getElementsByTagName("option")[0]
   option.value = m3u8_url
 
   update_cmd()
@@ -93,28 +97,28 @@ live_callback = ->
   xhr.send()
 
 document.addEventListener "DOMContentLoaded", ->
-  $("#extension_version")[0].textContent = version
+  $("#extension_version").textContent = version
 
-  $("#copy")[0].addEventListener "click", ->
-    cmd = $("#cmd")[0]
+  $("#copy").addEventListener "click", ->
+    cmd = $("#cmd")
     cmd.select()
     document.execCommand("copy")
     cmd.blur()
 
-  $("#filename")[0].addEventListener "change", update_cmd
-  $("#streams")[0].addEventListener "change", update_cmd
+  $("#filename").addEventListener "change", update_cmd
+  $("#streams").addEventListener "change", update_cmd
 
   chrome.tabs.query { active: true, lastFocusedWindow: true }, (tabs) ->
     url = tabs[0].url
-    $("#url")[0].value = url
+    $("#url").value = url
 
     if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/video\/(\d+)(?:\/([^/]+)\/([^/?#]+))?/.exec(url)
       video_id = ret[1]
       serie = ret[2]
       filename = "#{ret[3] || ret[2] || ret[1]}.mp4"
       json_url = "http://www.svtplay.se/video/#{video_id}?output=json"
-      $("#filename")[0].value = filename
-      $("#open_json")[0].href = json_url
+      $("#filename").value = filename
+      $("#open_json").href = json_url
 
       xhr = new XMLHttpRequest()
       xhr.addEventListener("load", video_callback)
@@ -125,8 +129,8 @@ document.addEventListener "DOMContentLoaded", ->
       filename = "#{channel || "svt1"}.mp4"
       json_url = "http://www.svtplay.se/api/channel_page"
       json_url += ";channel=#{channel}" if channel
-      $("#filename")[0].value = filename
-      $("#open_json")[0].href = json_url
+      $("#filename").value = filename
+      $("#open_json").href = json_url
 
       console.log(json_url)
       xhr = new XMLHttpRequest()
@@ -134,4 +138,4 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.open("GET", json_url)
       xhr.send()
     else
-      $("#error")[0].innerHTML = "Fel: Hittade ej video i URL."
+      $("#error").innerHTML = "Fel: Hittade ej video i URL."
