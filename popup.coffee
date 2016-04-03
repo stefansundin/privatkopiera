@@ -99,8 +99,8 @@ document.addEventListener "DOMContentLoaded", ->
     document.execCommand("copy")
     cmd.blur()
 
-  $("#filename")[0].addEventListener "input", update_cmd
-  $("#streams")[0].addEventListener "input", update_cmd
+  $("#filename")[0].addEventListener "change", update_cmd
+  $("#streams")[0].addEventListener "change", update_cmd
 
   chrome.tabs.query { active: true, lastFocusedWindow: true }, (tabs) ->
     url = tabs[0].url

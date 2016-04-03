@@ -1,5 +1,6 @@
 Thumbs.db
 .DS_Store
+._.DS_Store
 *.swp
 
 popup.js
@@ -8,5 +9,6 @@ popup.js
 *.woff2
 /node_modules
 /*.crx
+/*.xpi
 /*.zip
 /*.pem
