@@ -1,9 +1,10 @@
 title: Privatkopiera
 url: https://stefansundin.github.io
 baseurl: /privatkopiera
-description: Privatkopiera enklare med detta Chrome-tillägg.
+description: Privatkopiera enklare med detta tillägg.
 author: Stefan Sundin
 extension_id: jhjhnecocacdbhlkjgpdacoibidhmgdf
+extension_name: privatkopiera
 
 # posts
 permalink: /news/:year-:month-:day-:title.html
