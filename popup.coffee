@@ -7,6 +7,22 @@ $ = ->
   else
     elements
 
+error = (text) ->
+  el = $("#error")
+  el.removeChild(el.firstChild) while el.hasChildNodes()
+  el.appendChild document.createTextNode(text)
+
+api_error = (url, code) ->
+  el = $("#error")
+  el.removeChild(el.firstChild) while el.hasChildNodes()
+  el.appendChild document.createTextNode("Fel: ")
+  a = document.createElement("a")
+  a.target = "_blank"
+  a.href = url
+  a.appendChild document.createTextNode("API")
+  el.appendChild a
+  el.appendChild document.createTextNode(" svarade med #{code}")
+
 update_cmd = ->
   select = $("#streams")
   select.title = select.value.substr(select.value.lastIndexOf("/")+1).replace(/[?#].+/, "")
@@ -17,7 +33,7 @@ update_cmd = ->
 master_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    api_error(this.responseURL, this.status)
     return
 
   data = this.responseText
@@ -53,7 +69,7 @@ master_callback = ->
 video_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    api_error(this.responseURL, this.status)
     return
 
   data = JSON.parse(this.responseText)
@@ -76,7 +92,7 @@ video_callback = ->
 live_callback = ->
   console.log(this)
   if this.status != 200
-    $("#error").innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    api_error(this.responseURL, this.status)
     return
 
   data = JSON.parse(this.responseText)
@@ -134,8 +150,8 @@ document.addEventListener "DOMContentLoaded", ->
 
       console.log(json_url)
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", live_callback) #(channel))
+      xhr.addEventListener("load", live_callback)
       xhr.open("GET", json_url)
       xhr.send()
     else
-      $("#error").innerHTML = "Fel: Hittade ej video i URL."
+      error("Fel: Hittade ej video i URL.")
