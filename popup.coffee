@@ -4,7 +4,9 @@ $ = ->
   document.querySelectorAll.apply(document, arguments)
 
 update_cmd = ->
-  url = $("#streams")[0].value
+  select = $("#streams")[0]
+  select.title = select.value.substr(select.value.lastIndexOf("/")+1).replace(/[?#].+/, "")
+  url = select.value
   filename = $("#filename")[0].value
   $("#cmd")[0].value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
