@@ -18,7 +18,8 @@ master_callback = ->
   dropdown = $("#streams")[0]
 
   streams = []
-  re = /^#EXT-X-STREAM-INF:PROGRAM-ID=1,BANDWIDTH=(\d+),RESOLUTION=(\d+x\d+).*\n(.+)$/gm
+  re = /^#EXT-X-STREAM-INF:.*BANDWIDTH=(\d+),RESOLUTION=(\d+x\d+).*\n(.+)$/gm
+
   while (ret = re.exec(data)) != null
     streams.push
       bitrate: parseInt(ret[1], 10)
@@ -66,6 +67,29 @@ video_callback = ->
   xhr.open("GET", m3u8_url)
   xhr.send()
 
+live_callback = ->
+  console.log(this)
+  if this.status != 200
+    $("#error")[0].innerHTML = "Fel: <a target='_blank' href='#{this.responseURL}'>API</a> svarade med #{this.status}."
+    return
+
+  data = JSON.parse(this.responseText)
+  filename = "#{data.video.title}.mp4"
+  $("#filename")[0].value = filename
+
+  stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
+  m3u8_url = stream.url
+  option = $("#streams")[0].getElementsByTagName("option")[0]
+  option.value = m3u8_url
+
+  update_cmd()
+  console.log(m3u8_url)
+
+  xhr = new XMLHttpRequest()
+  xhr.addEventListener("load", master_callback)
+  xhr.open("GET", m3u8_url)
+  xhr.send()
+
 document.addEventListener "DOMContentLoaded", ->
   $("#extension_version")[0].textContent = version
 
@@ -82,8 +106,7 @@ document.addEventListener "DOMContentLoaded", ->
     url = tabs[0].url
     $("#url")[0].value = url
 
-    ret = /^https?:\/\/(?:www\.)?svtplay\.se\/video\/(\d+)(?:\/([^/]+)\/([^/?#]+))?/.exec(url)
-    if ret
+    if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/video\/(\d+)(?:\/([^/]+)\/([^/?#]+))?/.exec(url)
       video_id = ret[1]
       serie = ret[2]
       filename = "#{ret[3] || ret[2] || ret[1]}.mp4"
@@ -95,5 +118,18 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", video_callback)
       xhr.open("GET", json_url)
       xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/kanaler(?:\/([^/]+))?/.exec(url)
+      channel = ret[1]
+      filename = "#{channel || "svt1"}.mp4"
+      json_url = "http://www.svtplay.se/api/channel_page"
+      json_url += ";channel=#{channel}" if channel
+      $("#filename")[0].value = filename
+      $("#open_json")[0].href = json_url
+
+      console.log(json_url)
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", live_callback) #(channel))
+      xhr.open("GET", json_url)
+      xhr.send()
     else
-      $("#error")[0].innerHTML = "Fel: Hittade ej video id i URL."
+      $("#error")[0].innerHTML = "Fel: Hittade ej video i URL."
