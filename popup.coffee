@@ -36,7 +36,7 @@ master_callback = ->
     if /^https?:\/\//.test(stream.url)
       url = stream.url
     else
-      url = base_url+url
+      url = base_url+stream.url
     option.value = url
     option.appendChild document.createTextNode("#{kbps} kbps (#{stream.resolution})")
     dropdown.insertBefore option, default_option
