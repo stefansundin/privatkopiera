@@ -1,7 +1,7 @@
 {
   "name": "Privatkopiera",
   "version": "0.0.3",
-  "description": "Ladda ned från SVT Play. Kräver ffmpeg.",
+  "description": "Download from SVT Play. Requires ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
   "icons": {
