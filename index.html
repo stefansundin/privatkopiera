@@ -12,7 +12,7 @@
 
   <div class="text-center btn-group-lg">
     <a class="btn btn-default" target="_blank" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}" id="chrome-button"><span class="glyphicon glyphicon-download-alt"></span> Chrome</a>
-    <a class="btn btn-default" target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/{{ site.extension_name }}/" id="firefox-button"><span class="glyphicon glyphicon-download-alt"></span> Firefox</a>
+    <a class="btn btn-default" target="_blank" href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/" id="firefox-button"><span class="glyphicon glyphicon-download-alt"></span> Firefox</a>
     <a class="btn btn-default" target="_blank" href="{{ site.github.repository_url }}"><span class="glyphicon glyphicon-new-window"></span> Källkod</a>
   </div>
 
@@ -36,7 +36,7 @@
       <li>Förhoppningsvis har du filen nedladdad om någon minut.</li>
     </ol>
 
-    <p>Om du tycker om tillägget, lämna gärna en recension i <a target="_blank" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}">Chrome-butiken</a> eller <a target="_blank" href="https://addons.mozilla.org/en-US/firefox/addon/{{ site.extension_name }}/">Firefox Addons</a>. Tack!</p>
+    <p>Om du tycker om tillägget, lämna gärna en recension för <a target="_blank" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}/reviews">Chrome-tillägget</a> eller <a target="_blank" href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/reviews/add">Firefox-tillägget</a>. Tack!</p>
 
     <p>Svara på <a href="https://goo.gl/forms/gZKoMuXklI" target="_blank">en kort undersökning</a> för att hjälpa mig bestämma vilka sidor tillägget ska stödja härnäst.</p>
 
@@ -122,6 +122,8 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 {% highlight shell %}
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server="socks5://127.0.0.1:1080"
 {% endhighlight %}
+
+    <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> » <i>Avancerat</i> » <i>Nätverk</i> » <i>Inställningar</i> och kryssa sedan för <i>Manuell proxykonfiguration</i>. Skriv in <tt>localhost</tt> som <i>SOCKS-värd</i> och använd port <tt>1080</tt>.</p>
 
 
     <h2 id="other_programs">Andra program</h2>
