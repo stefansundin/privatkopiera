@@ -90,7 +90,7 @@ brew install ffmpeg
     <p>Windows är som vanligt krångligast. <a target="_blank" href="https://ffmpeg.zeranoe.com/builds/">Ladda ned FFmpeg</a>, välj static build för enklare installation. Nu kan du antingen konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>, eller alternativt kan du kopiera <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> (som redan finns i <tt>PATH</tt>).</p>
 
 
-    <h2 id="socks">SOCKS</h2>
+    <h2 id="socks">SOCKS Proxy</h2>
 
     <p>Du kan använda <tt>tsocks</tt> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Du måste ha en SSH server i Sverige.</p>
 
@@ -124,6 +124,39 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 {% endhighlight %}
 
     <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> » <i>Avancerat</i> » <i>Nätverk</i> » <i>Inställningar</i> och kryssa sedan för <i>Manuell proxykonfiguration</i>. Skriv in <tt>localhost</tt> som <i>SOCKS-värd</i> och använd port <tt>1080</tt>. Det är väldigt enkelt att glömma bort den här inställningen! Om du får proxy-fel senare så beror det nog på att du har glömt att återställa inställningen.</p>
+
+
+    <h2 id="http_proxy">HTTP Proxy</h2>
+
+    <p>I Windows och Mac fungerar inte <tt>tsocks</tt> så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stödjer däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
+
+{% highlight shell %}
+set http_proxy=http://server_i_sverige:3128/
+ffmpeg -i ...
+{% endhighlight %}
+
+    <p>Om du redan har en server med SSH så kan du port-forwarda en lokal port till en HTTP proxy på din Linux server, via din SSH-anslutning. Då behöver du inte oroa dig om att lämna proxy porten öppen för alla. Exempelvis så tillåter standard squid-inställningarna bara localhost att ansluta. Anslut till servern och installera squid. Exempel för Ubuntu:</p>
+
+{% highlight shell %}
+sudo apt-get install squid
+{% endhighlight %}
+
+    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a target="_blank" href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan <i>Add</i>. <a target="_blank" href="img/putty.png">Se bild för exempel</a>.</p>
+
+    <p>Efter detta kan du använda <tt>127.0.0.1</tt> istället för <tt>server_i_sverige</tt> i exemplet ovan:</p>
+
+{% highlight shell %}
+set http_proxy=http://127.0.0.1:3128/
+ffmpeg -i ...
+{% endhighlight %}
+
+    <p>I Mac eller Linux ansluter du med:</p>
+
+{% highlight shell %}
+ssh server_i_sverige.se -L 3128:127.0.0.1:3128
+{% endhighlight %}
+
+    <p>I Mac eller Linux använder du <tt>export</tt> istället för <tt>set</tt>.</p>
 
 
     <h2 id="other_programs">Andra program</h2>
