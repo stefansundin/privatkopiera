@@ -10,6 +10,10 @@ $ = ->
 extract_filename = (url) ->
   url.substr(url.lastIndexOf("/")+1).replace(/[?#].*/, "")
 
+update_filename = (fn) ->
+  # replace illegal characters
+  $("#filename").value = fn.replace(/[:*?"<>|]/, '.').replace(/\t+/, ' ')
+
 error = (text) ->
   el = $("#error")
   el.removeChild(el.firstChild) while el.hasChildNodes()
@@ -83,10 +87,9 @@ video_callback = ->
     return
 
   data = JSON.parse(this.responseText)
-  filename = "#{data.context.title}.mp4"
+  update_filename("#{data.context.title}.mp4")
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url.replace(/\?.+/, "")
-  $("#filename").value = filename
 
   option = document.createElement("option")
   option.value = m3u8_url
@@ -108,10 +111,9 @@ live_callback = ->
     return
 
   data = JSON.parse(this.responseText)
-  filename = "#{data.video.title}.mp4"
+  update_filename("#{data.video.title}.mp4")
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url
-  $("#filename").value = filename
 
   option = document.createElement("option")
   option.value = m3u8_url
@@ -136,8 +138,7 @@ tv4play_callback = ->
   data = parser.parseFromString(this.responseText, "text/xml")
 
   title = data.getElementsByTagName("title")[0].textContent
-  filename = "#{title}.mp4"
-  $("#filename").value = filename
+  update_filename("#{title}.mp4")
 
   streams = []
   for item in data.getElementsByTagName("item")
@@ -184,9 +185,8 @@ document.addEventListener "DOMContentLoaded", ->
     if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/video\/(\d+)(?:\/([^/]+)\/([^/?#]+))?/.exec(url)
       video_id = ret[1]
       serie = ret[2]
-      filename = "#{ret[3] || ret[2] || ret[1]}.mp4"
       json_url = "http://www.svtplay.se/video/#{video_id}?output=json"
-      $("#filename").value = filename
+      update_filename("#{ret[3] || ret[2] || ret[1]}.mp4")
       $("#open_json").href = json_url
 
       xhr = new XMLHttpRequest()
@@ -195,10 +195,9 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.send()
     else if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/kanaler(?:\/([^/]+))?/.exec(url)
       channel = ret[1]
-      filename = "#{channel || "svt1"}.mp4"
       json_url = "http://www.svtplay.se/api/channel_page"
       json_url += ";channel=#{channel}" if channel
-      $("#filename").value = filename
+      update_filename("#{channel || "svt1"}.mp4")
       $("#open_json").href = json_url
 
       console.log(json_url)
@@ -208,9 +207,8 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.send()
     else if ret = /^https?:\/\/(?:www\.)?tv4play\.se\/.*video_id=(\d+)/.exec(url)
       video_id = ret[1]
-      filename = "#{video_id}.mp4"
       data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
-      $("#filename").value = filename
+      update_filename("#{video_id}.mp4")
       $("#open_json").href = data_url
 
       console.log(data_url)
@@ -220,9 +218,8 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.send()
     else if ret = /^https?:\/\/(?:www\.)?tv4\.se\/.*-(\d+)/.exec(url)
       video_id = ret[1]
-      filename = "#{video_id}.mp4"
       data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
-      $("#filename").value = filename
+      update_filename("#{video_id}.mp4")
       $("#open_json").href = data_url
 
       console.log(data_url)
