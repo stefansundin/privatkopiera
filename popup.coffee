@@ -205,18 +205,7 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", live_callback)
       xhr.open("GET", json_url)
       xhr.send()
-    else if ret = /^https?:\/\/(?:www\.)?tv4play\.se\/.*video_id=(\d+)/.exec(url)
-      video_id = ret[1]
-      data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
-      update_filename("#{video_id}.mp4")
-      $("#open_json").href = data_url
-
-      console.log(data_url)
-      xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", tv4play_callback)
-      xhr.open("GET", data_url)
-      xhr.send()
-    else if ret = /^https?:\/\/(?:www\.)?tv4\.se\/.*-(\d+)/.exec(url)
+    else if ret = /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:video_id=|-)(\d+)/.exec(url)
       video_id = ret[1]
       data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
       update_filename("#{video_id}.mp4")
