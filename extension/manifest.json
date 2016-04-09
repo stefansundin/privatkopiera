@@ -20,7 +20,12 @@
   "permissions": [
     "activeTab",
     "http://www.svtplay.se/",
-    "https://www.svtplay.se/"
+    "https://www.svtplay.se/",
+    "http://www.tv4play.se/",
+    "https://www.tv4play.se/",
+    "https://prima.tv4play.se/",
+    "http://www.tv4.se/",
+    "https://www.tv4.se/"
   ],
   "manifest_version": 2
 }

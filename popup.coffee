@@ -7,6 +7,9 @@ $ = ->
   else
     elements
 
+extract_filename = (url) ->
+  url.substr(url.lastIndexOf("/")+1).replace(/[?#].*/, "")
+
 error = (text) ->
   el = $("#error")
   el.removeChild(el.firstChild) while el.hasChildNodes()
@@ -25,10 +28,17 @@ api_error = (url, code) ->
 
 update_cmd = ->
   select = $("#streams")
-  select.title = select.value.substr(select.value.lastIndexOf("/")+1).replace(/[?#].+/, "")
   url = select.value
+  stream_fn = extract_filename(url)
+  select.title = stream_fn
   filename = $("#filename").value
-  $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
+  if stream_fn.indexOf(".f4m") != -1
+    $("#cmd").value = "php AdobeHDS.php --delete --manifest \"#{url}\" --outfile \"#{filename}\""
+  else if stream_fn.indexOf(".webvtt") != -1
+    filename = filename.replace(".mp4", ".srt")
+    $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{filename}\""
+  else
+    $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
 master_callback = ->
   console.log(this)
@@ -74,12 +84,14 @@ video_callback = ->
 
   data = JSON.parse(this.responseText)
   filename = "#{data.context.title}.mp4"
-  $("#filename").value = filename
-
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url.replace(/\?.+/, "")
-  option = $("#streams").getElementsByTagName("option")[0]
+  $("#filename").value = filename
+
+  option = document.createElement("option")
   option.value = m3u8_url
+  option.appendChild document.createTextNode(extract_filename(m3u8_url))
+  $("#streams").appendChild option
 
   update_cmd()
   console.log(m3u8_url)
@@ -97,12 +109,14 @@ live_callback = ->
 
   data = JSON.parse(this.responseText)
   filename = "#{data.video.title}.mp4"
-  $("#filename").value = filename
-
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url
-  option = $("#streams").getElementsByTagName("option")[0]
+  $("#filename").value = filename
+
+  option = document.createElement("option")
   option.value = m3u8_url
+  option.appendChild document.createTextNode(extract_filename(m3u8_url))
+  $("#streams").appendChild option
 
   update_cmd()
   console.log(m3u8_url)
@@ -111,6 +125,45 @@ live_callback = ->
   xhr.addEventListener("load", master_callback)
   xhr.open("GET", m3u8_url)
   xhr.send()
+
+tv4play_callback = ->
+  console.log(this)
+  if this.status != 200
+    api_error(this.responseURL, this.status)
+    return
+
+  parser = new window.DOMParser()
+  data = parser.parseFromString(this.responseText, "text/xml")
+
+  title = data.getElementsByTagName("title")[0].textContent
+  filename = "#{title}.mp4"
+  $("#filename").value = filename
+
+  streams = []
+  for item in data.getElementsByTagName("item")
+    mediaFormat = item.getElementsByTagName("mediaFormat")[0].textContent
+    console.log(mediaFormat)
+    if mediaFormat == "wvm" or mediaFormat == "mp4" or mediaFormat == "webvtt"
+      url = item.getElementsByTagName("url")[0].textContent
+      if mediaFormat == "mp4"
+        url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+      streams.push
+        url: url
+        mediaFormat: mediaFormat
+
+  dropdown = $("#streams")
+  order = "wvm,mp4,webvtt".split(",")
+  streams = streams.sort (a,b) -> order.indexOf(a.mediaFormat) > order.indexOf(b.mediaFormat)
+  for stream in streams
+    option = document.createElement("option")
+    option.value = stream.url
+    option.appendChild document.createTextNode("#{stream.mediaFormat}")
+    if stream.mediaFormat == "webvtt"
+      option.appendChild document.createTextNode(" (undertexter)")
+    dropdown.appendChild option
+
+  update_cmd()
+  console.log(url)
 
 document.addEventListener "DOMContentLoaded", ->
   $("#extension_version").textContent = version
@@ -152,6 +205,30 @@ document.addEventListener "DOMContentLoaded", ->
       xhr = new XMLHttpRequest()
       xhr.addEventListener("load", live_callback)
       xhr.open("GET", json_url)
+      xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?tv4play\.se\/.*video_id=(\d+)/.exec(url)
+      video_id = ret[1]
+      filename = "#{video_id}.mp4"
+      data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
+      $("#filename").value = filename
+      $("#open_json").href = data_url
+
+      console.log(data_url)
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", tv4play_callback)
+      xhr.open("GET", data_url)
+      xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?tv4\.se\/.*-(\d+)/.exec(url)
+      video_id = ret[1]
+      filename = "#{video_id}.mp4"
+      data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
+      $("#filename").value = filename
+      $("#open_json").href = data_url
+
+      console.log(data_url)
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", tv4play_callback)
+      xhr.open("GET", data_url)
       xhr.send()
     else
       error("Fel: Hittade ej video i URL.")
