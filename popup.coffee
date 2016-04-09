@@ -216,5 +216,21 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", tv4play_callback)
       xhr.open("GET", data_url)
       xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?tv4play\.se\/kanaler(?:\/([^/]+))?/.exec(url)
+      chrome.tabs.executeScript
+        code: '(function(){ return document.getElementsByClassName("js-player-container")[0].getAttribute("data-asset") })()'
+        , (result) ->
+          data = JSON.parse(result[0])
+          console.log(data)
+          video_id = data.id
+          data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
+          update_filename("#{video_id}.mp4")
+          $("#open_json").href = data_url
+
+          console.log(data_url)
+          xhr = new XMLHttpRequest()
+          xhr.addEventListener("load", tv4play_callback)
+          xhr.open("GET", data_url)
+          xhr.send()
     else
       error("Fel: Hittade ej video i URL.")
