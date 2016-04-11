@@ -8,7 +8,14 @@ $ = ->
     elements
 
 extract_filename = (url) ->
+  url = url.replace(/\?.+/, "")
   url.substr(url.lastIndexOf("/")+1).replace(/[?#].*/, "")
+
+extract_extension = (url) ->
+  fn = extract_filename(url)
+  dot = fn.lastIndexOf(".")
+  if dot != -1
+    fn.substr(dot+1)
 
 update_filename = (fn) ->
   # replace illegal characters
@@ -34,11 +41,13 @@ update_cmd = ->
   select = $("#streams")
   url = select.value
   stream_fn = extract_filename(url)
+  stream_ext = extract_extension(url)
+  console.log(stream_ext)
   select.title = stream_fn
   filename = $("#filename").value
-  if stream_fn.indexOf(".f4m") != -1
+  if stream_ext == "f4m"
     $("#cmd").value = "php AdobeHDS.php --delete --manifest \"#{url}\" --outfile \"#{filename}\""
-  else if stream_fn.indexOf(".webvtt") != -1
+  else if stream_ext == "webvtt" or stream_ext == "wsrt"
     filename = filename.replace(".mp4", ".srt")
     $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{filename}\""
   else
@@ -88,21 +97,37 @@ video_callback = ->
 
   data = JSON.parse(this.responseText)
   update_filename("#{data.context.title}.mp4")
-  stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
-  m3u8_url = stream.url.replace(/\?.+/, "")
 
-  option = document.createElement("option")
-  option.value = m3u8_url
-  option.appendChild document.createTextNode(extract_filename(m3u8_url))
-  $("#streams").appendChild option
+  dropdown = $("#streams")
+  order = "m3u8,f4m,wsrt".split(",")
+  streams = data.video.videoReferences.concat(data.video.subtitleReferences)
+  console.log(streams)
+  streams.filter (stream) ->
+    ext = extract_extension(stream.url)
+    ext == "m3u8" or ext == "f4m" or ext == "wsrt"
+  .sort (a,b) ->
+    a_ext = extract_extension(a.url)
+    b_ext = extract_extension(b.url)
+    order.indexOf(a_ext) > order.indexOf(b_ext)
+  .forEach (stream) ->
+    ext = extract_extension(stream.url)
+    if ext == "f4m"
+      stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+
+    option = document.createElement("option")
+    option.value = stream.url
+    option.appendChild document.createTextNode(extract_filename(stream.url))
+    if ext == "wsrt"
+      option.appendChild document.createTextNode(" (undertexter)")
+    dropdown.appendChild option
+
+    if ext == "m3u8"
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", master_callback)
+      xhr.open("GET", stream.url)
+      xhr.send()
 
   update_cmd()
-  console.log(m3u8_url)
-
-  xhr = new XMLHttpRequest()
-  xhr.addEventListener("load", master_callback)
-  xhr.open("GET", m3u8_url)
-  xhr.send()
 
 live_callback = ->
   console.log(this)
@@ -158,7 +183,7 @@ tv4play_callback = ->
   for stream in streams
     option = document.createElement("option")
     option.value = stream.url
-    option.appendChild document.createTextNode("#{stream.mediaFormat}")
+    option.appendChild document.createTextNode(stream.mediaFormat)
     if stream.mediaFormat == "webvtt"
       option.appendChild document.createTextNode(" (undertexter)")
     dropdown.appendChild option
