@@ -1,5 +1,15 @@
 version = "v#{chrome.runtime.getManifest().version}"
 
+fmt_filesize = (bytes, digits=2) ->
+  units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
+  i = 0
+  while bytes > 1024 and i < units.length
+    bytes = bytes / 1024
+    i++
+  digits = 0 if i < 3
+  size = if i > 0 then bytes.toFixed(digits) else bytes
+  "#{size} #{units[i]}"
+
 $ = ->
   elements = document.querySelectorAll.apply(document, arguments)
   if arguments[0][0] == "#"
@@ -53,7 +63,7 @@ update_cmd = ->
   else
     $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
-master_callback = ->
+master_callback = (length) -> ->
   console.log(this)
   if this.status != 200
     api_error(this.responseURL, this.status)
@@ -79,12 +89,15 @@ master_callback = ->
   streams.sort((a,b) -> b.bitrate-a.bitrate).forEach (stream) ->
     kbps = stream.bitrate / 1000
     option = document.createElement("option")
+    stream.url = stream.url.replace(/[?#].*/, "")
     if /^https?:\/\//.test(stream.url)
       url = stream.url
     else
       url = base_url+stream.url
     option.value = url
-    option.appendChild document.createTextNode("#{kbps} kbps (#{stream.resolution})")
+    info = "#{stream.resolution}"
+    info += ", ~#{fmt_filesize(1.05*length*stream.bitrate/8)}" if length # the calculation is off by about  5%, probably because of audio and overhead
+    option.appendChild document.createTextNode("#{kbps} kbps (#{info})")
     dropdown.insertBefore option, default_option
   dropdown.getElementsByTagName("option")[0].selected = true
   update_cmd()
@@ -110,6 +123,7 @@ svtplay_callback = ->
     b_ext = extract_extension(b.url)
     order.indexOf(a_ext) > order.indexOf(b_ext)
   .forEach (stream) ->
+    stream.url = stream.url.replace(/[?#].*/, "")
     ext = extract_extension(stream.url)
     if ext == "f4m"
       stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
@@ -123,7 +137,7 @@ svtplay_callback = ->
 
     if ext == "m3u8"
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback)
+      xhr.addEventListener("load", master_callback(data.video.materialLength))
       xhr.open("GET", stream.url)
       xhr.send()
 
@@ -145,6 +159,7 @@ svt_callback = ->
   .sort (a,b) ->
     order.indexOf(a.format) > order.indexOf(b.format)
   .forEach (stream) ->
+    stream.url = stream.url.replace(/[?#].*/, "")
     if stream.format == "hds"
       stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
 
@@ -155,7 +170,7 @@ svt_callback = ->
 
     if stream.format == "hls"
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback)
+      xhr.addEventListener("load", master_callback(data.contentDuration))
       xhr.open("GET", stream.url)
       xhr.send()
 
@@ -181,7 +196,7 @@ live_callback = ->
   console.log(m3u8_url)
 
   xhr = new XMLHttpRequest()
-  xhr.addEventListener("load", master_callback)
+  xhr.addEventListener("load", master_callback())
   xhr.open("GET", m3u8_url)
   xhr.send()
 
