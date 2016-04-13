@@ -19,7 +19,7 @@ extract_extension = (url) ->
 
 update_filename = (fn) ->
   # replace illegal characters
-  $("#filename").value = fn.replace(/[:*?"<>|]/, '.').replace(/\t+/, ' ')
+  $("#filename").value = fn.replace(/[:*?"<>|]/, '').replace(/\t+/, ' ')
 
 error = (text) ->
   el = $("#error")
@@ -89,7 +89,7 @@ master_callback = ->
   dropdown.getElementsByTagName("option")[0].selected = true
   update_cmd()
 
-video_callback = ->
+svtplay_callback = ->
   console.log(this)
   if this.status != 200
     api_error(this.responseURL, this.status)
@@ -122,6 +122,38 @@ video_callback = ->
     dropdown.appendChild option
 
     if ext == "m3u8"
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", master_callback)
+      xhr.open("GET", stream.url)
+      xhr.send()
+
+  update_cmd()
+
+svt_callback = ->
+  console.log(this)
+  if this.status != 200
+    api_error(this.responseURL, this.status)
+    return
+
+  data = JSON.parse(this.responseText)
+  update_filename("#{data.episodeTitle}.mp4")
+
+  dropdown = $("#streams")
+  order = "hls,hds".split(",")
+  data.videoReferences.filter (stream) ->
+    stream.format == "hds" or stream.format == "hls"
+  .sort (a,b) ->
+    order.indexOf(a.format) > order.indexOf(b.format)
+  .forEach (stream) ->
+    if stream.format == "hds"
+      stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+
+    option = document.createElement("option")
+    option.value = stream.url
+    option.appendChild document.createTextNode(extract_filename(stream.url))
+    dropdown.appendChild option
+
+    if stream.format == "hls"
       xhr = new XMLHttpRequest()
       xhr.addEventListener("load", master_callback)
       xhr.open("GET", stream.url)
@@ -215,7 +247,7 @@ document.addEventListener "DOMContentLoaded", ->
       $("#open_json").href = json_url
 
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", video_callback)
+      xhr.addEventListener("load", svtplay_callback)
       xhr.open("GET", json_url)
       xhr.send()
     else if ret = /^https?:\/\/(?:www\.)?svtplay\.se\/kanaler(?:\/([^/]+))?/.exec(url)
@@ -230,6 +262,40 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", live_callback)
       xhr.open("GET", json_url)
       xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?svt\.se\//.exec(url)
+      # look for <video data-video-id='7779272'> and <iframe src="articleId=7748504">
+      chrome.tabs.executeScript
+        code: '(function(){
+          var ids = [];
+          var videos = document.getElementsByTagName("video");
+          for (var i=0; i < videos.length; i++) {
+            var id = videos[i].getAttribute("data-video-id");
+            if (id) {
+              ids.push(parseInt(id, 10));
+            }
+          }
+          var iframes = document.getElementsByTagName("iframe");
+          for (var i=0; i < iframes.length; i++) {
+            var src = iframes[i].getAttribute("src");
+            var ret;
+            if (ret = /articleId=(\\d+)/.exec(src)) {
+              ids.push(parseInt(ret[1], 10));
+            }
+          }
+          return ids;
+        })()'
+        , (ids) ->
+          console.log(ids)
+          ids.forEach (video_id) ->
+            data_url = "http://www.svt.se/videoplayer-api/video/#{video_id}"
+            update_filename("#{video_id}.mp4")
+            $("#open_json").href = data_url
+
+            console.log(data_url)
+            xhr = new XMLHttpRequest()
+            xhr.addEventListener("load", svt_callback)
+            xhr.open("GET", data_url)
+            xhr.send()
     else if ret = /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:video_id=|-)(\d+)/.exec(url)
       video_id = ret[1]
       data_url = "https://prima.tv4play.se/api/web/asset/#{video_id}/play"
