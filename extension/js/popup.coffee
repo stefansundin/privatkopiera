@@ -60,6 +60,8 @@ update_cmd = ->
   else if stream_ext == "webvtt" or stream_ext == "wsrt"
     filename = filename.replace(".mp4", ".srt")
     $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{filename}\""
+  else if stream_ext == "m4a"
+    $("#cmd").value = url
   else
     $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
@@ -238,6 +240,7 @@ tv4play_callback = ->
   update_cmd()
   console.log(url)
 
+
 document.addEventListener "DOMContentLoaded", ->
   $("#extension_version").textContent = version
 
@@ -246,6 +249,11 @@ document.addEventListener "DOMContentLoaded", ->
     cmd.select()
     document.execCommand("copy")
     cmd.blur()
+
+  $("#download").addEventListener "click", ->
+    chrome.downloads.download
+      url: $("#cmd").value
+      filename: $("#filename").value
 
   $("#filename").addEventListener "change", update_cmd
   $("#streams").addEventListener "change", update_cmd
@@ -322,5 +330,21 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", tv4play_callback)
       xhr.open("GET", data_url)
       xhr.send()
+    else if ret = /^https?:\/\/(?:www\.)?sverigesradio\.se(\/.*)/.exec(url)
+      path = ret[1]
+      data_url = "https://sverigesradio.se/sida/ajax/getplayerinfo?url=#{encodeURIComponent(path)}&isios=false&playertype=html5"
+      update_filename("#{path}.m4a")
+      $("#open_json").href = data_url
+      $("#copy").className += " hidden"
+      $("#download").className = $("#download").className.replace(" hidden", "")
+      label = $("label[for='cmd']")[0]
+      label.removeChild(label.firstChild) while label.hasChildNodes()
+      label.appendChild document.createTextNode("URL")
+
+      console.log(data_url)
+      xhr = new XMLHttpRequest()
+      xhr.addEventListener("load", sr_callback)
+      xhr.open("GET", data_url)
+      xhr.send()
     else
-      error("Fel: Hittade ej video i URL.")
+      error("Fel: Den här hemsidan stöds ej.")

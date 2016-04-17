@@ -1,2 +1,2 @@
 #!/bin/bash -ex
-coffeebar -w popup.coffee -o extension/js/popup.js
+coffee -w -b -c extension/js/*.coffee
