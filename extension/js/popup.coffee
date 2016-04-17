@@ -49,10 +49,13 @@ api_error = (url, code) ->
 
 update_cmd = ->
   select = $("#streams")
+  option = select.selectedOptions[0]
+  if option.getAttribute("data-filename")
+    update_filename option.getAttribute("data-filename")
+
   url = select.value
   stream_fn = extract_filename(url)
   stream_ext = extract_extension(url)
-  console.log(stream_ext)
   select.title = stream_fn
   filename = $("#filename").value
   if stream_ext == "f4m"
@@ -346,5 +349,27 @@ document.addEventListener "DOMContentLoaded", ->
       xhr.addEventListener("load", sr_callback)
       xhr.open("GET", data_url)
       xhr.send()
+
+      chrome.tabs.executeScript
+        code: '(function(){
+          var urls = [];
+          var related = document.getElementsByClassName("article-details__related-audios")[0].getElementsByTagName("a");
+          for (var i=0; i < related.length; i++) {
+            urls.push(related[i].href);
+          }
+          return urls;
+        })()'
+        , (urls) ->
+          console.log(urls)
+          urls[0].forEach (url) ->
+            path = url.replace(/^https?:\/\/[^/]+/, "")
+            console.log(path)
+            data_url = "https://sverigesradio.se/sida/ajax/getplayerinfo?url=#{encodeURIComponent(path)}&isios=false&playertype=html5"
+
+            console.log(data_url)
+            xhr = new XMLHttpRequest()
+            xhr.addEventListener("load", sr_callback)
+            xhr.open("GET", data_url)
+            xhr.send()
     else
       error("Fel: Den här hemsidan stöds ej.")

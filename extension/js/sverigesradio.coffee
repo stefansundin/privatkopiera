@@ -14,7 +14,8 @@ sr_callback = ->
   .forEach (stream) ->
     option = document.createElement("option")
     option.value = stream.Url
-    option.appendChild document.createTextNode("#{stream.Quality/1000} kbps (#{extract_extension(stream.Url)})")
+    option.setAttribute("data-filename", "#{data.playerInfo.Title}.m4a")
+    option.appendChild document.createTextNode("#{data.playerInfo.Title} (#{stream.Quality/1000} kbps)")
     dropdown.appendChild option
 
   update_cmd()
