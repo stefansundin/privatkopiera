@@ -29,7 +29,7 @@ extract_extension = (url) ->
 
 update_filename = (fn) ->
   # replace illegal characters
-  $("#filename").value = fn.replace(/[:*?"<>|]/, '').replace(/\t+/, ' ')
+  $("#filename").value = fn.replace(/[:*?"<>|]/g, '').replace(/\t+/, ' ')
 
 error = (text) ->
   el = $("#error")
@@ -63,8 +63,13 @@ update_cmd = ->
   else if stream_ext == "webvtt" or stream_ext == "wsrt"
     filename = filename.replace(".mp4", ".srt")
     $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{filename}\""
-  else if stream_ext == "m4a"
+  else if stream_ext == "m4a" or stream_ext == "mp3" or /^https?:\/\/http-live\.sr\.se/.test(url)
     $("#cmd").value = url
+    $("#copy").className += " hidden"
+    $("#download").className = "btn btn-primary"
+    label = $("label[for='cmd']")[0]
+    label.removeChild(label.firstChild) while label.hasChildNodes()
+    label.appendChild document.createTextNode("URL")
   else
     $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
 
@@ -336,13 +341,7 @@ document.addEventListener "DOMContentLoaded", ->
     else if ret = /^https?:\/\/(?:www\.)?sverigesradio\.se(\/.*)/.exec(url)
       path = ret[1]
       data_url = "https://sverigesradio.se/sida/ajax/getplayerinfo?url=#{encodeURIComponent(path)}&isios=false&playertype=html5"
-      update_filename("#{path}.m4a")
       $("#open_json").href = data_url
-      $("#copy").className += " hidden"
-      $("#download").className = $("#download").className.replace(" hidden", "")
-      label = $("label[for='cmd']")[0]
-      label.removeChild(label.firstChild) while label.hasChildNodes()
-      label.appendChild document.createTextNode("URL")
 
       console.log(data_url)
       xhr = new XMLHttpRequest()
@@ -353,9 +352,12 @@ document.addEventListener "DOMContentLoaded", ->
       chrome.tabs.executeScript
         code: '(function(){
           var urls = [];
-          var related = document.getElementsByClassName("article-details__related-audios")[0].getElementsByTagName("a");
-          for (var i=0; i < related.length; i++) {
-            urls.push(related[i].href);
+          var related = document.getElementsByClassName("article-details__related-audios")[0];
+          if (related) {
+            var links = related.getElementsByTagName("a");
+            for (var i=0; i < links.length; i++) {
+              urls.push(links[i].href);
+            }
           }
           return urls;
         })()'
