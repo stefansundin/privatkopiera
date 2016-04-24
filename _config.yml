@@ -10,16 +10,9 @@ extension_name: privatkopiera
 permalink: /news/:year-:month-:day-:title.html
 
 # build
-gems: [jekyll-coffeescript]
+gems:
+- jekyll-coffeescript
+- jekyll-github-metadata
 markdown: kramdown
 kramdown:
   input: GFM
-
-# github data
-# https://help.github.com/articles/repository-metadata-on-github-pages/
-github:
-  repository_nwo: stefansundin/privatkopiera
-  repository_url: https://github.com/stefansundin/privatkopiera
-  clone_url: https://github.com/stefansundin/privatkopiera.git
-  releases_url: https://github.com/stefansundin/privatkopiera/releases
-  issues_url: https://github.com/stefansundin/privatkopiera/issues
