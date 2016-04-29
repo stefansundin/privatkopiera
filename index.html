@@ -11,19 +11,19 @@
   </header>
 
   <div class="text-center btn-group-lg">
-    <a class="btn btn-default" target="_blank" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}" id="chrome-button"><span class="glyphicon glyphicon-download-alt"></span> Chrome</a>
-    <a class="btn btn-default" target="_blank" href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/" id="firefox-button"><span class="glyphicon glyphicon-download-alt"></span> Firefox</a>
-    <a class="btn btn-default" target="_blank" href="{{ site.github.repository_url }}"><span class="glyphicon glyphicon-new-window"></span> Källkod</a>
+    <a class="btn btn-default" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}" id="chrome-button"><span class="glyphicon glyphicon-download-alt"></span> Chrome</a>
+    <a class="btn btn-default" href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/" id="firefox-button"><span class="glyphicon glyphicon-download-alt"></span> Firefox</a>
+    <a class="btn btn-default" href="{{ site.github.repository_url }}"><span class="glyphicon glyphicon-new-window"></span> Källkod</a>
   </div>
 
   <div class="text-center hidden" id="browser-warning">
-    <h3><strong>Observera:</strong> Tillägget fungerar med <a target="_blank" href="https://www.google.com/chrome/">Chrome</a> och <a target="_blank" href="https://getfirefox.com/">Firefox</a>!</h3>
+    <h3><strong>Observera:</strong> Tillägget fungerar med <a href="https://www.google.com/chrome/">Chrome</a> och <a href="https://getfirefox.com/">Firefox</a>!</h3>
   </div>
 
   <div class="container">
     <h2 id="intro">Hur fungerar Privatkopiera?</h2>
 
-    <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från SVT Play. Tillägget är inspirerat av <a href="http://www.pirateplay.se/" target="_blank">Pirateplay</a>. Webbappen på Pirateplay var trasig under en period, så jag bestämde mig för att göra en version som var enklare att använda.</p>
+    <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från SVT Play. Tillägget är inspirerat av <a href="http://www.pirateplay.se/">Pirateplay</a>. Webbappen på Pirateplay var trasig under en period, så jag bestämde mig för att göra en version som var enklare att använda.</p>
 
     <p>Privatkopiera kräver att du vet hur man använder FFmpeg. Det är egentligen väldigt enkelt. Följ dessa steg:</p>
 
@@ -36,9 +36,9 @@
       <li>Förhoppningsvis har du filen nedladdad om någon minut.</li>
     </ol>
 
-    <p>Om du tycker om tillägget, lämna gärna en recension för <a target="_blank" href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}/reviews">Chrome-tillägget</a> eller <a target="_blank" href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/reviews/add">Firefox-tillägget</a>. Tack!</p>
+    <p>Om du tycker om tillägget, lämna gärna en recension för <a href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}/reviews">Chrome-tillägget</a> eller <a href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/reviews/add">Firefox-tillägget</a>. Tack!</p>
 
-    <p>Svara på <a href="https://goo.gl/forms/gZKoMuXklI" target="_blank">en kort undersökning</a> för att hjälpa mig bestämma vilka sidor tillägget ska stödja härnäst. Se svar <a href="https://docs.google.com/spreadsheets/d/1WFd5RIzHaTcnwWo41BQ8YMffX8FBn4_g9_bLdFxZfTY/pubhtml" target="_blank">här</a>.</p>
+    <p>Svara på <a href="https://goo.gl/forms/gZKoMuXklI">en kort undersökning</a> för att hjälpa mig bestämma vilka sidor tillägget ska stödja härnäst. Se svar <a href="https://docs.google.com/spreadsheets/d/1WFd5RIzHaTcnwWo41BQ8YMffX8FBn4_g9_bLdFxZfTY/pubhtml">här</a>.</p>
 
 
     <h2 id="donate">Donera</h2>
@@ -63,17 +63,21 @@
     <div id="donation-options">
       <p>Andra doneringsalternativ:</p>
       <ul>
-        <li>Bitcoin: <tt>1EhDUbc5MjC6JavC6idKiTCxnqSxY2sbTX</tt> (<a target="_blank" href="img/btc-qr.png">QR kod</a>)</li>
-        <li>Square Cash: <a target="_blank" href="https://cash.me/$StefanSundin">$StefanSundin</a></li>
-        <li>ChangeTip: <a target="_blank" href="https://www.changetip.com/tipme/stefansundin">stefansundin</a></li>
+        <li>Bitcoin: <tt>1EhDUbc5MjC6JavC6idKiTCxnqSxY2sbTX</tt> (<a href="img/btc-qr.png">QR kod</a>)</li>
+        <li>Square Cash: <a href="https://cash.me/$StefanSundin">$StefanSundin</a></li>
+        <li>ChangeTip: <a href="https://www.changetip.com/tipme/stefansundin">stefansundin</a></li>
       </ul>
-      <p>Kontakta mig på <a target="_blank" fubar>stefaNStefansundinCom</a> om du vill donera på annat sätt.</p>
+      <p>Kontakta mig på <a fubar>stefaNStefansundinCom</a> om du vill donera på annat sätt.</p>
     </div>
 
 
     <h2 id="install">Installera FFmpeg</h2>
 
-    <p>FFmpeg är ett program för som mest används för konverting av videofiler, men det kan även ladda ned videoströmmar.</p>
+    <p>FFmpeg är ett program för som används för konverting av videofiler, men det kan även ladda ned videoströmmar.</p>
+
+    <p>Du kan ladda ned FFmpeg till Linux, Windows och Mac från <a href="http://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build". Om du använder pakethanterare på din dator kan det däremot vara enklare (se nedan).</p>
+
+    <p>Du kan antingen lägga ffmpeg filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> som redan finns i <tt>PATH</tt>.</p>
 
     <p>I Debian och Ubuntu:</p>
 
@@ -81,13 +85,11 @@
 sudo apt-get install ffmpeg
 {% endhighlight %}
 
-    <p>I Mac OS X (med <a target="_blank" href="http://brew.sh/">Homebrew</a>):</p>
+    <p>I Mac OS X med <a href="http://brew.sh/">Homebrew</a>:</p>
 
 {% highlight shell %}
 brew install ffmpeg
 {% endhighlight %}
-
-    <p>Windows är som vanligt krångligast. <a target="_blank" href="https://ffmpeg.zeranoe.com/builds/">Ladda ned FFmpeg</a>, välj static build för enklare installation. Nu kan du antingen konfigurera så att <tt>ffmpeg.exe</tt> kan hittas i <tt>PATH</tt>, eller alternativt kan du kopiera <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> (som redan finns i <tt>PATH</tt>).</p>
 
 
     <h2 id="socks">SOCKS Proxy</h2>
@@ -141,7 +143,7 @@ ffmpeg -i ...
 sudo apt-get install squid
 {% endhighlight %}
 
-    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a target="_blank" href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan <i>Add</i>. <a target="_blank" href="img/putty.png">Se bild för exempel</a>.</p>
+    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a href="http://www.chiark.greenend.org.uk/~sgtatham/putty/download.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan <i>Add</i>. <a href="img/putty.png">Se bild för exempel</a>.</p>
 
     <p>Efter detta kan du använda <tt>127.0.0.1</tt> istället för <tt>server_i_sverige</tt> i exemplet ovan:</p>
 
@@ -162,14 +164,14 @@ ssh server_i_sverige.se -L 3128:127.0.0.1:3128
     <h2 id="other_programs">Andra program</h2>
 
     <ul>
-      <li><a target="_blank" href="http://www.pirateplay.se/">Pirateplay</a></li>
-      <li><a target="_blank" href="https://github.com/spaam/svtplay-dl">svtplay-dl</a></li>
-      <li><a target="_blank" href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
-      <li><a target="_blank" href="https://chiselapp.com/user/jesper/repository/teve/index">teve</a></li>
+      <li><a href="http://www.pirateplay.se/">Pirateplay</a></li>
+      <li><a href="https://github.com/spaam/svtplay-dl">svtplay-dl</a></li>
+      <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
+      <li><a href="https://chiselapp.com/user/jesper/repository/teve/index">teve</a></li>
     </ul>
 
 
-    <h2 id="news">Nyheter <a target="_blank" href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
+    <h2 id="news">Nyheter <a href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
 
     {% for post in site.posts limit:3 %}
     <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
