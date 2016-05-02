@@ -1,6 +1,6 @@
 {
   "name": "Privatkopiera",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "Download from SVT Play. Requires ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
@@ -19,8 +19,15 @@
   },
   "permissions": [
     "activeTab",
+    "downloads",
     "http://www.svtplay.se/",
-    "https://www.svtplay.se/"
+    "https://www.svtplay.se/",
+    "http://www.tv4play.se/",
+    "https://www.tv4play.se/",
+    "https://prima.tv4play.se/",
+    "http://www.tv4.se/",
+    "https://www.tv4.se/",
+    "https://sverigesradio.se/"
   ],
   "applications": {
     "gecko": {

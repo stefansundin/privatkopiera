@@ -13,6 +13,7 @@
 # SVT
 # Example URL:
 # http://www.svt.se/nyheter/utrikes/trudeau-viral-efter-kvantforklaring
+# http://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
 # Find <video data-video-id='7871492'> in source code.
 # Data URL:
 # http://www.svt.se/videoplayer-api/video/7871492
@@ -147,9 +148,10 @@ matchers.push
     xhr.send()
 
 matchers.push
-  re: /^https?:\/\/(?:www\.)?svt\.se\//
+  re: /^https?:\/\/(?:www\.)?(?:svt|oppetarkiv)\.se\//
   func: (ret) ->
     # look for <video data-video-id='7779272'> and <a data-id="7748504"> and <iframe src="articleId=7748504">
+    # video ids contain characters on oppetarkiv.se
     chrome.tabs.executeScript
       code: '(function(){
         var ids = [];
@@ -158,7 +160,7 @@ matchers.push
         for (var i=0; i < videos.length; i++) {
           var id = videos[i].getAttribute("data-video-id");
           if (id) {
-            ids.push(parseInt(id, 10));
+            ids.push(id);
           }
         }
         var links = article.getElementsByTagName("a");
@@ -181,7 +183,7 @@ matchers.push
       })()'
       , (ids) ->
         console.log(ids)
-        ids[0].forEach (video_id) ->
+        flatten(ids).forEach (video_id) ->
           data_url = "http://www.svt.se/videoplayer-api/video/#{video_id}"
           update_filename("#{video_id}.mp4")
           $("#open_json").href = data_url

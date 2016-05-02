@@ -1,5 +1,14 @@
 version = "v#{chrome.runtime.getManifest().version}"
 matchers = []
+is_firefox46 = navigator.userAgent.indexOf('Firefox/46') != -1;
+
+flatten = (arr) ->
+  arr.reduce (a, b) ->
+    if b.constructor == Array
+      a.concat(b)
+    else
+      a.concat([b])
+  , []
 
 fmt_filesize = (bytes, digits=2) ->
   units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
@@ -48,11 +57,12 @@ api_error = (url, code) ->
   el.appendChild a
   el.appendChild document.createTextNode(" svarade med #{code}")
 
-update_cmd = ->
+update_cmd = (e) ->
   select = $("#streams")
-  option = select.selectedOptions[0]
-  if option.getAttribute("data-filename")
-    update_filename option.getAttribute("data-filename")
+  if e?.target == select
+    option = select.selectedOptions[0]
+    fn = option.getAttribute("data-filename")
+    update_filename fn if fn
 
   url = select.value
   stream_fn = extract_filename(url)
@@ -123,9 +133,13 @@ document.addEventListener "DOMContentLoaded", ->
     cmd.blur()
 
   $("#download").addEventListener "click", ->
-    chrome.downloads.download
-      url: $("#cmd").value
-      filename: $("#filename").value
+    if is_firefox46
+      window.open $("#cmd").value
+    else
+      # this will start working in Firefox 47
+      chrome.downloads.download
+        url: $("#cmd").value
+        filename: $("#filename").value
 
   $("#filename").addEventListener "change", update_cmd
   $("#streams").addEventListener "change", update_cmd

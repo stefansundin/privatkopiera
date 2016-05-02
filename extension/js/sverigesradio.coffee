@@ -58,7 +58,7 @@ matchers.push
       })()'
       , (urls) ->
         console.log(urls)
-        urls[0].forEach (url) ->
+        flatten(urls).forEach (url) ->
           path = url.replace(/^https?:\/\/[^/]+/, "")
           console.log(path)
           data_url = "https://sverigesradio.se/sida/ajax/getplayerinfo?url=#{encodeURIComponent(path)}&isios=false&playertype=html5"
