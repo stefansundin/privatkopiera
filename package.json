@@ -1,5 +1,6 @@
 {
   "devDependencies": {
-    "coffee-script": "^1.10.0"
+    "coffee-script": "^1.10.0",
+    "web-ext": "^1.0.1"
   }
 }
