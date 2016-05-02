@@ -23,7 +23,7 @@
   <div class="container">
     <h2 id="intro">Hur fungerar Privatkopiera?</h2>
 
-    <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från SVT Play. Tillägget är inspirerat av <a href="http://www.pirateplay.se/">Pirateplay</a>. Webbappen på Pirateplay var trasig under en period, så jag bestämde mig för att göra en version som var enklare att använda.</p>
+    <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från ett antal Play-tjänster.</p>
 
     <p>Privatkopiera kräver att du vet hur man använder FFmpeg. Det är egentligen väldigt enkelt. Följ dessa steg:</p>
 
@@ -33,12 +33,26 @@
       <li>Vänta några sekunder tills tillägget hittar strömmen.</li>
       <li>Klicka på knappen <i>Kopiera kommando</i>.</li>
       <li>Klistra in kommandot i en terminal (t.ex. <tt>cmd.exe</tt> i Windows). Tryck enter.</li>
-      <li>Förhoppningsvis har du filen nedladdad om någon minut.</li>
+      <li>Förhoppningsvis har du filen nedladdad efter några minuter.</li>
     </ol>
+
+    <p>Senaste versionen stöder:</p>
+
+    <ul>
+      <li><a href="http://www.svtplay.se/">svtplay.se</a> (även direktsändningar)</li>
+      <li><a href="http://www.svt.se/">svt.se</a></li>
+      <li><a href="http://www.oppetarkiv.se/">oppetarkiv.se</a></li>
+      <li><a href="http://sverigesradio.se/">sverigesradio.se</a></li>
+      <li><a href="http://www.tv4.se/">tv4.se</a></li>
+      <li><a href="http://www.tv4play.se/">tv4play.se</a> (ej premium/direktsändningar)</li>
+    </ul>
+
+    <p></p>
+    <p></p>
 
     <p>Om du tycker om tillägget, lämna gärna en recension för <a href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}/reviews">Chrome-tillägget</a> eller <a href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/reviews/add">Firefox-tillägget</a>. Tack!</p>
 
-    <p>Svara på <a href="https://goo.gl/forms/gZKoMuXklI">en kort undersökning</a> för att hjälpa mig bestämma vilka sidor tillägget ska stödja härnäst. Se svar <a href="https://docs.google.com/spreadsheets/d/1WFd5RIzHaTcnwWo41BQ8YMffX8FBn4_g9_bLdFxZfTY/pubhtml">här</a>.</p>
+    <p>Svara på <a href="https://goo.gl/forms/gZKoMuXklI">en kort undersökning</a> för att hjälpa mig bestämma vilka sidor tillägget ska stödja härnäst. <a href="https://docs.google.com/spreadsheets/d/1WFd5RIzHaTcnwWo41BQ8YMffX8FBn4_g9_bLdFxZfTY/pubhtml">Läs svar här</a>.</p>
 
 
     <h2 id="donate">Donera</h2>
@@ -71,6 +85,15 @@
     </div>
 
 
+    <h2 id="news">Nyheter <a href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
+
+    {% for post in site.posts limit:2 %}
+    <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
+    <div class="post-body">{{ post.content }}</div>
+    {% endfor %}
+
+    <p><a href="news/">Läs äldre nyheter...</a></p>
+
     <h2 id="install">Installera FFmpeg</h2>
 
     <p>FFmpeg är ett program för som används för konverting av videofiler, men det kan även ladda ned videoströmmar.</p>
@@ -89,6 +112,21 @@ sudo apt-get install ffmpeg
 
 {% highlight shell %}
 brew install ffmpeg
+{% endhighlight %}
+
+
+    <h2 id="adobehds">AdobeHDS</h2>
+
+    <p>Det finns stöd för att hitta AdobeHDS-strömmar (<tt>manifest.f4m</tt>). Det enklaste sättet jag har hittat att ladda ned dessa är att använda ett php-script kallat <a href="https://github.com/K-S-V/Scripts/blob/master/AdobeHDS.php">AdobeHDS.php</a> för att ladda ned dem (<a href="https://github.com/K-S-V/Scripts/wiki">mer information</a>).</p>
+
+    <p>Scriptet kräver att ett antal tillägg i PHP är aktiverade.</p>
+
+    <p>I Ubuntu kan du köra följande kommandon för att få det hela att fungera:</p>
+
+{% highlight shell %}
+sudo apt-get install php-cli php-bcmath php-curl php-mcrypt php-xml
+wget https://raw.githubusercontent.com/K-S-V/Scripts/master/AdobeHDS.php
+php AdobeHDS.php ...
 {% endhighlight %}
 
 
@@ -169,16 +207,6 @@ ssh server_i_sverige.se -L 3128:127.0.0.1:3128
       <li><a href="https://github.com/rg3/youtube-dl">youtube-dl</a></li>
       <li><a href="https://chiselapp.com/user/jesper/repository/teve/index">teve</a></li>
     </ul>
-
-
-    <h2 id="news">Nyheter <a href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
-
-    {% for post in site.posts limit:3 %}
-    <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
-    <div class="post-body">{{ post.content }}</div>
-    {% endfor %}
-
-    <!-- <p><a href="news/">Läs äldre nyheter...</a></p> -->
   </div>
 
   <script src="js/browser.js"></script>
