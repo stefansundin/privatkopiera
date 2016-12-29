@@ -8,4 +8,4 @@ Ikon från https://commons.wikimedia.org/wiki/File:VHS_diagonal.svg
 
 ## Utveckling
 
-För att utveckla i Firefox måste du först öppna `about:config` och sätta `xpinstall.signatures.required=false`. Dra sedan xpi filen till ett Firefox-fönster.
+För att utveckla i Firefox kan du ladda tillägget i `about:debugging`.
