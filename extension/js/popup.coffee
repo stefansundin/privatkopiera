@@ -44,7 +44,7 @@ add_param = (url, param) ->
 
 update_filename = (fn) ->
   # replace illegal characters
-  $("#filename").value = fn.replace(/[:*?"<>|]/g, '').replace(/\t+/, ' ')
+  $("#filename").value = fn.replace(/[/\\]/g, '-').replace(/[:*?"<>|]/g, '').replace(/\t+/, ' ')
 
 error = (text) ->
   el = $("#error")
