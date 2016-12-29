@@ -37,6 +37,12 @@ extract_extension = (url) ->
   if dot != -1
     fn.substr(dot+1)
 
+add_param = (url, param) ->
+  if url.indexOf("?") == -1
+    "#{url}?#{param}"
+  else
+    "#{url}&#{param}"
+
 update_filename = (fn) ->
   # replace illegal characters
   $("#filename").value = fn.replace(/[:*?"<>|]/g, '').replace(/\t+/, ' ')

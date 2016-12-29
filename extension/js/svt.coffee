@@ -42,7 +42,7 @@ svtplay_callback = (fn) -> ->
     stream.url = stream.url.replace(/[?#].*/, "")
     ext = extract_extension(stream.url)
     if ext == "f4m"
-      stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+      stream.url = add_param(stream.url, "hdcore=3.5.0") # ¯\_(ツ)_/¯
 
     option = document.createElement("option")
     option.value = stream.url
@@ -103,7 +103,7 @@ svt_callback = ->
   .forEach (stream) ->
     stream.url = stream.url.replace(/[?#].*/, "")
     if stream.format == "hds"
-      stream.url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+      stream.url = add_param(stream.url, "hdcore=3.5.0") # ¯\_(ツ)_/¯
 
     option = document.createElement("option")
     option.value = stream.url

@@ -30,7 +30,7 @@ tv4play_callback = ->
     if mediaFormat == "wvm" or mediaFormat == "mp4" or mediaFormat == "webvtt"
       url = item.getElementsByTagName("url")[0].textContent
       if mediaFormat == "mp4"
-        url += "?hdcore=3.5.0" # ¯\_(ツ)_/¯
+        url = add_param(url, "hdcore=3.5.0") # ¯\_(ツ)_/¯
       streams.push
         url: url
         mediaFormat: mediaFormat
