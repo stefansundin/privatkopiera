@@ -1,6 +1,5 @@
 version = "v#{chrome.runtime.getManifest().version}"
 matchers = []
-is_firefox46 = navigator.userAgent.indexOf('Firefox/46') != -1;
 
 flatten = (arr) ->
   arr.reduce (a, b) ->
@@ -141,13 +140,9 @@ document.addEventListener "DOMContentLoaded", ->
     cmd.blur()
 
   $("#download").addEventListener "click", ->
-    if is_firefox46
-      window.open $("#cmd").value
-    else
-      # this will start working in Firefox 47
-      chrome.downloads.download
-        url: $("#cmd").value
-        filename: $("#filename").value
+    chrome.downloads.download
+      url: $("#cmd").value
+      filename: $("#filename").value
 
   $("#filename").addEventListener "change", update_cmd
   $("#streams").addEventListener "change", update_cmd
