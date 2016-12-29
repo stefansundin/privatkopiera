@@ -19,14 +19,13 @@
 # http://www.svt.se/videoplayer-api/video/7871492
 
 
-svtplay_callback = ->
+svtplay_callback = (fn) -> ->
   console.log(this)
   if this.status != 200
     api_error(this.responseURL, this.status)
     return
 
   data = JSON.parse(this.responseText)
-  update_filename("#{data.context.title}.mp4")
 
   dropdown = $("#streams")
   order = "m3u8,f4m,wsrt".split(",")
@@ -47,6 +46,7 @@ svtplay_callback = ->
 
     option = document.createElement("option")
     option.value = stream.url
+    option.setAttribute("data-filename", fn)
     option.appendChild document.createTextNode(extract_filename(stream.url))
     if ext == "wsrt"
       option.appendChild document.createTextNode(" (undertexter)")
@@ -54,7 +54,7 @@ svtplay_callback = ->
 
     if ext == "m3u8"
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback(data.video.materialLength))
+      xhr.addEventListener("load", master_callback(data.video.materialLength, fn))
       xhr.open("GET", stream.url)
       xhr.send()
 
@@ -67,12 +67,13 @@ svtplay_live_callback = ->
     return
 
   data = JSON.parse(this.responseText)
-  update_filename("#{data.video.title}.mp4")
+  fn = "#{data.video.title}.mp4"
   stream = data.video.videoReferences.find (stream) -> stream.url.indexOf(".m3u8") != -1
   m3u8_url = stream.url
 
   option = document.createElement("option")
   option.value = m3u8_url
+  option.setAttribute("data-filename", fn)
   option.appendChild document.createTextNode(extract_filename(m3u8_url))
   $("#streams").appendChild option
 
@@ -91,7 +92,7 @@ svt_callback = ->
     return
 
   data = JSON.parse(this.responseText)
-  update_filename("#{data.episodeTitle}.mp4")
+  fn = "#{data.episodeTitle}.mp4"
 
   dropdown = $("#streams")
   order = "hls,hds".split(",")
@@ -106,12 +107,13 @@ svt_callback = ->
 
     option = document.createElement("option")
     option.value = stream.url
+    option.setAttribute("data-filename", fn)
     option.appendChild document.createTextNode(extract_filename(stream.url))
     dropdown.appendChild option
 
     if stream.format == "hls"
       xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback(data.contentDuration))
+      xhr.addEventListener("load", master_callback(data.contentDuration, fn))
       xhr.open("GET", stream.url)
       xhr.send()
 
@@ -124,11 +126,11 @@ matchers.push
     video_id = ret[1]
     serie = ret[2]
     json_url = "http://www.svtplay.se/video/#{video_id}?output=json"
-    update_filename("#{ret[3] || ret[2] || ret[1]}.mp4")
+    fn = "#{ret[3] || ret[2] || ret[1]}.mp4"
     $("#open_json").href = json_url
 
     xhr = new XMLHttpRequest()
-    xhr.addEventListener("load", svtplay_callback)
+    xhr.addEventListener("load", svtplay_callback(fn))
     xhr.open("GET", json_url)
     xhr.send()
 

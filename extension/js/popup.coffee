@@ -58,22 +58,23 @@ api_error = (url, code) ->
   el.appendChild document.createTextNode(" svarade med #{code}")
 
 update_cmd = (e) ->
+  filename = $("#filename")
   select = $("#streams")
-  if e?.target == select
+  if e?.target == select or filename.value == ""
     option = select.selectedOptions[0]
     fn = option.getAttribute("data-filename")
     update_filename fn if fn
 
   url = select.value
+  fn = filename.value
   stream_fn = extract_filename(url)
   stream_ext = extract_extension(url)
   select.title = stream_fn
-  filename = $("#filename").value
   if stream_ext == "f4m"
-    $("#cmd").value = "php AdobeHDS.php --delete --manifest \"#{url}\" --outfile \"#{filename}\""
+    $("#cmd").value = "php AdobeHDS.php --delete --manifest \"#{url}\" --outfile \"#{fn}\""
   else if stream_ext == "webvtt" or stream_ext == "wsrt"
-    filename = filename.replace(".mp4", ".srt")
-    $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{filename}\""
+    fn = fn.replace(".mp4", ".srt")
+    $("#cmd").value = "ffmpeg -i \"#{url}\" \"#{fn}\""
   else if stream_ext == "m4a" or stream_ext == "mp3" or /^https?:\/\/http-live\.sr\.se/.test(url)
     $("#cmd").value = url
     $("#copy").className += " hidden"
@@ -82,9 +83,9 @@ update_cmd = (e) ->
     label.removeChild(label.firstChild) while label.hasChildNodes()
     label.appendChild document.createTextNode("URL")
   else
-    $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{filename}\""
+    $("#cmd").value = "ffmpeg -i \"#{url}\" -acodec copy -vcodec copy -absf aac_adtstoasc \"#{fn}\""
 
-master_callback = (length) -> ->
+master_callback = (length, fn) -> ->
   console.log(this)
   if this.status != 200
     api_error(this.responseURL, this.status)
@@ -116,8 +117,9 @@ master_callback = (length) -> ->
     else
       url = base_url+stream.url
     option.value = url
-    info = "#{stream.resolution}"
-    info += ", ~#{fmt_filesize(1.05*length*stream.bitrate/8)}" if length # the calculation is off by about  5%, probably because of audio and overhead
+    option.setAttribute("data-filename", fn)
+    info = stream.resolution
+    info += ", ~#{fmt_filesize(1.05*length*stream.bitrate/8)}" if length # the calculation is off by about 5%, probably because of audio and overhead
     option.appendChild document.createTextNode("#{kbps} kbps (#{info})")
     dropdown.insertBefore option, default_option
   dropdown.getElementsByTagName("option")[0].selected = true
