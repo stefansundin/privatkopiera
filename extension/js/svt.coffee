@@ -121,11 +121,9 @@ svt_callback = ->
 
 
 matchers.push
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\/video\/(\d+)(?:\/([^/]+)\/([^/?#]+))?/
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\/(?:video|klipp)\/(\d+)(?:\/([^/?#]+)(?:\/([^/?#]+))?)?/
   func: (ret) ->
-    video_id = ret[1]
-    serie = ret[2]
-    json_url = "http://www.svtplay.se/video/#{video_id}?output=json"
+    json_url = add_param(ret.input, "output=json")
     fn = "#{ret[3] || ret[2] || ret[1]}.mp4"
     $("#open_json").href = json_url
 
