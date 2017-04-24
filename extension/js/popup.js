@@ -157,12 +157,13 @@ function master_callback(length, fn, base_url) {
 
     var header = "#EXT-X-STREAM-INF:"
     var streams = []
+    var params
     this.responseText.split("\n").forEach(function(line) {
       if (line.length == 0) {
         return;
       }
       if (line.startsWith(header)) {
-        var params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map((arg) => arg.split("=")))
+        params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map((arg) => arg.split("=")))
       }
       else if (!line.startsWith("#")) {
         var url = line
