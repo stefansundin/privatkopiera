@@ -39,12 +39,14 @@
     <p>Senaste versionen stöder:</p>
 
     <ul>
-      <li><a href="http://www.svtplay.se/">svtplay.se</a> (även direktsändningar)</li>
-      <li><a href="http://www.svt.se/">svt.se</a></li>
-      <li><a href="http://www.oppetarkiv.se/">oppetarkiv.se</a></li>
-      <li><a href="http://sverigesradio.se/">sverigesradio.se</a></li>
-      <li><a href="http://www.tv4.se/">tv4.se</a></li>
-      <li><a href="http://www.tv4play.se/">tv4play.se</a> (ej premium/direktsändningar)</li>
+      <li><a href="https://www.svtplay.se/">svtplay.se</a> (även direktsändningar)</li>
+      <li><a href="https://www.svt.se/">svt.se</a></li>
+      <li><a href="https://www.oppetarkiv.se/">oppetarkiv.se</a></li>
+      <li><a href="https://sverigesradio.se/">sverigesradio.se</a></li>
+      <li><a href="https://urplay.se/">urplay.se</a></li>
+      <li><a href="https://urskola.se/">urskola.se</a></li>
+      <li><a href="https://www.tv4.se/">tv4.se</a></li>
+      <li><a href="https://www.tv4play.se/">tv4play.se</a> (ej premium/direktsändningar)</li>
     </ul>
 
     <p></p>
@@ -104,6 +106,8 @@
     <p>Du kan ladda ned FFmpeg till Linux, Windows och Mac från <a href="http://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build". Om du använder pakethanterare på din dator kan det däremot vara enklare (se nedan).</p>
 
     <p>Du kan antingen lägga ffmpeg filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> som redan finns i <tt>PATH</tt>.</p>
+
+    <p><strong>Obs:</strong> Kör helst inte kommandon från <tt>C:\</tt>. I nya versioner av Windows så är det begränsat vilka användare som kan skriva här. Jag rekommenderar att du kör kommandon från ditt skrivbord.</p>
 
     <p>I Debian och Ubuntu:</p>
 
@@ -178,14 +182,14 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 
     <h2 id="http_proxy">HTTP Proxy</h2>
 
-    <p>I Windows och Mac fungerar inte <tt>tsocks</tt> så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stödjer däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
+    <p>I Windows och Mac fungerar inte <tt>tsocks</tt>, så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stödjer däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
 
 {% highlight shell %}
 set http_proxy=http://server_i_sverige:3128/
 ffmpeg -i ...
 {% endhighlight %}
 
-    <p>Om du redan har en server med SSH så kan du port-forwarda en lokal port till en HTTP proxy på din Linux server, via din SSH-anslutning. Då behöver du inte oroa dig om att lämna proxy porten öppen för alla. Exempelvis så tillåter standard squid-inställningarna bara localhost att ansluta. Anslut till servern och installera squid. Exempel för Ubuntu:</p>
+    <p>Om du redan har en server med SSH så kan du port-forwarda en lokal port till en HTTP proxy på din Linux server, via din SSH-anslutning. Då behöver du inte oroa dig om att lämna proxy porten öppen för alla. Ett program som gör detta som standard är squid. I Ubuntu kan du installera squid med följande kommandon:</p>
 
 {% highlight shell %}
 sudo apt-get install squid
@@ -207,6 +211,17 @@ ssh server_i_sverige.se -L 3128:127.0.0.1:3128
 {% endhighlight %}
 
     <p>I Mac eller Linux använder du <tt>export</tt> istället för <tt>set</tt>.</p>
+
+    <p>Om du har en SOCKS-anslutning men du kan inte installera squid på servern så kan du installera en HTTP proxy lokalt som kan skicka HTTP över SOCKS. Ett exempel på program som kan göra detta är privoxy. För att installera på Mac kan du köra följande kommandon:</p>
+
+{% highlight shell %}
+ssh server_i_sverige.se -D 1080
+brew install privoxy
+echo "forward-socks5 / localhost:1080 ." >> /usr/local/etc/privoxy/config
+brew services start privoxy
+export http_proxy=http://127.0.0.1:8118/
+ffmpeg -i ...
+{% endhighlight %}
 
 
     <h2 id="other_programs">Andra program</h2>
