@@ -40,7 +40,7 @@ matchers.push({
         for (var i=0; i < related.length; i++) {
           var link = related[i];
           var header = link;
-          while (header.className != "article-audio-details__header") {
+          while (header.children.length < 2) {
             header = header.parentNode;
           }
           var title_element = header.getElementsByClassName("main-audio-new__title")[0] || header.getElementsByClassName("related-audio__title")[0] || header.getElementsByClassName("article-audio-details__header-title")[0];
