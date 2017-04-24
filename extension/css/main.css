@@ -1,7 +1,18 @@
 body {
   width: 500px;
+  min-height: 350px;
   padding: 10px;
   /*background-color: #f2f1f0;*/
+}
+body.expand {
+  width: 800px;
+}
+#expand {
+  color: black;
+}
+#expand:hover {
+  text-decoration: none;
+  cursor: pointer;
 }
 
 h2 {

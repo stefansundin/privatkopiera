@@ -88,7 +88,7 @@ function update_filename(fn) {
 }
 
 function error(text) {
-  var el = $("#error")
+  var el = $("#info")
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
@@ -96,7 +96,7 @@ function error(text) {
 }
 
 function api_error(url, code) {
-  var el = $("#error")
+  var el = $("#info")
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
@@ -107,6 +107,20 @@ function api_error(url, code) {
   a.appendChild(document.createTextNode("API"))
   el.appendChild(a)
   el.appendChild(document.createTextNode(` svarade med ${code}`))
+}
+
+function download_info(program) {
+  var el = $("#info")
+  while (el.hasChildNodes()) {
+    el.removeChild(el.firstChild)
+  }
+  el.appendChild(document.createTextNode("För att ladda ned den här strömmen krävs "))
+  var a = document.createElement("a")
+  a.target = "_blank"
+  a.href = `https://stefansundin.github.io/privatkopiera/#${program.toLowerCase()}`
+  a.appendChild(document.createTextNode(program))
+  el.appendChild(a)
+  el.appendChild(document.createTextNode(`.`))
 }
 
 function update_cmd(e) {
@@ -120,20 +134,21 @@ function update_cmd(e) {
     }
   }
 
+  var cmd = $("#cmd")
   var url = select.value
   var fn = filename.value
   var stream_fn = extract_filename(url)
   var stream_ext = extract_extension(url)
   select.title = stream_fn
   if (stream_ext == "f4m") {
-    $("#cmd").value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
+    cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
   }
   else if (stream_ext == "webvtt" || stream_ext == "wsrt") {
     fn = fn.replace(".mp4", ".srt")
-    $("#cmd").value = `ffmpeg -i "${url}" "${fn}"`
+    cmd.value = `ffmpeg -i "${url}" "${fn}"`
   }
   else if (stream_ext == "m4a" || stream_ext == "mp3" || /^https?:\/\/http-live\.sr\.se/.test(url)) {
-    $("#cmd").value = url
+    cmd.value = url
     $("#copy").className += " hidden"
     $("#download").className = "btn btn-primary"
     label = $("label[for='cmd']")[0]
@@ -143,7 +158,14 @@ function update_cmd(e) {
     label.appendChild(document.createTextNode("URL"))
   }
   else {
-    $("#cmd").value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
+    cmd.value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
+  }
+
+  if (cmd.value.startsWith("ffmpeg")) {
+    download_info("FFmpeg")
+  }
+  else if (cmd.value.startsWith("php AdobeHDS.php")) {
+    download_info("AdobeHDS")
   }
 }
 
@@ -202,6 +224,11 @@ function master_callback(length, fn, base_url) {
 
 document.addEventListener("DOMContentLoaded", function() {
   $("#extension_version").textContent = version
+
+  $("#expand").addEventListener("click", function() {
+    document.body.classList.toggle("expand")
+    $("#expand").textContent = document.body.classList.contains("expand") ? "»" : "«"
+  })
 
   $("#copy").addEventListener("click", function() {
     cmd = $("#cmd")
