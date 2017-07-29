@@ -24,12 +24,12 @@ function trackLink(e) {
     if (this.href.indexOf('mailto:') == 0) {
       category = 'mailto';
     }
-		else {
+    else {
       category = 'link';
     }
   }
   ga('send', 'event', category, 'click', this.href);
-};
+}
 
 var links = document.getElementsByTagName('a');
 for (var i=0; i < links.length; i++) {
