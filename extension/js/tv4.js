@@ -60,7 +60,7 @@ function tv4play_callback() {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:video_id=|-)(\d+)/,
+  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:video_id=|-|\/)(\d+)/,
   func: function(ret) {
     var video_id = ret[1]
     var data_url = `https://prima.tv4play.se/api/web/asset/${video_id}/play`
