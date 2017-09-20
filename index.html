@@ -186,7 +186,7 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 
     <h2 id="http_proxy">HTTP Proxy</h2>
 
-    <p>I Windows och Mac fungerar inte <tt>tsocks</tt>, så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stödjer däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
+    <p>I Windows och Mac fungerar inte <tt>tsocks</tt>, så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stöder däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
 
 {% highlight shell %}
 set http_proxy=http://server_i_sverige:3128/
@@ -227,6 +227,11 @@ export http_proxy=http://127.0.0.1:8118/
 ffmpeg -i ...
 {% endhighlight %}
 
+    <p>AdobeHDS stöder tyvärr inte <tt>http_proxy</tt> variabeln, men du kan använda följande argument:</p>
+
+{% highlight shell %}
+php AdobeHDS.php ... --fproxy --proxy http://127.0.0.1:8118/
+{% endhighlight %}
 
     <h2 id="other_programs">Andra program</h2>
 
