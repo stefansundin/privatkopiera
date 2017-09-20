@@ -1,12 +1,12 @@
 // TV4
 // Example URL:
-// http://www.tv4.se/nyhetsmorgon/klipp/n%C3%A4men-h%C3%A4r-sover-peter-dalle-under-tommy-k%C3%B6rbergs-framtr%C3%A4dande-3349622
+// https://www.tv4.se/nyhetsmorgon/klipp/n%C3%A4men-h%C3%A4r-sover-peter-dalle-under-tommy-k%C3%B6rbergs-framtr%C3%A4dande-3349622
 // Data URL:
 // https://prima.tv4play.se/api/web/asset/3349622/play
 //
 // TV4 Play
 // Example URL:
-// http://www.tv4play.se/program/nyheterna?video_id=3349759
+// https://www.tv4play.se/program/nyheterna/3349759
 // Data URL:
 // https://prima.tv4play.se/api/web/asset/3349759/play
 
@@ -60,7 +60,7 @@ function tv4play_callback() {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:video_id=|-|\/)(\d+)/,
+  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
     var video_id = ret[1]
     var data_url = `https://prima.tv4play.se/api/web/asset/${video_id}/play`
