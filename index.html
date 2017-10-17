@@ -32,7 +32,7 @@
       <li>Öppna Privatkopiera genom att klicka på VHS-ikonen till höger om addressfältet. <img src="img/launcher.png"></li>
       <li>Vänta några sekunder tills tillägget hittar strömmen.</li>
       <li>Klicka på knappen <i>Kopiera kommando</i>.</li>
-      <li>Klistra in kommandot i en terminal (t.ex. <tt>cmd.exe</tt> i Windows). Tryck enter.</li>
+      <li>Klistra in kommandot i en terminal (t.ex. <tt>cmd.exe</tt> i Windows, använd högerklick för att klistra in). Tryck enter.</li>
       <li>Förhoppningsvis har du filen nedladdad efter några minuter.</li>
     </ol>
 
@@ -92,7 +92,7 @@
 
     <h2 id="news">Nyheter <a href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
 
-    <p>Observera att Firefox har en obligatorisk granskningsprocess vid uppdatering av tillägg. Därför kommer Firefox-versionen ut några dagar efter nyheten är skriven.</p>
+    <p>Observera att Firefox har en obligatorisk granskningsprocess vid uppdatering av tillägg. Därför kommer Firefox-versionen ut några dagar efter att nyheten är skriven.</p>
 
     {% for post in site.posts limit:2 %}
     <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
@@ -103,13 +103,15 @@
 
     <h2 id="ffmpeg">Installera FFmpeg</h2>
 
-    <p>FFmpeg är ett program för som används för konverting av videofiler, men det kan även ladda ned videoströmmar. Notera att för vissa strömmar krävs AdobeHDS.php istället (se nedan).</p>
+    <p>FFmpeg är ett program för som används för konvertering av videofiler, men det kan även ladda ned videoströmmar. Notera att för vissa strömmar krävs AdobeHDS.php istället (se nedan).</p>
 
-    <p>Du kan ladda ned FFmpeg till Linux, Windows och Mac från <a href="http://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build". Om du använder pakethanterare på din dator kan det däremot vara enklare (se nedan).</p>
+    <p>Du kan ladda ned FFmpeg till Linux, Windows och Mac från <a href="http://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build" (i detta fall behöver du bara filen <tt>ffmpeg.exe</tt>). Om du har en pakethanterare på din dator kan du använda den istället (se nedan).</p>
 
-    <p>Du kan antingen lägga ffmpeg filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\WINDOWS\</tt> som redan finns i <tt>PATH</tt>.</p>
+    <p>Du kan antingen lägga ffmpeg filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\Windows\</tt> som redan finns i <tt>PATH</tt>.</p>
 
-    <p><strong>Obs:</strong> Kör helst inte kommandon från <tt>C:\</tt>. I nya versioner av Windows så är det begränsat vilka användare som kan skriva här. Jag rekommenderar att du kör kommandon från ditt skrivbord.</p>
+    <p><strong>Obs:</strong> ffmpeg spottar gärna (och ofta) ur sig varningar. Om programmet fortsätter att köra så bör du ta det lungt, det finns en bra chans att det fungerar ändå. Ha tålamod och ge det en stund.</p>
+
+    <p><strong>Obs:</strong> Kör inte kommandon från <tt>C:\</tt> (eller <tt>C:\Windows\</tt>). I nya versioner av Windows så kan inte vanliga användare skriva här. Jag rekommenderar att du kör kommandon från ditt skrivbord. För att navigera till skrivbordet, skriv först "<tt>cd&nbsp;Skrivbord</tt>".</p>
 
     <p>I Debian och Ubuntu:</p>
 
@@ -117,7 +119,7 @@
 sudo apt-get install ffmpeg
 {% endhighlight %}
 
-    <p>I Mac OS X med <a href="https://brew.sh/">Homebrew</a>:</p>
+    <p>I Mac med <a href="https://brew.sh/">Homebrew</a>:</p>
 
 {% highlight shell %}
 brew install ffmpeg
@@ -138,7 +140,7 @@ wget https://raw.githubusercontent.com/K-S-V/Scripts/master/AdobeHDS.php
 php AdobeHDS.php ...
 {% endhighlight %}
 
-    <p>I Mac OS X med <a href="https://brew.sh/">Homebrew</a>:</p>
+    <p>I Mac med <a href="https://brew.sh/">Homebrew</a>:</p>
 
 {% highlight shell %}
 brew install homebrew/php/php70 homebrew/php/php70-mcrypt
@@ -175,7 +177,7 @@ tsocks ffmpeg -i ...
 google-chrome --proxy-server="socks5://127.0.0.1:1080"
 {% endhighlight %}
 
-    <p>Om du använder Mac OS X:</p>
+    <p>Om du använder Mac:</p>
 
 {% highlight shell %}
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server="socks5://127.0.0.1:1080"
@@ -199,7 +201,7 @@ ffmpeg -i ...
 sudo apt-get install squid
 {% endhighlight %}
 
-    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan <i>Add</i>. <a href="img/putty.png">Se bild för exempel</a>.</p>
+    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan <i>Add</i>. <a href="img/putty.png">Se bild med exempel</a>.</p>
 
     <p>Efter detta kan du använda <tt>127.0.0.1</tt> istället för <tt>server_i_sverige</tt> i exemplet ovan:</p>
 
