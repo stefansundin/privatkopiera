@@ -2,13 +2,13 @@
 // Example URL:
 // https://www.tv4.se/nyhetsmorgon/klipp/n%C3%A4men-h%C3%A4r-sover-peter-dalle-under-tommy-k%C3%B6rbergs-framtr%C3%A4dande-3349622
 // Data URL:
-// https://prima.tv4play.se/api/web/asset/3349622/play.json
+// https://prima.tv4play.se/api/web/asset/3349622/play.json?protocol=HLS3
 //
 // TV4 Play
 // Example URL:
 // https://www.tv4play.se/program/nyheterna/3349759
 // Data URL:
-// https://prima.tv4play.se/api/web/asset/3349759/play.json
+// https://prima.tv4play.se/api/web/asset/3349759/play.json?protocol=HLS3
 
 
 function tv4play_callback() {
@@ -25,13 +25,9 @@ function tv4play_callback() {
   var item = data.playback.items.item
   console.log(item.mediaFormat)
   if (item.mediaFormat == "wvm" || item.mediaFormat == "mp4" || item.mediaFormat == "webvtt") {
-    var url = item.url
-    if (item.mediaFormat == "mp4") {
-      url = add_param(url, "hdcore=3.5.0") // ¯\_(ツ)_/¯
-    }
     streams.push({
-      url: url,
-      mediaFormat: item.mediaFormat
+      url: item.url,
+      mediaFormat: item.mediaFormat,
     })
   }
 
@@ -58,7 +54,7 @@ matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
     var video_id = ret[1]
-    var data_url = `https://prima.tv4play.se/api/web/asset/${video_id}/play.json`
+    var data_url = `https://prima.tv4play.se/api/web/asset/${video_id}/play.json?protocol=HLS3`
     update_filename(`${video_id}.mp4`)
     $("#open_json").href = data_url
 
