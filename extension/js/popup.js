@@ -15,14 +15,6 @@ function flatten(arr) {
   }, [])
 }
 
-function toa(e) {
-  var arr = []
-  for (var i=0; i < e.length; i++) {
-    arr.push(e[i])
-  }
-  return arr
-}
-
 function toObject(arr) {
   var obj = {}
   arr.forEach(function(e) {
