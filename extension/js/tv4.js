@@ -9,6 +9,10 @@
 // https://www.tv4play.se/program/nyheterna/3349759
 // Data URL:
 // https://prima.tv4play.se/api/web/asset/3349759/play.json?protocol=HLS3
+//
+// Multiple items:
+// https://www.tv4play.se/program/jul-med-ernst/3946707
+// https://prima.tv4play.se/api/web/asset/3946707/play.json?protocol=HLS3
 
 
 function tv4play_callback() {
@@ -22,14 +26,19 @@ function tv4play_callback() {
   update_filename(`${data.playback.title}.mp4`)
 
   var streams = []
-  var item = data.playback.items.item
-  console.log(item.mediaFormat)
-  if (item.mediaFormat == "wvm" || item.mediaFormat == "mp4" || item.mediaFormat == "webvtt") {
-    streams.push({
-      url: item.url,
-      mediaFormat: item.mediaFormat,
-    })
+  var items = data.playback.items.item
+  if (!(items instanceof Array)) {
+    items = [items]
   }
+  items.forEach(function(item) {
+    console.log(item.mediaFormat)
+    if (item.mediaFormat == "wvm" || item.mediaFormat == "mp4" || item.mediaFormat == "webvtt") {
+      streams.push({
+        url: item.url,
+        mediaFormat: item.mediaFormat,
+      })
+    }
+  })
 
   var dropdown = $("#streams")
   var order = "wvm,mp4,webvtt".split(",")
