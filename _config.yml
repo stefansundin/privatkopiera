@@ -10,7 +10,7 @@ extension_name: privatkopiera
 permalink: /news/:year-:month-:day-:title.html
 
 # build
-gems:
+plugins:
 - jekyll-github-metadata
 markdown: kramdown
 kramdown:
