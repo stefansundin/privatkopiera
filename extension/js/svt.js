@@ -49,7 +49,6 @@ function svt_callback() {
     return (formats.indexOf(a.format) > formats.indexOf(b.format))
   })
   .forEach(function(stream) {
-    stream.url = stream.url.replace(/[?#].*/, "")
     if (stream.format == "hds") {
       stream.url = add_param(stream.url, "hdcore=3.5.0") // ¯\_(ツ)_/¯
     }

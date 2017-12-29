@@ -187,7 +187,7 @@ function master_callback(length, fn, base_url) {
         streams.push({
           bitrate: parseInt(params["BANDWIDTH"], 10),
           resolution: params["RESOLUTION"],
-          url: url.replace(/[?#].*/, "")
+          url: url,
         })
       }
     })
