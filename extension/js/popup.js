@@ -141,8 +141,8 @@ function update_cmd(e) {
   }
   else if (stream_ext == "m4a" || stream_ext == "mp3" || /^https?:\/\/http-live\.sr\.se/.test(url)) {
     cmd.value = url
-    $("#copy").className += " hidden"
-    $("#download").className = "btn btn-primary"
+    $("#copy").classList.add("hidden")
+    $("#download").classList.remove("hidden")
     label = $("label[for='cmd']")[0]
     while (label.hasChildNodes()) {
       label.removeChild(label.firstChild)
