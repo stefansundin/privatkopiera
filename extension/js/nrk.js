@@ -47,7 +47,7 @@ function nrk_callback() {
     if (stream.format == "HLS") {
       var base_url = stream.url.replace(/\/[^/]+$/, "/")
       var xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback(null, fn, base_url))
+      xhr.addEventListener("load", master_callback(parse_pt(data.duration), fn, base_url))
       xhr.open("GET", stream.url)
       xhr.send()
     }

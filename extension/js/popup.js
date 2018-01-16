@@ -74,6 +74,18 @@ function add_param(url, param) {
   }
 }
 
+function parse_pt(pt) {
+  var ret = /^PT(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt)
+  var duration = 0
+  if (ret[1]) {
+    duration += 60 * parseInt(ret[1])
+  }
+  if (ret[2]) {
+    duration += parseFloat(ret[2])
+  }
+  return duration
+}
+
 function update_filename(fn) {
   // replace illegal characters
   $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|]/g, '').replace(/\t+/, ' ')
