@@ -2,9 +2,11 @@
 // https://tv.nrk.no/serie/ardna-tv/SAPP67004716/16-05-2016
 // https://tv.nrk.no/serie/lindmo/MUHU12005817/14-10-2017
 // https://tv.nrk.no/program/KOID75000216/bitcoineksperimentet
+// https://radio.nrk.no/serie/tett-paa-norske-artister/MYNF51000518/04-01-2018
 // Data URL:
 // https://psapi-ne.nrk.no/mediaelement/SAPP67004716
 // https://undertekst.nrk.no/prod/SAPP67/00/SAPP67004716AA/NOR/SAPP67004716AA.vtt
+// https://psapi-ne.nrk.no/mediaelement/MYNF51000518
 
 
 
@@ -17,9 +19,13 @@ function nrk_callback() {
 
   var data = JSON.parse(this.responseText)
   console.log(data)
-  var fn = `${data.title}.mp4`
+  var ext = "mp4"
+  if (data.playable.sourceMedium == "audio") {
+    ext = "m4a"
+  }
+  var fn = `${data.title}.${ext}`
   if (data.preplay && data.preplay.titles) {
-    fn = `${data.preplay.titles.title} - ${data.preplay.titles.subtitle}.mp4`
+    fn = `${data.preplay.titles.title} - ${data.preplay.titles.subtitle}.${ext}`
   }
 
   var dropdown = $("#streams")
@@ -52,7 +58,7 @@ function nrk_callback() {
 }
 
 matchers.push({
-  re: /^https?:\/\/tv\.nrk\.no\/(?:program|serie\/[^/]+)\/([^/?]+)/,
+  re: /^https?:\/\/(?:tv|radio)\.nrk\.no\/(?:program|serie\/[^/]+)\/([^/?]+)/,
   func: function(ret) {
     var video_id = ret[1]
     var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`

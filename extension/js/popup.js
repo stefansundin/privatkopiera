@@ -129,6 +129,7 @@ function update_cmd(e) {
   var cmd = $("#cmd")
   var url = select.value
   var fn = filename.value
+  var ext = extract_extension(fn)
   var stream_fn = extract_filename(url)
   var stream_ext = extract_extension(url)
   select.title = stream_fn
@@ -148,6 +149,9 @@ function update_cmd(e) {
       label.removeChild(label.firstChild)
     }
     label.appendChild(document.createTextNode("URL"))
+  }
+  else if (ext == "m4a") {
+    cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`
   }
   else {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
@@ -177,7 +181,13 @@ function master_callback(length, fn, base_url) {
         return;
       }
       if (line.startsWith(header)) {
-        params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map((arg) => arg.split("=")))
+        params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map(function(arg) {
+          var kv = arg.split("=")
+          if (ret = /^"(.*)"$/.exec(kv[1])) {
+            kv[1] = ret[1]
+          }
+          return kv
+        }))
       }
       else if (!line.startsWith("#")) {
         var url = line
@@ -186,7 +196,7 @@ function master_callback(length, fn, base_url) {
         }
         streams.push({
           bitrate: parseInt(params["BANDWIDTH"], 10),
-          resolution: params["RESOLUTION"],
+          params: params,
           url: url,
         })
       }
@@ -197,25 +207,25 @@ function master_callback(length, fn, base_url) {
     var default_option = dropdown.getElementsByTagName("option")[0]
 
     streams.sort(function(a,b) { return b.bitrate-a.bitrate }).forEach(function(stream) {
-      var kbps = parseInt(stream.bitrate / 1000)
+      var kbps = Math.round(stream.bitrate / 1000)
       var option = document.createElement("option")
       option.value = stream.url
       option.appendChild(document.createTextNode(`${kbps} kbps`))
       option.setAttribute("data-filename", fn)
-      if (stream.resolution) {
-        var info = stream.resolution
+      if (stream.params["RESOLUTION"]) {
+        var info = stream.params["RESOLUTION"]
         if (length) {
           // the calculation is off by about 5%, probably because of audio and overhead
           info += `, ~${fmt_filesize(1.05*length*stream.bitrate/8)}`
         }
         option.appendChild(document.createTextNode(` (${info})`))
       }
-      else {
+      else if (stream.params["CODECS"] == "mp4a.40.2") {
+        option.setAttribute("data-filename", fn.replace(".mp4", ".m4a"))
         var url_fn = extract_filename(stream.url)
         if (/^index_\d+_a\.m3u8$/.test(url_fn)) {
           // some tv.nrk.no programs have a separate audio-only stream
           option.appendChild(document.createTextNode(` (endast ljud)`))
-          option.setAttribute("data-filename", fn.replace(".mp4", ".m4a"))
         }
       }
       dropdown.insertBefore(option, default_option)
