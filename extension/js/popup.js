@@ -135,7 +135,7 @@ function update_cmd(e) {
   if (stream_ext == "f4m") {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
   }
-  else if (stream_ext == "webvtt" || stream_ext == "wsrt") {
+  else if (stream_ext == "webvtt" || stream_ext == "wsrt" || stream_ext == "vtt") {
     fn = fn.replace(".mp4", ".srt")
     cmd.value = `ffmpeg -i "${url}" "${fn}"`
   }
@@ -197,16 +197,27 @@ function master_callback(length, fn, base_url) {
     var default_option = dropdown.getElementsByTagName("option")[0]
 
     streams.sort(function(a,b) { return b.bitrate-a.bitrate }).forEach(function(stream) {
-      var kbps = stream.bitrate / 1000
+      var kbps = parseInt(stream.bitrate / 1000)
       var option = document.createElement("option")
       option.value = stream.url
+      option.appendChild(document.createTextNode(`${kbps} kbps`))
       option.setAttribute("data-filename", fn)
-      var info = stream.resolution
-      if (length) {
-        // the calculation is off by about 5%, probably because of audio and overhead
-        info += `, ~${fmt_filesize(1.05*length*stream.bitrate/8)}`
+      if (stream.resolution) {
+        var info = stream.resolution
+        if (length) {
+          // the calculation is off by about 5%, probably because of audio and overhead
+          info += `, ~${fmt_filesize(1.05*length*stream.bitrate/8)}`
+        }
+        option.appendChild(document.createTextNode(` (${info})`))
       }
-      option.appendChild(document.createTextNode(`${kbps} kbps (${info})`))
+      else {
+        var url_fn = extract_filename(stream.url)
+        if (/^index_\d+_a\.m3u8$/.test(url_fn)) {
+          // some tv.nrk.no programs have a separate audio-only stream
+          option.appendChild(document.createTextNode(` (endast ljud)`))
+          option.setAttribute("data-filename", fn.replace(".mp4", ".m4a"))
+        }
+      }
       dropdown.insertBefore(option, default_option)
     })
     dropdown.getElementsByTagName("option")[0].selected = true
