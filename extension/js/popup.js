@@ -75,13 +75,17 @@ function add_param(url, param) {
 }
 
 function parse_pt(pt) {
-  var ret = /^PT(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt)
+  var ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt)
+  if (ret == null) return 0
   var duration = 0
   if (ret[1]) {
-    duration += 60 * parseInt(ret[1])
+    duration += 60 * 60 * parseInt(ret[1], 10)
   }
   if (ret[2]) {
-    duration += parseFloat(ret[2])
+    duration += 60 * parseInt(ret[2], 10)
+  }
+  if (ret[3]) {
+    duration += parseFloat(ret[3])
   }
   return duration
 }
