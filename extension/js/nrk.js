@@ -4,10 +4,12 @@
 // https://tv.nrk.no/program/KOID75000216/bitcoineksperimentet
 // https://radio.nrk.no/serie/tett-paa-norske-artister/MYNF51000518/04-01-2018
 // https://tv.nrk.no/serie/ski-nm
+// https://radio.nrk.no/podcast/bjoernen_lyver/nrkno-poddkast-26582-131253-19022018140000
 // Data URL:
 // https://psapi-ne.nrk.no/mediaelement/SAPP67004716
 // https://undertekst.nrk.no/prod/SAPP67/00/SAPP67004716AA/NOR/SAPP67004716AA.vtt
 // https://psapi-ne.nrk.no/mediaelement/MYNF51000518
+// https://psapi-ne.nrk.no/podcasts/bjoernen_lyver/episodes/nrkno-poddkast-26582-131253-19022018140000
 
 
 
@@ -58,6 +60,28 @@ function nrk_callback() {
   update_filename(fn)
 }
 
+function nrk_postcast_callback() {
+  console.log(this)
+  if (this.status != 200) {
+    api_error(this.responseURL, this.status)
+    return
+  }
+
+  var data = JSON.parse(this.responseText)
+  console.log(data)
+
+  var dropdown = $("#streams")
+  data.downloadables.forEach(function(stream) {
+    var ext = extract_extension(stream.audio.url) || "mp3"
+    var option = document.createElement("option")
+    option.value = stream.audio.url
+    option.setAttribute("data-filename", `${data.titles.title}.${ext}`)
+    option.appendChild(document.createTextNode(data.titles.title))
+    dropdown.appendChild(option)
+  })
+  update_cmd()
+}
+
 matchers.push({
   re: /^https?:\/\/(?:tv|radio)\.nrk\.no\/(?:program|serie\/[^/]+)\/([^/?]+)/,
   func: function(ret) {
@@ -72,6 +96,22 @@ matchers.push({
     xhr.open("GET", data_url)
     xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
     xhr.send()
+  }
+})
+
+matchers.push({
+  re: /^https?:\/\/radio\.nrk\.no\/podcast\/([^/]+)\/([^/?]+)/,
+  func: function(ret) {
+    var data_url = `https://psapi-ne.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`
+    update_filename(`${ret[1]}-${ret[2]}.mp3`)
+    $("#open_json").href = data_url
+
+    console.log(data_url)
+    var xhr = new XMLHttpRequest()
+    xhr.addEventListener("load", nrk_postcast_callback)
+    xhr.open("GET", data_url)
+    xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
+    setTimeout(function() { xhr.send() }, 1000)
   }
 })
 

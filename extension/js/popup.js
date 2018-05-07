@@ -61,7 +61,7 @@ function extract_extension(url) {
   var fn = extract_filename(url)
   var dot = fn.lastIndexOf(".")
   if (dot != -1) {
-    return fn.substr(dot+1)
+    return fn.substr(dot+1).toLowerCase()
   }
 }
 
