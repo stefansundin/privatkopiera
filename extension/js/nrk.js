@@ -3,6 +3,7 @@
 // https://tv.nrk.no/serie/lindmo/MUHU12005817/14-10-2017
 // https://tv.nrk.no/program/KOID75000216/bitcoineksperimentet
 // https://radio.nrk.no/serie/tett-paa-norske-artister/MYNF51000518/04-01-2018
+// https://tv.nrk.no/serie/ski-nm
 // Data URL:
 // https://psapi-ne.nrk.no/mediaelement/SAPP67004716
 // https://undertekst.nrk.no/prod/SAPP67/00/SAPP67004716AA/NOR/SAPP67004716AA.vtt
@@ -71,5 +72,31 @@ matchers.push({
     xhr.open("GET", data_url)
     xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
     xhr.send()
+  }
+})
+
+matchers.push({
+  re: /^https?:\/\/(?:tv|radio)\.nrk\.no\//,
+  func: function(ret) {
+    // <li class="episode-item   first" data-episode="MSPO30080518" data-ga-action="click-episode" data-ga-label="MSPO30080518" data-ga-category="episodeobject">
+    chrome.tabs.executeScript({
+      code: `(function(){
+        return document.querySelector("[data-episode]").getAttribute("data-episode");
+      })()`
+    }, function(ids) {
+      console.log(ids)
+      flatten(ids).forEach(function(video_id) {
+        var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
+        update_filename(`${video_id}.mp4`)
+        $("#open_json").href = data_url
+
+        console.log(data_url)
+        var xhr = new XMLHttpRequest()
+        xhr.addEventListener("load", nrk_callback)
+        xhr.open("GET", data_url)
+        xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
+        xhr.send()
+      })
+    })
   }
 })
