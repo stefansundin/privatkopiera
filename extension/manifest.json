@@ -22,7 +22,7 @@
     "downloads",
     "https://api.svt.se/",
     "https://sverigesradio.se/",
-    "https://prima.tv4play.se/",
+    "https://playback-api.b17g.net/",
     "https://psapi-ne.nrk.no/"
   ],
   "manifest_version": 2
