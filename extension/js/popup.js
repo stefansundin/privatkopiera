@@ -172,6 +172,7 @@ function update_cmd(e) {
   else {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
   }
+  cmd.setAttribute("data-url", url)
 
   if (cmd.value.startsWith("ffmpeg")) {
     download_info("FFmpeg")
@@ -259,8 +260,13 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#expand").textContent = document.body.classList.contains("expand") ? "»" : "«"
   })
 
-  $("#copy").addEventListener("click", function() {
+  $("#copy").addEventListener("click", function(e) {
     cmd = $("#cmd")
+    if (e.shiftKey) {
+      // copy only the URL if the shift key is held
+      var url = cmd.getAttribute("data-url")
+      cmd.value = url
+    }
     cmd.select()
     document.execCommand("copy")
     cmd.blur()
