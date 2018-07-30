@@ -13,9 +13,13 @@
 // https://playback-api.b17g.net/media/3349759?service=tv4&device=browser&protocol=hls%2Cdash&drm=widevine&is_clip=true
 //
 // could probably avoid the request to /asset/ and just grab the tab title for the filename.
-// drm and is_clip seem to be optional:
+// is_clip seem to be optional:
 // https://playback-api.b17g.net/asset/3349759?service=tv4&device=browser&protocol=hls%2Cdash
 // https://playback-api.b17g.net/media/3349759?service=tv4&device=browser&protocol=hls%2Cdash
+//
+// drm is required:
+// https://www.tv4play.se/program/maria-lang/10001026
+// https://playback-api.b17g.net/asset/10001026?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash
 //
 // Multiple items:
 // https://www.tv4play.se/program/jul-med-ernst/3946707
@@ -62,7 +66,7 @@ matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
     var video_id = ret[1]
-    var data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&protocol=hls%2Cdash`
+    var data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`
     update_filename(`${video_id}.mp4`)
     $("#open_json").href = data_url
 
