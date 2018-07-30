@@ -1,6 +1,6 @@
 {
   "name": "Privatkopiera",
-  "version": "0.1.7",
+  "version": "0.1.8",
   "description": "Ladda ned från play-tjänster. Kräver ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
