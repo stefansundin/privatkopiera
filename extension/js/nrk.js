@@ -83,7 +83,7 @@ function nrk_postcast_callback() {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:tv|radio)\.nrk\.no\/(?:program|serie\/[^/]+)\/([^/?]+)/,
+  re: /^https?:\/\/(?:tv|radio)\.nrk\.no\/(?:program|serie)[^A-Z]*\/([A-Z][A-Z0-9]+)/,
   func: function(ret) {
     var video_id = ret[1]
     var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
@@ -100,7 +100,7 @@ matchers.push({
 })
 
 matchers.push({
-  re: /^https?:\/\/radio\.nrk\.no\/podcast\/([^/]+)\/([^/?]+)/,
+  re: /^https?:\/\/radio\.nrk\.no\/pod[ck]ast\/([^/]+)\/([^/?]+)/,
   func: function(ret) {
     var data_url = `https://psapi-ne.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`
     update_filename(`${ret[1]}-${ret[2]}.mp3`)
@@ -118,10 +118,14 @@ matchers.push({
 matchers.push({
   re: /^https?:\/\/(?:tv|radio)\.nrk\.no\//,
   func: function(ret) {
-    // <li class="episode-item   first" data-episode="MSPO30080518" data-ga-action="click-episode" data-ga-label="MSPO30080518" data-ga-category="episodeobject">
+    // <div id="series-program-id-container" data-program-id="MSPO30080518">
     chrome.tabs.executeScript({
       code: `(function(){
-        return document.querySelector("[data-episode]").getAttribute("data-episode");
+        var div = document.querySelector("[data-program-id]");
+        if (!div) {
+          return null;
+        }
+        return div.getAttribute("data-program-id");
       })()`
     }, function(ids) {
       console.log(ids)

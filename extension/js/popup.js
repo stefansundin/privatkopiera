@@ -2,6 +2,7 @@ var version = `v${chrome.runtime.getManifest().version}`
 var matchers = []
 
 function flatten(arr) {
+  if (!Array.isArray(arr)) return []
   return arr.reduce(function(a, b) {
     if (!b) {
       return a;
