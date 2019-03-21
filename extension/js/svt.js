@@ -2,13 +2,13 @@
 // Example URL:
 // https://www.svtplay.se/video/5661566/leif-gw-persson-min-klassresa/leif-gw-persson-min-klassresa-leif-gw-persson-min-klassresa-avsnitt-2
 // Data URL:
-// https://api.svt.se/videoplayer-api/video/1371049-002A
+// https://api.svt.se/video/1371049-002A
 //
 // SVT Play Live:
 // Example URL:
 // https://www.svtplay.se/kanaler/svt1
 // Data URL:
-// https://api.svt.se/videoplayer-api/video/ch-svt1
+// https://api.svt.se/video/ch-svt1
 //
 // SVT
 // Example URL:
@@ -16,7 +16,7 @@
 // https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
 // Find <video data-video-id='7871492'> in source code.
 // Data URL:
-// https://api.svt.se/videoplayer-api/video/1120284-002OA
+// https://api.svt.se/video/1120284-002OA
 
 
 function svt_callback() {
@@ -112,7 +112,7 @@ matchers.push({
     }, function(ids) {
       console.log(ids)
       flatten(ids).forEach(function(video_id) {
-        var data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
+        var data_url = `https://api.svt.se/video/${video_id}`
         update_filename(`${video_id}.mp4`)
         $("#open_json").href = data_url
 
