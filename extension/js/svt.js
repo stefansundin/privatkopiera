@@ -1,8 +1,8 @@
 // SVT Play:
 // Example URL:
-// https://www.svtplay.se/video/5661566/leif-gw-persson-min-klassresa/leif-gw-persson-min-klassresa-leif-gw-persson-min-klassresa-avsnitt-2
+// https://www.svtplay.se/video/21564078/veckans-brott/veckans-brott-avsnitt-7
 // Data URL:
-// https://api.svt.se/video/1371049-002A
+// https://api.svt.se/video/K5w23M5
 //
 // SVT Play Live:
 // Example URL:
@@ -12,15 +12,28 @@
 //
 // SVT
 // Example URL:
-// https://www.svt.se/kultur/bok/var-tids-langtan-efter-bildning
-// https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
-// Find <video data-video-id='7871492'> in source code.
+// https://www.svt.se/nyheter/vetenskap/1700-tals-instrumentet-som-raddade-astronauterna-pa-den-forsta-manresan
+// Find <video data-video-id='21472022'> in source code.
 // Data URL:
-// https://api.svt.se/video/1120284-002OA
+// https://api.svt.se/videoplayer-api/video/21472022
+//
+// https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
+// https://api.svt.se/videoplayer-api/video/1120284-002OA
 
 
 function svt_callback() {
   console.log(this)
+  if (this.status == 404 && this.responseURL.startsWith("https://api.svt.se/video/")) {
+    // Somewhat ugly fix until I can figure out a better way to determine where to send the request to in the first place...
+    var data_url = this.responseURL.replace("https://api.svt.se/video/", "https://api.svt.se/videoplayer-api/video/")
+    $("#open_json").href = data_url
+    console.log(data_url)
+    var xhr = new XMLHttpRequest()
+    xhr.addEventListener("load", svt_callback)
+    xhr.open("GET", data_url)
+    xhr.send()
+    return
+  }
   if (this.status != 200) {
     api_error(this.responseURL, this.status)
     return
