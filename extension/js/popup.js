@@ -5,7 +5,7 @@ function flatten(arr) {
   if (!Array.isArray(arr)) return []
   return arr.reduce(function(a, b) {
     if (!b) {
-      return a;
+      return a
     }
     else if (b.constructor == Array) {
       return a.concat(b)
@@ -135,8 +135,10 @@ function download_info(program) {
 function update_cmd(e) {
   var filename = $("#filename")
   var select = $("#streams")
+  var option = select.selectedOptions[0]
+  var audio_stream = option.getAttribute("data-audio-stream")
+
   if ((e && e.target == select) || filename.value == "") {
-    var option = select.selectedOptions[0]
     var fn = option.getAttribute("data-filename")
     if (fn) {
       update_filename(fn)
@@ -170,6 +172,9 @@ function update_cmd(e) {
   else if (ext == "m4a") {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`
   }
+  else if (audio_stream) {
+    cmd.value = `ffmpeg -i "${url}" -i "${audio_stream}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
+  }
   else {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
   }
@@ -191,23 +196,35 @@ function master_callback(length, fn, base_url) {
       return
     }
 
-    var header = "#EXT-X-STREAM-INF:"
+    var ext_x_media = {}
     var streams = []
     var params
     this.responseText.split("\n").forEach(function(line) {
       if (line.length == 0) {
-        return;
+        return
       }
-      if (line.startsWith(header)) {
-        params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map(function(arg) {
+      if (line.startsWith("#")) {
+        if (!line.includes(":")) {
+          return
+        }
+        var type = line.substring(1, line.indexOf(":"))
+        console.log(type)
+        var obj = toObject(line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map(function(arg) {
           var kv = arg.split("=")
           if (kv[1].startsWith('"') && kv[1].endsWith('"')) {
             kv[1] = kv[1].substring(1, kv[1].length-1)
           }
           return kv
         }))
+        console.log(obj)
+        if (type == "EXT-X-MEDIA") { // && obj["TYPE"] == "AUDIO") {
+          ext_x_media[obj["TYPE"]] = obj
+        }
+        else if (type == "EXT-X-STREAM-INF") {
+          params = obj
+        }
       }
-      else if (!line.startsWith("#")) {
+      else {
         var url = line
         if (!/^https?:\/\//.test(url)) {
           url = base_url+url
@@ -230,6 +247,9 @@ function master_callback(length, fn, base_url) {
       option.value = stream.url
       option.appendChild(document.createTextNode(`${kbps} kbps`))
       option.setAttribute("data-filename", fn)
+      if (ext_x_media["AUDIO"]) {
+        option.setAttribute("data-audio-stream", base_url+ext_x_media["AUDIO"]["URI"])
+      }
       if (stream.params["RESOLUTION"]) {
         var info = stream.params["RESOLUTION"]
         if (length) {
