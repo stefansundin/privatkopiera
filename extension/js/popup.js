@@ -156,7 +156,12 @@ function update_cmd(e) {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
   }
   else if (stream_ext == "webvtt" || stream_ext == "wsrt" || stream_ext == "vtt") {
-    fn = fn.replace(".mp4", ".srt")
+    if (fn.endsWith(".mp4")) {
+      fn = fn.replace(/\.mp4$/, ".srt")
+    }
+    else {
+      fn += ".srt"
+    }
     cmd.value = `ffmpeg -i "${url}" "${fn}"`
   }
   else if (stream_ext == "m4a" || stream_ext == "mp3" || /^https?:\/\/http-live\.sr\.se/.test(url)) {
