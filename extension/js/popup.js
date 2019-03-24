@@ -201,8 +201,8 @@ function master_callback(length, fn, base_url) {
       if (line.startsWith(header)) {
         params = toObject(line.substr(header.length).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map(function(arg) {
           var kv = arg.split("=")
-          if (ret = /^"(.*)"$/.exec(kv[1])) {
-            kv[1] = ret[1]
+          if (kv[1].startsWith('"') && kv[1].endsWith('"')) {
+            kv[1] = kv[1].substring(1, kv[1].length-1)
           }
           return kv
         }))
