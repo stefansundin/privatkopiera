@@ -208,13 +208,13 @@ function master_callback(length, fn, base_url) {
       if (line.length == 0) {
         return
       }
+      console.log(line)
       if (line.startsWith("#")) {
-        if (!line.includes(":")) {
-          return
-        }
+        if (!line.includes(":")) return
         var type = line.substring(1, line.indexOf(":"))
-        console.log(type)
-        var obj = toObject(line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=("[^"]*"|[^,]*)/g).map(function(arg) {
+        var args = line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
+        if (!args) return
+        var obj = toObject(args.map(function(arg) {
           var kv = arg.split("=")
           if (kv[1].startsWith('"') && kv[1].endsWith('"')) {
             kv[1] = kv[1].substring(1, kv[1].length-1)
