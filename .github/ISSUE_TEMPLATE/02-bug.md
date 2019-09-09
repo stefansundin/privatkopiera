@@ -1,3 +1,9 @@
+---
+name: 'Bug report'
+about: 'Report a bug'
+labels: 'bug'
+---
+
 <!--
 Hej. Om du har problem att ladda ned en specifik video, var god länka videon. Tack!
 
