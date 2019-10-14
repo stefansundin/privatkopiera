@@ -58,13 +58,15 @@ img[src="img/launcher.png"] {
   height: 2em;
 }
 
+.form-inline {
+  margin-bottom: 15px;
+}
 .form-inline .input-group {
   margin-right: 5px;
 }
 
 .expander {
   display: none;
-  margin-top: 15px;
 }
 
 .post-body {
