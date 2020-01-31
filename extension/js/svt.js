@@ -49,7 +49,7 @@ function svt_callback() {
   }
 
   var dropdown = $("#streams")
-  var formats = "hls,hds,websrt".split(",")
+  var formats = "hls,hds,websrt,webvtt".split(",")
   var streams = data.videoReferences
   if (data.subtitleReferences) {
     streams = streams.concat(data.subtitleReferences)
@@ -70,7 +70,7 @@ function svt_callback() {
     option.value = stream.url
     option.setAttribute("data-filename", fn)
     option.appendChild(document.createTextNode(extract_filename(stream.url)))
-    if (stream.format == "websrt") {
+    if (stream.format == "websrt" || stream.format == "webvtt") {
       option.appendChild(document.createTextNode(" (undertexter)"))
     }
     dropdown.appendChild(option)
