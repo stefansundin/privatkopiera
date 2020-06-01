@@ -93,7 +93,7 @@ function parse_pt(pt) {
 
 function update_filename(fn) {
   // replace illegal characters
-  $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|]/g, '').replace(/\t+/, ' ')
+  $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|!]/g, '').replace(/\t+/, ' ')
 }
 
 function error(text) {
