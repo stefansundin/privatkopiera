@@ -309,12 +309,13 @@ document.addEventListener("DOMContentLoaded", function() {
   $("#streams").addEventListener("change", update_cmd)
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
-    var url = tabs[0].url
-    $("#url").value = url
+    $("#url").value = tabs[0].url
+    const url = new URL(tabs[0].url)
+    console.log(url)
 
     var matched = matchers.find(function(m) {
-      if (ret = m.re.exec(url)) {
-        m.func(ret)
+      if (ret = m.re.exec(tabs[0].url)) {
+        m.func(ret, url)
         return true
       }
     })
