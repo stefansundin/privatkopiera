@@ -24,17 +24,6 @@
 
 function svt_callback() {
   console.log(this)
-  if (this.status == 404 && this.responseURL.startsWith("https://api.svt.se/video/")) {
-    // Somewhat ugly fix until I can figure out a better way to determine where to send the request to in the first place...
-    var data_url = this.responseURL.replace("https://api.svt.se/video/", "https://api.svt.se/videoplayer-api/video/")
-    $("#open_json").href = data_url
-    console.log(data_url)
-    var xhr = new XMLHttpRequest()
-    xhr.addEventListener("load", svt_callback)
-    xhr.open("GET", data_url)
-    xhr.send()
-    return
-  }
   if (this.status != 200) {
     api_error(this.responseURL, this.status)
     return
@@ -91,7 +80,7 @@ function svt_callback() {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?(?:svtplay|oppetarkiv)\.se\//,
-  func: function(ret) {
+  func: function(_, url) {
     chrome.tabs.executeScript({
       code: `(function(){
         var ids = [];
@@ -124,7 +113,10 @@ matchers.push({
     }, function(ids) {
       console.log(ids)
       flatten(ids).forEach(function(video_id) {
-        var data_url = `https://api.svt.se/video/${video_id}`
+        let data_url = `https://api.svt.se/video/${video_id}`
+        if (url.host == "www.oppetarkiv.se") {
+          data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
+        }
         update_filename(`${video_id}.mp4`)
         $("#open_json").href = data_url
 
