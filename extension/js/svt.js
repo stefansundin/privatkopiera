@@ -1,8 +1,8 @@
 // SVT Play:
 // Example URL:
-// https://www.svtplay.se/video/21564078/veckans-brott/veckans-brott-avsnitt-7
+// https://www.svtplay.se/video/25786024/veckans-brott/veckans-brott-redaktionen-skandiamannen-det-hetaste-palmesparet-del-2-av-2
 // Data URL:
-// https://api.svt.se/video/K5w23M5
+// https://api.svt.se/video/jVk9NXV
 //
 // SVT Play Live:
 // Example URL:
@@ -12,10 +12,9 @@
 //
 // SVT
 // Example URL:
-// https://www.svt.se/nyheter/vetenskap/1700-tals-instrumentet-som-raddade-astronauterna-pa-den-forsta-manresan
-// Find <video data-video-id='21472022'> in source code.
+// https://www.svt.se/nyheter/utrikes/har-ar-bron-som-nastan-snuddar-husen
 // Data URL:
-// https://api.svt.se/videoplayer-api/video/21472022
+// https://api.svt.se/video/jE4x6LA
 //
 // https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
 // https://api.svt.se/videoplayer-api/video/1120284-002OA
@@ -89,10 +88,8 @@ function svt_callback() {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?(?:svt|svtplay|oppetarkiv)\.se\//,
+  re: /^https?:\/\/(?:www\.)?(?:svtplay|oppetarkiv)\.se\//,
   func: function(ret) {
-    // look for <video data-video-id='7779272'> and <a data-id="7748504"> and <iframe src="articleId=7748504">
-    // video ids contain characters on oppetarkiv.se
     chrome.tabs.executeScript({
       code: `(function(){
         var ids = [];
@@ -127,6 +124,48 @@ matchers.push({
       flatten(ids).forEach(function(video_id) {
         var data_url = `https://api.svt.se/video/${video_id}`
         update_filename(`${video_id}.mp4`)
+        $("#open_json").href = data_url
+
+        console.log(data_url)
+        var xhr = new XMLHttpRequest()
+        xhr.addEventListener("load", svt_callback)
+        xhr.open("GET", data_url)
+        xhr.send()
+      })
+    })
+  }
+})
+
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?svt\.se\//,
+  func: function(ret) {
+    chrome.tabs.executeScript({
+      code: `(function(){
+        var scripts = document.getElementsByTagName("script");
+        for (var i=0; i < scripts.length; i++) {
+          var re = /\\.reduxState=({.+});/.exec(scripts[i].textContent);
+          if (!re) {
+            continue;
+          }
+          return re[1];
+        }
+      })()`
+    }, function(ret) {
+      console.log(ret)
+      let ids = []
+      flatten(ret).forEach(function(json) {
+        var data = JSON.parse(json)
+        console.log(data)
+
+        const article = data.areaData.articles[data.routing.location.pathname]
+        console.log(article.media)
+        ids = ids.concat(article.media.filter(m => m.image && m.image.isVideo && m.image.svtId).map(m => m.image.svtId))
+      })
+      console.log(ids)
+
+      ids.forEach(function(svtId) {
+        var data_url = `https://api.svt.se/video/${svtId}`
+        update_filename(`${svtId}.mp4`)
         $("#open_json").href = data_url
 
         console.log(data_url)
