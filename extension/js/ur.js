@@ -41,6 +41,14 @@ function ur_callback(data) {
         url: `https://${domain}/${data.file_http}${data.streaming_config.http_streaming.hls_file}`
       })
     }
+    if (data.subtitles) {
+      data.subtitles.filter(s => s.label).forEach(s => {
+        streams.push({
+          info: `Undertext (${s.label})`,
+          url: s.file
+        })
+      })
+    }
 
     var dropdown = $("#streams")
     console.log(streams)
