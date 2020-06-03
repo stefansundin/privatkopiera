@@ -18,11 +18,10 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "activeTab",
+    "activeTab"
+  ],
+  "optional_permissions": [
     "downloads",
-    "https://api.svt.se/",
-    "https://sverigesradio.se/",
-    "https://playback-api.b17g.net/",
     "https://psapi-ne.nrk.no/"
   ],
   "manifest_version": 2

@@ -1,5 +1,7 @@
-var version = `v${chrome.runtime.getManifest().version}`
-var matchers = []
+const version = `v${chrome.runtime.getManifest().version}`
+const isFirefox = navigator.userAgent.includes("Firefox/")
+let matchers = []
+let tab_url, url, site
 
 function flatten(arr) {
   if (!Array.isArray(arr)) return []
@@ -94,6 +96,12 @@ function parse_pt(pt) {
 function update_filename(fn) {
   // replace illegal characters
   $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|!]/g, '').replace(/\t+/, ' ')
+}
+
+function call_func() {
+  if (ret = site.re.exec(tab_url)) {
+    site.func(ret, url)
+  }
 }
 
 function get_json(response) {
@@ -322,10 +330,37 @@ document.addEventListener("DOMContentLoaded", function() {
     cmd.blur()
   })
 
+  $("#grant_permissions").addEventListener("click", function(e) {
+    chrome.permissions.request({
+      origins: site.required_origins,
+    }, function(granted) {
+      // The popup is automatically closed, so this does not really matter
+      // It stays open if "Inspect Popup" is used
+      if (granted) {
+        $("#copy").classList.remove("hidden")
+        $("#grant_permissions").classList.add("hidden")
+        $("#streams").disabled = false
+        $("#filename").disabled = false
+        $("#cmd").disabled = false
+        call_func()
+      }
+      else {
+        error("Fel: Behörigheter ej beviljade.")
+      }
+    })
+  })
+
   $("#download").addEventListener("click", function() {
-    chrome.downloads.download({
-      url: $("#cmd").value,
-      filename: $("#filename").value
+    chrome.permissions.request({
+      permissions: ["downloads"]
+    }, function(granted) {
+      if (!granted) {
+        return
+      }
+      chrome.downloads.download({
+        url: $("#cmd").value,
+        filename: $("#filename").value
+      })
     })
   })
 
@@ -333,18 +368,32 @@ document.addEventListener("DOMContentLoaded", function() {
   $("#streams").addEventListener("change", update_cmd)
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
-    const url = tabs[0].url
-    $("#url").value = url
-    console.log(url)
+    tab_url = tabs[0].url
+    url = new URL(tab_url)
+    $("#url").value = tab_url
+    console.log(tab_url)
 
-    var matched = matchers.find(function(m) {
-      if (ret = m.re.exec(tabs[0].url)) {
-        m.func(ret, new URL(url))
+    if (site = matchers.find(m => m.re.test(tab_url))) {
+      if (site.required_origins) {
+        chrome.permissions.contains({
+          origins: site.required_origins,
+        }, function(result) {
+          if (result) {
+            call_func()
+          }
+          else {
+            $("#copy").classList.add("hidden")
+            $("#grant_permissions").classList.remove("hidden")
+            $("#streams").disabled = true
+            $("#filename").disabled = true
+            $("#cmd").disabled = true
+          }
+        })
         return true
       }
-    })
-
-    if (!matched) {
+      call_func()
+    }
+    else {
       error("Fel: Den här hemsidan stöds ej.")
     }
   })

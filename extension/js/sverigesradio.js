@@ -1,3 +1,5 @@
+// In Chrome, activeTab permissions automatically grants access to https://sverigesradio.se/, but this is not true for Firefox.
+//
 // Example URL:
 // https://sverigesradio.se/sida/artikel.aspx?programid=493&artikel=6411195
 // Example URL with multiple streams:
@@ -19,6 +21,7 @@ function sr_callback(stream, option) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?sverigesradio\.se\.?(\/.*)/,
+  required_origins: isFirefox ? ["https://sverigesradio.se/"] : null,
   func: function(ret) {
     // Find audio streams by looking for data-audio-id attributes
     chrome.tabs.executeScript({
