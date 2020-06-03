@@ -13,14 +13,7 @@
 
 
 
-function nrk_callback() {
-  console.log(this)
-  if (this.status != 200) {
-    api_error(this.responseURL, this.status)
-    return
-  }
-
-  var data = JSON.parse(this.responseText)
+function nrk_callback(data) {
   console.log(data)
   var ext = "mp4"
   if (data.playable.sourceMedium == "audio") {
@@ -57,16 +50,8 @@ function nrk_callback() {
   update_filename(fn)
 }
 
-function nrk_postcast_callback() {
-  console.log(this)
-  if (this.status != 200) {
-    api_error(this.responseURL, this.status)
-    return
-  }
-
-  var data = JSON.parse(this.responseText)
+function nrk_postcast_callback(data) {
   console.log(data)
-
   var dropdown = $("#streams")
   data.downloadables.forEach(function(stream) {
     var ext = extract_extension(stream.audio.url) || "mp3"
@@ -88,11 +73,11 @@ matchers.push({
     $("#open_json").href = data_url
 
     console.log(data_url)
-    var xhr = new XMLHttpRequest()
-    xhr.addEventListener("load", nrk_callback)
-    xhr.open("GET", data_url)
-    xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
-    xhr.send()
+    fetch(data_url, {
+      headers: {
+        "Accept": "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot",
+      }
+    }).then(get_json).then(nrk_callback).catch(api_error)
   }
 })
 
@@ -104,11 +89,11 @@ matchers.push({
     $("#open_json").href = data_url
 
     console.log(data_url)
-    var xhr = new XMLHttpRequest()
-    xhr.addEventListener("load", nrk_postcast_callback)
-    xhr.open("GET", data_url)
-    xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
-    setTimeout(function() { xhr.send() }, 1000)
+    fetch(data_url, {
+      headers: {
+        "Accept": "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot",
+      }
+    }).then(get_json).then(nrk_postcast_callback).catch(api_error)
   }
 })
 
@@ -132,11 +117,11 @@ matchers.push({
         $("#open_json").href = data_url
 
         console.log(data_url)
-        var xhr = new XMLHttpRequest()
-        xhr.addEventListener("load", nrk_callback)
-        xhr.open("GET", data_url)
-        xhr.setRequestHeader("Accept", "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot");
-        xhr.send()
+        fetch(data_url, {
+          headers: {
+            "Accept": "application/vnd.nrk.psapi+json; version=9; ludo-client=true; psapi=snapshot",
+          }
+        }).then(get_json).then(nrk_callback).catch(api_error)
       })
     })
   }

@@ -2,8 +2,6 @@
 // https://sverigesradio.se/sida/artikel.aspx?programid=493&artikel=6411195
 // Example URL with multiple streams:
 // https://sverigesradio.se/sida/artikel.aspx?programid=83&artikel=6412615
-// Metadata URL: (seems to be deprecated now)
-// https://sverigesradio.se/sida/ajax/getplayerinfo?url=%2Fsida%2Fartikel.aspx%3Fprogramid%3D493%26artikel%3D6411195%26playaudio%3D5677543&isios=false&playertype=html5
 // Metadata URL:
 // https://sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
@@ -11,20 +9,10 @@
 
 
 function sr_callback(stream, option) {
-  return function() {
-    console.log(this)
-    if (this.status != 200) {
-      api_error(this.responseURL, this.status)
-      return
-    }
-
-    var data = JSON.parse(this.responseText)
-    console.log(data)
-
+  return function(data) {
     var ext = extract_extension(data.audioUrl) || "mp3"
     option.value = data.audioUrl
     option.setAttribute("data-filename", `${stream.title}.${ext}`)
-
     update_cmd()
   }
 }
@@ -76,10 +64,8 @@ matchers.push({
         var data_url = `https://sverigesradio.se/sida/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`
         $("#open_json").href = data_url
 
-        var xhr = new XMLHttpRequest()
-        xhr.addEventListener("load", sr_callback(stream, option))
-        xhr.open("GET", data_url)
-        xhr.send()
+        console.log(data_url)
+        fetch(data_url).then(get_json).then(sr_callback(stream, option)).catch(api_error)
       })
     })
   }

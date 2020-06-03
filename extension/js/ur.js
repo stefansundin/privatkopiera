@@ -6,15 +6,7 @@
 // https://streaming4.ur.se/urplay/_definst_/mp4:193000-193999/193738-12.mp4/playlist.m3u8?pid=cao6ju&cid=urplay
 
 function ur_callback(data) {
-  return function() {
-    console.log(this)
-    if (this.status != 200) {
-      api_error(this.responseURL, this.status)
-      return
-    }
-
-    var lb_data = JSON.parse(this.responseText)
-    console.log(lb_data)
+  return function(lb_data) {
     var domain = lb_data.redirect
     var streams = []
     if (data.file_http_sub_hd) {
@@ -91,10 +83,7 @@ matchers.push({
           lb_url = `https:${lb_url}`
         }
 
-        var xhr = new XMLHttpRequest()
-        xhr.addEventListener("load", ur_callback(data))
-        xhr.open("GET", lb_url)
-        xhr.send()
+        fetch(lb_url).then(get_json).then(ur_callback(data)).catch(api_error)
       })
     })
   }

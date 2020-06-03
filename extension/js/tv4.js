@@ -27,38 +27,19 @@
 // https://playback-api.b17g.net/media/3946707?service=tv4&device=browser&protocol=hls%2Cdash
 
 
-function tv4play_asset_callback() {
-  console.log(this)
-  if (this.status != 200) {
-    api_error(this.responseURL, this.status)
-    return
-  }
-
-  var data = JSON.parse(this.responseText)
+function tv4play_asset_callback(data) {
   update_filename(`${data.metadata.title}.mp4`)
-
   var media_url = `https://playback-api.b17g.net${data.mediaUri}`
   console.log(media_url)
-  var xhr = new XMLHttpRequest()
-  xhr.addEventListener("load", tv4play_media_callback)
-  xhr.open("GET", media_url)
-  xhr.send()
+  fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error)
 }
 
-function tv4play_media_callback() {
-  console.log(this)
-  if (this.status != 200) {
-    api_error(this.responseURL, this.status)
-    return
-  }
-
-  var data = JSON.parse(this.responseText)
+function tv4play_media_callback(data) {
   var dropdown = $("#streams")
   var option = document.createElement("option")
   option.value = data.playbackItem.manifestUrl
   option.appendChild(document.createTextNode(data.playbackItem.type))
   dropdown.appendChild(option)
-
   update_cmd()
 }
 
@@ -71,9 +52,6 @@ matchers.push({
     $("#open_json").href = data_url
 
     console.log(data_url)
-    var xhr = new XMLHttpRequest()
-    xhr.addEventListener("load", tv4play_asset_callback)
-    xhr.open("GET", data_url)
-    xhr.send()
+    fetch(data_url).then(get_json).then(tv4play_asset_callback).catch(api_error)
   }
 })
