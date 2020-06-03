@@ -23,10 +23,16 @@ matchers.push({
     // Find audio streams by looking for data-audio-id attributes
     chrome.tabs.executeScript({
       code: `(function(){
+        const ids = [];
         var streams = [];
         var related = document.getElementsByTagName("article")[0].querySelectorAll("[data-audio-id]");
         for (var i=0; i < related.length; i++) {
           var link = related[i];
+          const id = link.getAttribute("data-audio-id");
+          if (ids.includes(id)) {
+            continue;
+          }
+          ids.push(id);
           var header = link;
           while (header.children.length < 2) {
             header = header.parentNode;
@@ -37,13 +43,13 @@ matchers.push({
           }
           else {
             var title = document.title;
-            var dash = title.indexOf("-");
+            var dash = title.lastIndexOf("-");
             if (dash != -1) {
               title = title.substr(0, dash).trim();
             }
           }
           streams.push({
-            id: link.getAttribute("data-audio-id"),
+            id: id,
             type: link.getAttribute("data-audio-type"),
             title: title,
           });
@@ -54,8 +60,6 @@ matchers.push({
       var dropdown = $("#streams")
       console.log(streams)
       flatten(streams).forEach(function(stream) {
-        console.log(stream)
-
         // Create the option here so we always get them in the same order
         var option = document.createElement("option")
         option.appendChild(document.createTextNode(stream.title))
