@@ -21,7 +21,10 @@ function sr_callback(stream, option) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?sverigesradio\.se\.?(\/.*)/,
-  required_origins: isFirefox ? ["https://sverigesradio.se/"] : null,
+  permissions: isFirefox ? {
+    permissions: ["downloads"],
+    origins: ["https://sverigesradio.se/"],
+  } : null,
   func: function(ret) {
     // Find audio streams by looking for data-audio-id attributes
     chrome.tabs.executeScript({

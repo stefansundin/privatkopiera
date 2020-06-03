@@ -331,9 +331,7 @@ document.addEventListener("DOMContentLoaded", function() {
   })
 
   $("#grant_permissions").addEventListener("click", function(e) {
-    chrome.permissions.request({
-      origins: site.required_origins,
-    }, function(granted) {
+    chrome.permissions.request(site.permissions, function(granted) {
       // The popup is automatically closed, so this does not really matter
       // It stays open if "Inspect Popup" is used
       if (granted) {
@@ -374,10 +372,8 @@ document.addEventListener("DOMContentLoaded", function() {
     console.log(tab_url)
 
     if (site = matchers.find(m => m.re.test(tab_url))) {
-      if (site.required_origins) {
-        chrome.permissions.contains({
-          origins: site.required_origins,
-        }, function(result) {
+      if (site.permissions) {
+        chrome.permissions.contains(site.permissions, function(result) {
           if (result) {
             call_func()
           }
