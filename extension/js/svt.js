@@ -69,7 +69,7 @@ function svt_callback(data) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?(?:svtplay|oppetarkiv)\.se\//,
+  re: /^https?:\/\/(?:www\.)?(?:svtplay|oppetarkiv)\.se\.?\//,
   func: function(_, url) {
     chrome.tabs.executeScript({
       code: `(function(){
@@ -117,7 +117,7 @@ matchers.push({
 })
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svt\.se\//,
+  re: /^https?:\/\/(?:www\.)?svt\.se\.?\//,
   func: async function(_, url) {
     const data = await fetch(`https://api.svt.se/nss-api/page${url.pathname}?q=articles`).then(get_json).catch(api_error)
     console.log(data)

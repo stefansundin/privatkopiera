@@ -57,7 +57,7 @@ function ur_callback(data) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?(?:urplay|urskola)\.se\//,
+  re: /^https?:\/\/(?:www\.)?(?:urplay|urskola)\.se\.?\//,
   func: function(ret) {
     // look for urPlayer.init({...})
     chrome.tabs.executeScript({

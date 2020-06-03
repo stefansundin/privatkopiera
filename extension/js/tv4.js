@@ -44,7 +44,7 @@ function tv4play_media_callback(data) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\/.*(?:-|\/)(\d+)/,
+  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\.?\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
     var video_id = ret[1]
     var data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`

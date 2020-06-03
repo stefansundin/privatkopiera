@@ -18,7 +18,7 @@ function sr_callback(stream, option) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?sverigesradio\.se(\/.*)/,
+  re: /^https?:\/\/(?:www\.)?sverigesradio\.se\.?(\/.*)/,
   func: function(ret) {
     // Find audio streams by looking for data-audio-id attributes
     chrome.tabs.executeScript({
