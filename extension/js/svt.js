@@ -22,14 +22,7 @@
 // https://api.svt.se/videoplayer-api/video/1120284-002OA
 
 
-function svt_callback() {
-  console.log(this)
-  if (this.status != 200) {
-    api_error(this.responseURL, this.status)
-    return
-  }
-
-  var data = JSON.parse(this.responseText)
+function svt_callback(data) {
   console.log(data)
   if (data.programTitle) {
     var fn = `${data.programTitle} - ${data.episodeTitle}.mp4`
@@ -67,10 +60,7 @@ function svt_callback() {
 
     if (stream.format == "hls") {
       var base_url = stream.url.replace(/\/[^/]+$/, "/")
-      var xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", master_callback(data.contentDuration, fn, base_url))
-      xhr.open("GET", stream.url)
-      xhr.send()
+      fetch(stream.url).then(get_text).then(master_callback(data.contentDuration, fn, base_url)).catch(api_error)
     }
   })
 
@@ -119,12 +109,8 @@ matchers.push({
         }
         update_filename(`${video_id}.mp4`)
         $("#open_json").href = data_url
-
         console.log(data_url)
-        var xhr = new XMLHttpRequest()
-        xhr.addEventListener("load", svt_callback)
-        xhr.open("GET", data_url)
-        xhr.send()
+        fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
       })
     })
   }
@@ -133,22 +119,19 @@ matchers.push({
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svt\.se\//,
   func: async function(_, url) {
-    const data = await fetch(`https://api.svt.se/nss-api/page${url.pathname}?q=articles`).then(r => r.json())
+    const data = await fetch(`https://api.svt.se/nss-api/page${url.pathname}?q=articles`).then(get_json).catch(api_error)
     console.log(data)
+    if (!data) return
 
-    let ids = flatten(data.articles.content.map(article => article.media.filter(m => m.image && m.image.isVideo && m.image.svtId).map(m => m.image.svtId)))
+    let ids = flatten(data.articles.content.filter(a => a.media).map(article => article.media.filter(m => m.image && m.image.isVideo && m.image.svtId).map(m => m.image.svtId)))
     console.log(ids)
 
     ids.forEach(function(svtId) {
       const data_url = `https://api.svt.se/video/${svtId}`
       update_filename(`${svtId}.mp4`)
       $("#open_json").href = data_url
-
       console.log(data_url)
-      var xhr = new XMLHttpRequest()
-      xhr.addEventListener("load", svt_callback)
-      xhr.open("GET", data_url)
-      xhr.send()
+      fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
     })
   }
 })

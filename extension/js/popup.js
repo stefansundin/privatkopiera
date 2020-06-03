@@ -96,6 +96,22 @@ function update_filename(fn) {
   $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|!]/g, '').replace(/\t+/, ' ')
 }
 
+function get_json(response) {
+  console.log(response)
+  if (response.ok) {
+    return response.json()
+  }
+  throw response
+}
+
+function get_text(response) {
+  console.log(response)
+  if (response.ok) {
+    return response.text()
+  }
+  throw response
+}
+
 function error(text) {
   var el = $("#info")
   while (el.hasChildNodes()) {
@@ -104,18 +120,30 @@ function error(text) {
   el.appendChild(document.createTextNode(text))
 }
 
-function api_error(url, code) {
-  var el = $("#info")
+function api_error(e) {
+  console.log(e)
+  const el = $("#info")
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
-  el.appendChild(document.createTextNode("Fel: "))
-  var a = document.createElement("a")
-  a.target = "_blank"
-  a.href = url
-  a.appendChild(document.createTextNode("API"))
-  el.appendChild(a)
-  el.appendChild(document.createTextNode(` svarade med ${code}`))
+  if (e instanceof Response) {
+    el.appendChild(document.createTextNode("Fel: "))
+    let a = document.createElement("a")
+    a.target = "_blank"
+    a.href = e.url
+    a.appendChild(document.createTextNode("API"))
+    el.appendChild(a)
+    el.appendChild(document.createTextNode(` svarade med kod `))
+    a = document.createElement("a")
+    a.target = "_blank"
+    a.href = `https://httpstatuses.com/${e.status}`
+    a.appendChild(document.createTextNode(e.status))
+    el.appendChild(a)
+    el.appendChild(document.createTextNode("."))
+  }
+  else {
+    el.appendChild(document.createTextNode(`Error: ${e.message}`))
+  }
 }
 
 function download_info(program) {
@@ -194,17 +222,13 @@ function update_cmd(e) {
 }
 
 function master_callback(length, fn, base_url) {
-  return function() {
-    console.log(this)
-    if (this.status != 200) {
-      api_error(this.responseURL, this.status)
-      return
-    }
+  return function(text) {
+    console.log(text)
 
     var ext_x_media = {}
     var streams = []
     var params
-    this.responseText.split("\n").forEach(function(line) {
+    text.split("\n").forEach(function(line) {
       if (line.length == 0) {
         return
       }
@@ -309,13 +333,13 @@ document.addEventListener("DOMContentLoaded", function() {
   $("#streams").addEventListener("change", update_cmd)
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
-    $("#url").value = tabs[0].url
-    const url = new URL(tabs[0].url)
+    const url = tabs[0].url
+    $("#url").value = url
     console.log(url)
 
     var matched = matchers.find(function(m) {
       if (ret = m.re.exec(tabs[0].url)) {
-        m.func(ret, url)
+        m.func(ret, new URL(url))
         return true
       }
     })
