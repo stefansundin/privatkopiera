@@ -157,7 +157,7 @@ php AdobeHDS.php ...
 
     <h2 id="socks">SOCKS Proxy</h2>
 
-    <p>Du kan använda <tt>tsocks</tt> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Du måste ha en SSH server i Sverige.</p>
+    <p>Du kan använda <tt>tsocks</tt> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Du måste ha en SSH server i Sverige (routrar har ofta stöd för SSH server).</p>
 
     <p>Exempel för Ubuntu:</p>
 
@@ -188,7 +188,7 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server="socks5://127.0.0.1:1080"
 {% endhighlight %}
 
-    <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> » <i>Avancerat</i> » <i>Nätverk</i> » <i>Inställningar</i> och kryssa sedan för <i>Manuell proxykonfiguration</i>. Skriv in <tt>localhost</tt> som <i>SOCKS-värd</i> och använd port <tt>1080</tt>. Det är väldigt enkelt att glömma bort den här inställningen! Om du får proxy-fel senare så beror det nog på att du har glömt att återställa inställningen.</p>
+    <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> och sök efter "<i>socks</i>". Klicka på knappen <i>Inställningar...</i> och kryssa för <i>Manuell proxykonfiguration</i>. Skriv in <tt>localhost</tt> som <i>SOCKS-värd</i> och använd port <tt>1080</tt>. Det är väldigt enkelt att glömma bort den här inställningen! Om du får proxy-fel senare så beror det nog på att du har glömt att återställa inställningen.</p>
 
 
     <h2 id="http_proxy">HTTP Proxy</h2>
