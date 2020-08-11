@@ -105,6 +105,8 @@
 
     <h2 id="news">Nyheter <a href="feed.xml"><img src="img/feed.png" alt="RSS flöde"></a></h2>
 
+    <p>Observera att Chrome har en obligatorisk granskningsprocess för nya versioner. Därför får Chrome uppdateringen först några dagar efter att nyheten är skriven.</p>
+
     {% for post in site.posts limit:2 %}
     <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
     <div class="post-body">{{ post.content }}</div>
