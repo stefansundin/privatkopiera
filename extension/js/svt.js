@@ -18,6 +18,13 @@
 // Media Data URL:
 // https://api.svt.se/video/jE4x6LA
 //
+// Example URL:
+// https://www.svt.se/barnkanalen/barnplay/bolibompa-drakens-tradgard/KG5RQPG
+// Clicking play on the main episode redirects to this URL that is missing "/barnkanalen" (probably a react bug?)
+// https://www.svt.se/barnplay/bolibompa-drakens-tradgard/KG5RQPG
+// Media Data URL:
+// https://api.svt.se/video/KG5RQPG
+//
 // https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
 // https://api.svt.se/videoplayer-api/video/1120284-002OA
 
@@ -119,6 +126,15 @@ matchers.push({
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svt\.se\.?\//,
   func: async function(_, url) {
+    if (ret = /^(?:\/barnkanalen)?\/barnplay\/([^/]+)\/([^/?]+)/.exec(url.pathname)) {
+      const data_url = `https://api.svt.se/video/${ret[2]}`
+      update_filename(`${ret[1]}.mp4`)
+      update_json_url(data_url)
+      console.log(data_url)
+      fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
+      return
+    }
+
     const data = await fetch(`https://api.svt.se/nss-api/page${url.pathname}?q=articles`).then(get_json).catch(api_error)
     console.log(data)
     if (!data) return
