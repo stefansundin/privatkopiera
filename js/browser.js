@@ -1,11 +1,10 @@
 
-if (navigator.userAgent.indexOf("Chrome") != -1) {
+if (navigator.userAgent.includes("Chrome")) {
   document.getElementById("chrome-button").className = "btn btn-primary";
 }
-else if (navigator.userAgent.indexOf("Firefox") != -1) {
+else if (navigator.userAgent.includes("Firefox")) {
   document.getElementById("firefox-button").className = "btn btn-primary";
 }
 else {
-  var el = document.getElementById("browser-warning");
-  el.classList.remove("hidden");
+  document.getElementById("browser-warning").classList.remove("d-none");
 }
