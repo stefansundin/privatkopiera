@@ -72,7 +72,7 @@ matchers.push({
         dropdown.appendChild(option)
 
         var data_url = `https://sverigesradio.se/sida/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`
-        $("#open_json").href = data_url
+        update_json_url(data_url)
 
         console.log(data_url)
         fetch(data_url).then(get_json).then(sr_callback(stream, option)).catch(api_error)

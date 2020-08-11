@@ -76,7 +76,6 @@ matchers.push({
       flatten(ret).forEach(function(json) {
         var data = JSON.parse(json)
         console.log(data)
-        $("#open_json").classList.add("disabled")
 
         var lb_url = data.streaming_config.loadbalancer
         if (lb_url.substr(0,2) == "//") {

@@ -108,7 +108,7 @@ matchers.push({
           data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
         }
         update_filename(`${video_id}.mp4`)
-        $("#open_json").href = data_url
+        update_json_url(data_url)
         console.log(data_url)
         fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
       })
@@ -129,7 +129,7 @@ matchers.push({
     ids.forEach(function(svtId) {
       const data_url = `https://api.svt.se/video/${svtId}`
       update_filename(`${svtId}.mp4`)
-      $("#open_json").href = data_url
+      update_json_url(data_url)
       console.log(data_url)
       fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
     })

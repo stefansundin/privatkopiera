@@ -73,7 +73,7 @@ matchers.push({
     var video_id = ret[1]
     var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
     update_filename(`${video_id}.mp4`)
-    $("#open_json").href = data_url
+    update_json_url(data_url)
 
     console.log(data_url)
     fetch(data_url, {
@@ -92,7 +92,7 @@ matchers.push({
   func: function(ret) {
     var data_url = `https://psapi-ne.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`
     update_filename(`${ret[1]}-${ret[2]}.mp3`)
-    $("#open_json").href = data_url
+    update_json_url(data_url)
 
     console.log(data_url)
     fetch(data_url, {
@@ -123,7 +123,7 @@ matchers.push({
       flatten(ids).forEach(function(video_id) {
         var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
         update_filename(`${video_id}.mp4`)
-        $("#open_json").href = data_url
+        update_json_url(data_url)
 
         console.log(data_url)
         fetch(data_url, {

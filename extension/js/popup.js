@@ -98,6 +98,11 @@ function update_filename(fn) {
   $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|!]/g, '').replace(/\t+/, ' ')
 }
 
+function update_json_url(url) {
+  $("#open_json").href = url
+  $("#open_json").classList.remove("hidden")
+}
+
 function call_func() {
   if (ret = site.re.exec(tab_url)) {
     site.func(ret, url)

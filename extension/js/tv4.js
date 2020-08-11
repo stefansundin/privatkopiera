@@ -49,7 +49,7 @@ matchers.push({
     var video_id = ret[1]
     var data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`
     update_filename(`${video_id}.mp4`)
-    $("#open_json").href = data_url
+    update_json_url(data_url)
 
     console.log(data_url)
     fetch(data_url).then(get_json).then(tv4play_asset_callback).catch(api_error)
