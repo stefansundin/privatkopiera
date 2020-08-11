@@ -4,8 +4,20 @@ Chrome Web Store: https://chrome.google.com/webstore/detail/privatkopiera/jhjhne
 
 Firefox Addons: https://addons.mozilla.org/addon/privatkopiera/
 
-Ikon från https://commons.wikimedia.org/wiki/File:VHS_diagonal.svg
+Icon: https://commons.wikimedia.org/wiki/File:VHS_diagonal.svg
 
-## Utveckling
+## Development
 
-För att utveckla i Firefox kan du ladda tillägget i `about:debugging`.
+To build the custom Bootstrap theme, run:
+
+```
+cd bootstrap
+yarn install
+yarn run build
+```
+
+If you have trouble building it, you can get the default Bootstrap theme by running:
+
+```
+curl -o extension/css/bootstrap.min.css https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
+```

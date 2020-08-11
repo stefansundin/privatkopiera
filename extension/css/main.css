@@ -1,8 +1,7 @@
 body {
-  width: 500px;
+  width: 550px;
   min-height: 350px;
   padding: 10px;
-  /*background-color: #f2f1f0;*/
 }
 body.expand {
   width: 800px;
@@ -15,13 +14,14 @@ body.expand {
   cursor: pointer;
 }
 
-h2 {
+h3 {
   margin-top: 0;
   border-bottom: 1px solid #ccc;
   padding-bottom: 0.125em;
 }
 
-*[monospace] {
+input[monospace] {
+  height: 38px;
   font-family: monospace;
 }
 input[pattern]:invalid {
@@ -31,11 +31,10 @@ input[pattern]:invalid {
 .input-group {
   margin-bottom: 15px;
 }
-.input-group-addon {
-  min-width: 110px;
-}
-.input-group-addon label {
+.input-group-prepend label {
+  min-width: 100px;
   margin: 0;
+  font-weight: bold;
 }
 .input-group.btns > .btn {
   margin-right: 1em;

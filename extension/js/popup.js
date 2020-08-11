@@ -100,7 +100,7 @@ function update_filename(fn) {
 
 function update_json_url(url) {
   $("#open_json").href = url
-  $("#open_json").classList.remove("hidden")
+  $("#open_json").classList.remove("d-none")
 }
 
 function call_func() {
@@ -207,8 +207,8 @@ function update_cmd(e) {
   }
   else if (stream_ext == "m4a" || stream_ext == "mp3" || /^https?:\/\/http-live\.sr\.se/.test(url)) {
     cmd.value = url
-    $("#copy").classList.add("hidden")
-    $("#download").classList.remove("hidden")
+    $("#copy").classList.add("d-none")
+    $("#download").classList.remove("d-none")
     label = $("label[for='cmd']")[0]
     while (label.hasChildNodes()) {
       label.removeChild(label.firstChild)
@@ -340,8 +340,8 @@ document.addEventListener("DOMContentLoaded", function() {
       // The popup is automatically closed, so this does not really matter
       // It stays open if "Inspect Popup" is used
       if (granted) {
-        $("#copy").classList.remove("hidden")
-        $("#grant_permissions").classList.add("hidden")
+        $("#copy").classList.remove("d-none")
+        $("#grant_permissions").classList.add("d-none")
         $("#streams").disabled = false
         $("#filename").disabled = false
         $("#cmd").disabled = false
@@ -383,8 +383,8 @@ document.addEventListener("DOMContentLoaded", function() {
             call_func()
           }
           else {
-            $("#copy").classList.add("hidden")
-            $("#grant_permissions").classList.remove("hidden")
+            $("#copy").classList.add("d-none")
+            $("#grant_permissions").classList.remove("d-none")
             $("#streams").disabled = true
             $("#filename").disabled = true
             $("#cmd").disabled = true

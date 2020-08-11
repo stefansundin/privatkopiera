@@ -3,7 +3,6 @@
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/bootstrap.min.css">
-  <link rel="stylesheet" href="css/bootstrap-theme.min.css">
   <link rel="stylesheet" href="css/main.css">
   <script src="js/popup.js"></script>
   <script src="js/svt.js"></script>
@@ -13,39 +12,47 @@
   <script src="js/nrk.js"></script>
 </head>
 <body>
-  <h2>
+  <h3>
     <a id="expand">«</a>
     <span>Privatkopiera</span>
-    <small id="extension_version" class="pull-right"></small>
-  </h2>
+    <small id="extension_version" class="float-right"></small>
+  </h3>
 
-  <form class="input-group">
-    <div class="input-group-addon"><label for="url">URL</label></div>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><label for="url">URL</label></span>
+    </div>
     <input class="form-control" type="text" id="url" placeholder="URL to video on svtplay.se" readonly>
-  </form>
+  </div>
 
-  <form class="input-group">
-    <div class="input-group-addon"><label for="streams">Ström</label></div>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><label for="streams">Ström</label></span>
+    </div>
     <select class="form-control" id="streams"></select>
-  </form>
+  </div>
 
-  <form class="input-group">
-    <div class="input-group-addon"><label for="filename">Filnamn</label></div>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><label for="filename">Filnamn</label></span>
+    </div>
     <input class="form-control" type="text" id="filename" placeholder="Filnamn.mp4" pattern='^[^\t:*?"<>|]*$' spellcheck="false">
-  </form>
+  </div>
 
-  <form class="input-group">
-    <div class="input-group-addon"><label for="cmd">Kommando</label></div>
+  <div class="input-group">
+    <div class="input-group-prepend">
+      <span class="input-group-text"><label for="cmd">Kommando</label></span>
+    </div>
     <input class="form-control" type="text" id="cmd" placeholder="ffmpeg ..." spellcheck="false" monospace>
-  </form>
+  </div>
 
-  <form class="input-group btns">
-    <a class="btn btn-primary" id="copy">Kopiera kommando</a>
-    <a class="btn btn-primary hidden" id="download">Ladda ned</a>
-    <a class="btn btn-primary hidden" id="grant_permissions">Bevilja behörigheter</a>
-    <a class="btn btn-default hidden" id="open_json" target="_blank">Öppna JSON</a>
-    <a class="btn btn-default" href="https://stefansundin.github.io/privatkopiera/" target="_blank">Hjälp</a>
-  </form>
+  <div class="input-group btns">
+    <a class="btn btn-primary" href="#" id="copy">Kopiera kommando</a>
+    <a class="btn btn-primary d-none" href="#" id="download">Ladda ned</a>
+    <a class="btn btn-primary d-none" href="#" id="grant_permissions">Bevilja behörigheter</a>
+    <a class="btn btn-light d-none" id="open_json" target="_blank">Öppna JSON</a>
+    <a class="btn btn-light" href="https://stefansundin.github.io/privatkopiera/" target="_blank">Hjälp</a>
+  </div>
 
   <p id="info"></p>
 </body>
