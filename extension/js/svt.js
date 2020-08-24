@@ -76,7 +76,50 @@ function svt_callback(data) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?(?:svtplay|oppetarkiv)\.se\.?\//,
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
+  func: (_, url) => {
+    chrome.tabs.executeScript({
+      code: `(function(){
+        var scripts = document.getElementsByTagName("script");
+        for (var i=0; i < scripts.length; i++) {
+          var re = /root\\['__svtplay_apollo'\\] = ({.+})/.exec(scripts[i].textContent);
+          if (!re) {
+            continue;
+          }
+          return re[1];
+        }
+      })()`
+    }, (ret) => {
+      console.log(ret)
+      flatten(ret).forEach((json) => {
+        const apollo = JSON.parse(json)
+        console.log(apollo)
+
+        for (const [key, value] of Object.entries(apollo["ROOT_QUERY"])) {
+          if (!key.startsWith("listablesByEscenicId")) {
+            continue
+          }
+          value.forEach((v) => {
+            const variant = apollo[v.id]
+            if (!variant) {
+              return
+            }
+            console.log(variant)
+            const svtId = variant.svtId
+            const data_url = `https://api.svt.se/video/${svtId}`
+            update_filename(`${svtId}.mp4`)
+            update_json_url(data_url)
+            console.log(data_url)
+            fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
+          })
+        }
+      })
+    })
+  }
+})
+
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?oppetarkiv\.se\.?\//,
   func: function(_, url) {
     chrome.tabs.executeScript({
       code: `(function(){
@@ -110,10 +153,7 @@ matchers.push({
     }, function(ids) {
       console.log(ids)
       flatten(ids).forEach(function(video_id) {
-        let data_url = `https://api.svt.se/video/${video_id}`
-        if (url.host == "www.oppetarkiv.se") {
-          data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
-        }
+        const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
         update_filename(`${video_id}.mp4`)
         update_json_url(data_url)
         console.log(data_url)
