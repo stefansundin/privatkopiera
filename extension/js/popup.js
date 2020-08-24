@@ -69,11 +69,11 @@ function extract_extension(url) {
 }
 
 function add_param(url, param) {
-  if (url.indexOf("?") == -1) {
-    return `${url}?${param}`
+  if (url.includes("?")) {
+    return `${url}&${param}`
   }
   else {
-    return `${url}&${param}`
+    return `${url}?${param}`
   }
 }
 

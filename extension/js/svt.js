@@ -46,7 +46,7 @@ function svt_callback(data) {
   }
   console.log(streams)
   streams.filter(function(stream) {
-    return (formats.indexOf(stream.format) != -1)
+    return (formats.includes(stream.format))
   })
   .sort(function(a,b) {
     return (formats.indexOf(a.format) > formats.indexOf(b.format))
