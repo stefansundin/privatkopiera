@@ -49,7 +49,7 @@ function svt_callback(data) {
     return (formats.includes(stream.format))
   })
   .sort(function(a,b) {
-    return (formats.indexOf(a.format) > formats.indexOf(b.format))
+    return (formats.indexOf(a.format) - formats.indexOf(b.format))
   })
   .forEach(function(stream) {
     if (stream.format == "hds") {
