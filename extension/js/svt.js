@@ -31,16 +31,17 @@
 
 function svt_callback(data) {
   console.log(data)
+  let fn
   if (data.programTitle) {
-    var fn = `${data.programTitle} - ${data.episodeTitle}.mp4`
+    fn = `${data.programTitle} - ${data.episodeTitle}.mp4`
   }
   else {
-    var fn = `${data.episodeTitle}.mp4`
+    fn = `${data.episodeTitle}.mp4`
   }
 
-  var dropdown = $("#streams")
-  var formats = "hls,hds,websrt,webvtt".split(",")
-  var streams = data.videoReferences
+  const dropdown = $("#streams")
+  const formats = "hls,hds,websrt,webvtt".split(",")
+  let streams = data.videoReferences
   if (data.subtitleReferences) {
     streams = streams.concat(data.subtitleReferences)
   }
@@ -56,7 +57,7 @@ function svt_callback(data) {
       stream.url = add_param(stream.url, "hdcore=3.5.0") // ¯\_(ツ)_/¯
     }
 
-    var option = document.createElement("option")
+    const option = document.createElement("option")
     option.value = stream.url
     option.setAttribute("data-filename", fn)
     option.appendChild(document.createTextNode(extract_filename(stream.url)))
@@ -66,13 +67,13 @@ function svt_callback(data) {
     dropdown.appendChild(option)
 
     if (stream.format == "hls") {
-      var base_url = stream.url.replace(/\/[^/]+$/, "/")
+      const base_url = stream.url.replace(/\/[^/]+$/, "/")
       fetch(stream.url).then(get_text).then(master_callback(data.contentDuration, fn, base_url)).catch(api_error)
     }
   })
 
-  update_cmd()
   update_filename(fn)
+  update_cmd()
 }
 
 matchers.push({

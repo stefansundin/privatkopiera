@@ -46,8 +46,8 @@ function nrk_callback(data) {
     }
   })
 
-  update_cmd()
   update_filename(fn)
+  update_cmd()
 }
 
 function nrk_postcast_callback(data) {
