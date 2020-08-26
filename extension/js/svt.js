@@ -79,41 +79,32 @@ function svt_callback(data) {
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
   func: (_, url) => {
-    chrome.tabs.executeScript({
-      code: `(function(){
-        var scripts = document.getElementsByTagName("script");
-        for (var i=0; i < scripts.length; i++) {
-          var re = /root\\['__svtplay_apollo'\\] = ({.+})/.exec(scripts[i].textContent);
-          if (!re) {
-            continue;
-          }
-          return re[1];
-        }
-      })()`
-    }, (ret) => {
-      console.log(ret)
-      flatten(ret).forEach((json) => {
-        const apollo = JSON.parse(json)
-        console.log(apollo)
+    fetch(url.toString()).then(get_text).then((text) => {
+      const re = /root\['__svtplay_apollo'\] = ({.+})/.exec(text);
+      if (!re) {
+        return
+      }
+      const apollo = JSON.parse(re[1])
+      console.log(apollo)
+      const root = apollo["ROOT_QUERY"]
+      console.log(root)
 
-        for (const [key, value] of Object.entries(apollo["ROOT_QUERY"])) {
-          if (!key.startsWith("listablesByEscenicId")) {
-            continue
-          }
-          value.forEach((v) => {
-            const variant = apollo[v.id]
-            if (!variant) {
-              return
-            }
-            console.log(variant)
-            const svtId = variant.svtId
-            const data_url = `https://api.svt.se/video/${svtId}`
-            update_filename(`${svtId}.mp4`)
-            update_json_url(data_url)
-            console.log(data_url)
-            fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
-          })
-        }
+      const ids = Array.from(new Set(flatten(
+        Object.entries(root).filter(([key, value]) => {
+          return key.startsWith("listablesByEscenicId")
+        }).map(([key, value]) => {
+          console.log(key,value)
+          return value.map(v => v.id)
+        }))))
+      console.log(ids)
+      ids.map(id => apollo[id]).filter(v => v !== undefined).forEach((variant) => {
+        console.log(variant)
+        const svtId = variant.svtId
+        const data_url = `https://api.svt.se/video/${svtId}`
+        update_filename(`${svtId}.mp4`)
+        update_json_url(data_url)
+        console.log(data_url)
+        fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
       })
     })
   }
