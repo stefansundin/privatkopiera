@@ -78,6 +78,9 @@ function svt_callback(data) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
+  permissions: isFirefox ? {
+    origins: ["https://www.svtplay.se/"],
+  } : null,
   func: (_, url) => {
     fetch(url.toString()).then(get_text).then((text) => {
       const re = /root\['__svtplay_apollo'\] = ({.+})/.exec(text);

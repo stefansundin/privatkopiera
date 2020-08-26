@@ -23,7 +23,8 @@
   "optional_permissions": [
     "downloads",
     "https://psapi-ne.nrk.no/",
-    "https://sverigesradio.se/"
+    "https://sverigesradio.se/",
+    "https://www.svtplay.se/"
   ],
   "applications": {
     "gecko": {
