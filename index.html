@@ -120,9 +120,15 @@
 
     <p>FFmpeg är ett program för som används för konvertering av videofiler, men det kan även ladda ned videoströmmar. Notera att för vissa strömmar krävs AdobeHDS.php istället (se nedan).</p>
 
-    <p>Du kan ladda ned FFmpeg till Linux och Mac med pakethanterare (se nedan). Till Windows kan du ladda ned från <a href="http://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build" (i detta fall behöver du bara filen <tt>ffmpeg.exe</tt>). Om du har svårt att hitta nedladdningen för Windows, så testa den här: <a href="https://ffmpeg.zeranoe.com/builds/win64/static/ffmpeg-4.2.2-win64-static.zip">ffmpeg-4.2.2-win64-static.zip</a></p>
+    <p>Du kan ladda ned FFmpeg till Linux och Mac med pakethanterare (se nedan). Till Windows kan du ladda ned från <a href="https://ffmpeg.org/download.html">ffmpeg.org</a>. Det är enklast om du väljer "static build" (i detta fall behöver du bara filen <tt>ffmpeg.exe</tt>).</p>
 
-    <p>Du kan antingen lägga ffmpeg filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\Windows\</tt> som redan finns i <tt>PATH</tt>.</p>
+    <p>Om du har svårt att hitta nedladdningarna:</p>
+    <ul>
+      <li>Windows: <a href="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip">https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip</a></li>
+      <li>Mac: <a href="https://evermeet.cx/ffmpeg/">https://evermeet.cx/ffmpeg/</a></li>
+    </ul>
+
+    <p>Du kan antingen lägga <tt>ffmpeg.exe</tt> filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\Windows\</tt> som redan finns i <tt>PATH</tt>.</p>
 
     <p><strong>Obs:</strong> ffmpeg spottar gärna (och ofta) ur sig varningar. Om programmet fortsätter att köra så bör du ta det lungt, det finns en bra chans att det fungerar ändå. Ha tålamod och ge det en stund.</p>
 
@@ -136,7 +142,7 @@
 sudo apt-get install ffmpeg
 {% endhighlight %}
 
-    <p>I Mac med <a href="https://brew.sh/">Homebrew</a>:</p>
+    <p>I Mac kan du installera med <a href="https://brew.sh/">Homebrew</a>. Observera att Homebrew kommer att installera många andra program, så du kanske föredrar att istället <a href="https://evermeet.cx/ffmpeg/">ladda ned en static build</a>.</p>
 
 {% highlight shell %}
 brew install ffmpeg
