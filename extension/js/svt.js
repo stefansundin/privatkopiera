@@ -7,8 +7,16 @@
 // SVT Play Live:
 // Example URL:
 // https://www.svtplay.se/kanaler/svt1
+// https://www.svtplay.se/kanaler/svt2
+// https://www.svtplay.se/kanaler/svtbarn
+// https://www.svtplay.se/kanaler/kunskapskanalen
+// https://www.svtplay.se/kanaler/svt24
 // Data URL:
 // https://api.svt.se/video/ch-svt1
+// https://api.svt.se/video/ch-svt2
+// https://api.svt.se/video/ch-barnkanalen
+// https://api.svt.se/video/ch-kunskapskanalen
+// https://api.svt.se/video/ch-svt24
 //
 // SVT:
 // Example URL:
@@ -75,6 +83,17 @@ function svt_callback(data) {
   update_filename(fn)
   update_cmd()
 }
+
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/kanaler\/([^\/?]+)/,
+  func: (ret, _) => {
+    let ch = ret[1]
+    if (ch == "svtbarn") {
+      ch = "barnkanalen"
+    }
+    fetch(`https://api.svt.se/video/ch-${ch}`).then(get_json).then(svt_callback).catch(api_error)
+  }
+})
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
