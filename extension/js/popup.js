@@ -320,8 +320,15 @@ document.addEventListener("DOMContentLoaded", function() {
 
   $("#expand").addEventListener("click", function() {
     document.body.classList.toggle("expand")
-    $("#expand").textContent = document.body.classList.contains("expand") ? "»" : "«"
+    const expanded = document.body.classList.contains("expand")
+    $("#expand").textContent = expanded ? "»" : "«"
+    localStorage.setItem("expanded", expanded.toString())
   })
+
+  const expanded = (localStorage.getItem("expanded") == "true")
+  if (expanded) {
+    $("#expand").click()
+  }
 
   $("#copy").addEventListener("click", function(e) {
     e.preventDefault()
