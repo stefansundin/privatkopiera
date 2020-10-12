@@ -324,6 +324,7 @@ document.addEventListener("DOMContentLoaded", function() {
   })
 
   $("#copy").addEventListener("click", function(e) {
+    e.preventDefault()
     cmd = $("#cmd")
     if (e.shiftKey) {
       // copy only the URL if the shift key is held
