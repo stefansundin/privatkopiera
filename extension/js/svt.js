@@ -1,8 +1,8 @@
 // SVT Play:
 // Example URL:
-// https://www.svtplay.se/video/25786024/veckans-brott/veckans-brott-redaktionen-skandiamannen-det-hetaste-palmesparet-del-2-av-2
+// https://www.svtplay.se/video/2520376/pippi-langstrump/pippi-langstrump-sasong-1-avsnitt-1
 // Data URL:
-// https://api.svt.se/video/jVk9NXV
+// https://api.svt.se/video/jBDqx98
 //
 // SVT Play Live:
 // Example URL:
@@ -32,9 +32,6 @@
 // https://www.svt.se/barnplay/bolibompa-drakens-tradgard/KG5RQPG
 // Media Data URL:
 // https://api.svt.se/video/KG5RQPG
-//
-// https://www.oppetarkiv.se/video/3192653/pippi-langstrump-avsnitt-2-av-13
-// https://api.svt.se/videoplayer-api/video/1120284-002OA
 
 
 function svt_callback(data) {
@@ -126,51 +123,6 @@ matchers.push({
         const svtId = variant.svtId
         const data_url = `https://api.svt.se/video/${svtId}`
         update_filename(`${svtId}.mp4`)
-        update_json_url(data_url)
-        console.log(data_url)
-        fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
-      })
-    })
-  }
-})
-
-matchers.push({
-  re: /^https?:\/\/(?:www\.)?oppetarkiv\.se\.?\//,
-  func: function(_, url) {
-    chrome.tabs.executeScript({
-      code: `(function(){
-        const ids = [];
-        const article = document.querySelectorAll("article.svtArticleOpen")[0] || document.querySelectorAll("article[role='main']")[0] || document;
-        const videos = article.getElementsByTagName("video");
-        for (let i=0; i < videos.length; i++) {
-          const id = videos[i].getAttribute("data-video-id");
-          if (id) {
-            ids.push(id);
-          }
-        }
-        const links = article.getElementsByTagName("a");
-        for (let i=0; i < links.length; i++) {
-          const href = links[i].getAttribute("data-json-href");
-          let ret;
-          if (ret = /articleId=(\\d+)/.exec(href)) {
-            ids.push(parseInt(ret[1], 10));
-          }
-        }
-        const iframes = article.getElementsByTagName("iframe");
-        for (let i=0; i < iframes.length; i++) {
-          const src = iframes[i].getAttribute("src");
-          let ret;
-          if (ret = /articleId=(\\d+)/.exec(src)) {
-            ids.push(parseInt(ret[1], 10));
-          }
-        }
-        return ids;
-      })()`
-    }, function(ids) {
-      console.log(ids)
-      flatten(ids).forEach(function(video_id) {
-        const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`
-        update_filename(`${video_id}.mp4`)
         update_json_url(data_url)
         console.log(data_url)
         fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
