@@ -54,7 +54,7 @@ a {
   margin: 0 5px;
 }
 
-img[src="img/launcher.png"] {
+#img-launcher {
   height: 2em;
 }
 
@@ -86,6 +86,13 @@ navbar {
 
 tt {
   white-space: nowrap;
+}
+
+.bottom-right-fixed {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  user-select: none;
 }
 
 @import
