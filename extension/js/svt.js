@@ -40,7 +40,7 @@
 function svt_callback(data) {
   console.log(data)
   let fn
-  if (data.programTitle) {
+  if (data.programTitle && data.programTitle != data.episodeTitle) {
     fn = `${data.programTitle} - ${data.episodeTitle}.mp4`
   }
   else {
