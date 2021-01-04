@@ -381,6 +381,13 @@ document.addEventListener("DOMContentLoaded", function() {
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
     tab_url = tabs[0].url
+    if (!tab_url) {
+      return
+    }
+    if (tab_url.startsWith("chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html")) {
+      // Tab suspended with The Great Suspender. Your mileage may vary.
+      tab_url = tab_url.split("&uri=")[1]
+    }
     url = new URL(tab_url)
     $("#url").value = tab_url
     console.log(tab_url)
