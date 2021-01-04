@@ -29,14 +29,14 @@
 
 function tv4play_asset_callback(data) {
   update_filename(`${data.metadata.title}.mp4`)
-  var media_url = `https://playback-api.b17g.net${data.mediaUri}`
+  const media_url = `https://playback-api.b17g.net${data.mediaUri}`
   console.log(media_url)
   fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error)
 }
 
 function tv4play_media_callback(data) {
-  var dropdown = $("#streams")
-  var option = document.createElement("option")
+  const dropdown = $("#streams")
+  const option = document.createElement("option")
   option.value = data.playbackItem.manifestUrl
   option.appendChild(document.createTextNode(data.playbackItem.type))
   dropdown.appendChild(option)
@@ -46,8 +46,8 @@ function tv4play_media_callback(data) {
 matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\.?\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
-    var video_id = ret[1]
-    var data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`
+    const video_id = ret[1]
+    const data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`
     update_filename(`${video_id}.mp4`)
     update_json_url(data_url)
 

@@ -19,7 +19,7 @@ function flatten(arr) {
 }
 
 function toObject(arr) {
-  var obj = {}
+  const obj = {}
   arr.forEach(function(e) {
     obj[e[0]] = e[1]
   })
@@ -27,8 +27,8 @@ function toObject(arr) {
 }
 
 function fmt_filesize(bytes, digits=2) {
-  var units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
-  var i = 0
+  const units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB']
+  let i = 0
   while (bytes > 1024 && i < units.length) {
     bytes = bytes / 1024
     i++
@@ -46,7 +46,7 @@ function fmt_filesize(bytes, digits=2) {
 }
 
 function $() {
-  var elements = document.querySelectorAll.apply(document, arguments)
+  const elements = document.querySelectorAll.apply(document, arguments)
   if (arguments[0][0] == "#") {
     return elements[0]
   }
@@ -61,8 +61,8 @@ function extract_filename(url) {
 }
 
 function extract_extension(url) {
-  var fn = extract_filename(url)
-  var dot = fn.lastIndexOf(".")
+  const fn = extract_filename(url)
+  const dot = fn.lastIndexOf(".")
   if (dot != -1) {
     return fn.substr(dot+1).toLowerCase()
   }
@@ -78,9 +78,9 @@ function add_param(url, param) {
 }
 
 function parse_pt(pt) {
-  var ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt)
+  const ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt)
   if (ret == null) return 0
-  var duration = 0
+  let duration = 0
   if (ret[1]) {
     duration += 60 * 60 * parseInt(ret[1], 10)
   }
@@ -126,7 +126,7 @@ function get_text(response) {
 }
 
 function error(text) {
-  var el = $("#info")
+  const el = $("#info")
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
@@ -160,12 +160,12 @@ function api_error(e) {
 }
 
 function download_info(program) {
-  var el = $("#info")
+  const el = $("#info")
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
   el.appendChild(document.createTextNode("För att ladda ned den här strömmen krävs "))
-  var a = document.createElement("a")
+  const a = document.createElement("a")
   a.target = "_blank"
   a.href = `https://stefansundin.github.io/privatkopiera/#${program.toLowerCase()}`
   a.appendChild(document.createTextNode(program))
@@ -174,24 +174,24 @@ function download_info(program) {
 }
 
 function update_cmd(e) {
-  var filename = $("#filename")
-  var select = $("#streams")
-  var option = select.selectedOptions[0]
-  var audio_stream = option.getAttribute("data-audio-stream")
+  const filename = $("#filename")
+  const select = $("#streams")
+  const option = select.selectedOptions[0]
+  const audio_stream = option.getAttribute("data-audio-stream")
 
   if ((e && e.target == select) || filename.value == "") {
-    var fn = option.getAttribute("data-filename")
+    const fn = option.getAttribute("data-filename")
     if (fn) {
       update_filename(fn)
     }
   }
 
-  var cmd = $("#cmd")
-  var url = select.value
-  var fn = filename.value
-  var ext = extract_extension(fn)
-  var stream_fn = extract_filename(url)
-  var stream_ext = extract_extension(url)
+  const cmd = $("#cmd")
+  const url = select.value
+  let fn = filename.value
+  const ext = extract_extension(fn)
+  const stream_fn = extract_filename(url)
+  const stream_ext = extract_extension(url)
   select.title = stream_fn
   if (stream_ext == "f4m") {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
@@ -238,9 +238,9 @@ function master_callback(length, fn, base_url) {
   return function(text) {
     console.log(text)
 
-    var ext_x_media = {}
-    var streams = []
-    var params
+    const ext_x_media = {}
+    const streams = []
+    let params
     text.split("\n").forEach(function(line) {
       if (line.length == 0) {
         return
@@ -248,10 +248,10 @@ function master_callback(length, fn, base_url) {
       console.log(line)
       if (line.startsWith("#")) {
         if (!line.includes(":")) return
-        var type = line.substring(1, line.indexOf(":"))
-        var args = line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
+        const type = line.substring(1, line.indexOf(":"))
+        const args = line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g)
         if (!args) return
-        var obj = toObject(args.map(function(arg) {
+        const obj = toObject(args.map(function(arg) {
           const k = arg.substring(0, arg.indexOf("="))
           let v = arg.substring(arg.indexOf("=")+1)
           if (v.startsWith('"') && v.endsWith('"')) {
@@ -268,7 +268,7 @@ function master_callback(length, fn, base_url) {
         }
       }
       else {
-        var url = line
+        let url = line
         if (!/^https?:\/\//.test(url)) {
           url = base_url+url
         }
@@ -281,12 +281,12 @@ function master_callback(length, fn, base_url) {
     })
     console.log(streams)
 
-    var dropdown = $("#streams")
-    var default_option = dropdown.getElementsByTagName("option")[0]
+    const dropdown = $("#streams")
+    const default_option = dropdown.getElementsByTagName("option")[0]
 
     streams.sort(function(a,b) { return b.bitrate-a.bitrate }).forEach(function(stream) {
-      var kbps = Math.round(stream.bitrate / 1000)
-      var option = document.createElement("option")
+      const kbps = Math.round(stream.bitrate / 1000)
+      const option = document.createElement("option")
       option.value = stream.url
       option.appendChild(document.createTextNode(`${kbps} kbps`))
       option.setAttribute("data-filename", fn)
@@ -294,7 +294,7 @@ function master_callback(length, fn, base_url) {
         option.setAttribute("data-audio-stream", base_url+ext_x_media["AUDIO"]["URI"])
       }
       if (stream.params["RESOLUTION"]) {
-        var info = stream.params["RESOLUTION"]
+        let info = stream.params["RESOLUTION"]
         if (length) {
           // the calculation is off by about 5%, probably because of audio and overhead
           info += `, ~${fmt_filesize(1.05*length*stream.bitrate/8)}`
@@ -303,7 +303,7 @@ function master_callback(length, fn, base_url) {
       }
       else if (stream.params["CODECS"] == "mp4a.40.2") {
         option.setAttribute("data-filename", fn.replace(".mp4", ".m4a"))
-        var url_fn = extract_filename(stream.url)
+        const url_fn = extract_filename(stream.url)
         if (/^index_\d+_a\.m3u8$/.test(url_fn)) {
           // some tv.nrk.no programs have a separate audio-only stream
           option.appendChild(document.createTextNode(` (endast ljud)`))
@@ -333,10 +333,10 @@ document.addEventListener("DOMContentLoaded", function() {
 
   $("#copy").addEventListener("click", function(e) {
     e.preventDefault()
-    cmd = $("#cmd")
+    const cmd = $("#cmd")
     if (e.shiftKey) {
       // copy only the URL if the shift key is held
-      var url = cmd.getAttribute("data-url")
+      const url = cmd.getAttribute("data-url")
       cmd.value = url
     }
     cmd.select()

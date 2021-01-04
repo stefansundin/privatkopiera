@@ -139,27 +139,27 @@ matchers.push({
   func: function(_, url) {
     chrome.tabs.executeScript({
       code: `(function(){
-        var ids = [];
-        var article = document.querySelectorAll("article.svtArticleOpen")[0] || document.querySelectorAll("article[role='main']")[0] || document;
-        var videos = article.getElementsByTagName("video");
-        for (var i=0; i < videos.length; i++) {
-          var id = videos[i].getAttribute("data-video-id");
+        const ids = [];
+        const article = document.querySelectorAll("article.svtArticleOpen")[0] || document.querySelectorAll("article[role='main']")[0] || document;
+        const videos = article.getElementsByTagName("video");
+        for (let i=0; i < videos.length; i++) {
+          const id = videos[i].getAttribute("data-video-id");
           if (id) {
             ids.push(id);
           }
         }
-        var links = article.getElementsByTagName("a");
-        for (var i=0; i < links.length; i++) {
-          var href = links[i].getAttribute("data-json-href");
-          var ret;
+        const links = article.getElementsByTagName("a");
+        for (let i=0; i < links.length; i++) {
+          const href = links[i].getAttribute("data-json-href");
+          let ret;
           if (ret = /articleId=(\\d+)/.exec(href)) {
             ids.push(parseInt(ret[1], 10));
           }
         }
-        var iframes = article.getElementsByTagName("iframe");
-        for (var i=0; i < iframes.length; i++) {
-          var src = iframes[i].getAttribute("src");
-          var ret;
+        const iframes = article.getElementsByTagName("iframe");
+        for (let i=0; i < iframes.length; i++) {
+          const src = iframes[i].getAttribute("src");
+          let ret;
           if (ret = /articleId=(\\d+)/.exec(src)) {
             ids.push(parseInt(ret[1], 10));
           }

@@ -15,23 +15,23 @@
 
 function nrk_callback(data) {
   console.log(data)
-  var ext = "mp4"
+  let ext = "mp4"
   if (data.playable.sourceMedium == "audio") {
     ext = "m4a"
   }
-  var fn = `${data.title}.${ext}`
+  let fn = `${data.title}.${ext}`
   if (data.preplay && data.preplay.titles) {
     fn = `${data.preplay.titles.title} - ${data.preplay.titles.subtitle}.${ext}`
   }
 
-  var dropdown = $("#streams")
-  var streams = []
+  const dropdown = $("#streams")
+  let streams = []
   data.playable.parts.forEach(function(part) {
     streams = streams.concat(part.assets).concat(part.subtitles)
   })
   console.log(streams)
   streams.forEach(function(stream) {
-    var option = document.createElement("option")
+    const option = document.createElement("option")
     option.value = stream.url || stream.webVtt
     option.setAttribute("data-filename", fn)
     option.appendChild(document.createTextNode(extract_filename(option.value)))
@@ -41,7 +41,7 @@ function nrk_callback(data) {
     dropdown.appendChild(option)
 
     if (stream.format == "HLS") {
-      var base_url = stream.url.replace(/\/[^/]+$/, "/")
+      const base_url = stream.url.replace(/\/[^/]+$/, "/")
       fetch(stream.url).then(get_text).then(master_callback(parse_pt(data.duration), fn, base_url)).catch(api_error)
     }
   })
@@ -52,10 +52,10 @@ function nrk_callback(data) {
 
 function nrk_postcast_callback(data) {
   console.log(data)
-  var dropdown = $("#streams")
+  const dropdown = $("#streams")
   data.downloadables.forEach(function(stream) {
-    var ext = extract_extension(stream.audio.url) || "mp3"
-    var option = document.createElement("option")
+    const ext = extract_extension(stream.audio.url) || "mp3"
+    const option = document.createElement("option")
     option.value = stream.audio.url
     option.setAttribute("data-filename", `${data.titles.title}.${ext}`)
     option.appendChild(document.createTextNode(data.titles.title))
@@ -70,8 +70,8 @@ matchers.push({
     origins: ["https://psapi-ne.nrk.no/"],
   },
   func: function(ret) {
-    var video_id = ret[1]
-    var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
+    const video_id = ret[1]
+    const data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
     update_filename(`${video_id}.mp4`)
     update_json_url(data_url)
 
@@ -90,7 +90,7 @@ matchers.push({
     origins: ["https://psapi-ne.nrk.no/"],
   },
   func: function(ret) {
-    var data_url = `https://psapi-ne.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`
+    const data_url = `https://psapi-ne.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`
     update_filename(`${ret[1]}-${ret[2]}.mp3`)
     update_json_url(data_url)
 
@@ -112,7 +112,7 @@ matchers.push({
     // <div id="series-program-id-container" data-program-id="MSPO30080518">
     chrome.tabs.executeScript({
       code: `(function(){
-        var div = document.querySelector("[data-program-id]");
+        const div = document.querySelector("[data-program-id]");
         if (!div) {
           return null;
         }
@@ -121,7 +121,7 @@ matchers.push({
     }, function(ids) {
       console.log(ids)
       flatten(ids).forEach(function(video_id) {
-        var data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
+        const data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`
         update_filename(`${video_id}.mp4`)
         update_json_url(data_url)
 
