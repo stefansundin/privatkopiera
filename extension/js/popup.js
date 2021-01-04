@@ -252,11 +252,12 @@ function master_callback(length, fn, base_url) {
         var args = line.substring(line.indexOf(":")+1).match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
         if (!args) return
         var obj = toObject(args.map(function(arg) {
-          var kv = arg.split("=")
-          if (kv[1].startsWith('"') && kv[1].endsWith('"')) {
-            kv[1] = kv[1].substring(1, kv[1].length-1)
+          const k = arg.substring(0, arg.indexOf("="))
+          let v = arg.substring(arg.indexOf("=")+1)
+          if (v.startsWith('"') && v.endsWith('"')) {
+            v = v.substring(1, v.length-1)
           }
-          return kv
+          return [k, v]
         }))
         console.log(obj)
         if (type == "EXT-X-MEDIA") { // && obj["TYPE"] == "AUDIO") {
