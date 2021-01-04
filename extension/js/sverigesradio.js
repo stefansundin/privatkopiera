@@ -1,9 +1,9 @@
 // In Chrome, activeTab permissions automatically grants access to https://sverigesradio.se/, but this is not true for Firefox.
 //
 // Example URL:
-// https://sverigesradio.se/sida/artikel.aspx?programid=493&artikel=6411195
+// https://sverigesradio.se/artikel/6411195
 // Example URL with multiple streams:
-// https://sverigesradio.se/sida/artikel.aspx?programid=83&artikel=6412615
+// https://sverigesradio.se/artikel/6412615
 // Metadata URL:
 // https://sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
