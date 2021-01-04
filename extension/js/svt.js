@@ -91,7 +91,9 @@ matchers.push({
     if (ch == "svtbarn") {
       ch = "barnkanalen"
     }
-    fetch(`https://api.svt.se/video/ch-${ch}`).then(get_json).then(svt_callback).catch(api_error)
+    const data_url = `https://api.svt.se/video/ch-${ch}`
+    update_json_url(data_url)
+    fetch(data_url).then(get_json).then(svt_callback).catch(api_error)
   }
 })
 
