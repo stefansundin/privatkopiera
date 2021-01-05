@@ -1,13 +1,10 @@
 body {
   width: 550px;
-  min-height: 350px;
+  min-height: 370px;
   padding: 10px;
 }
 body.expand {
   width: 800px;
-}
-#expand {
-  color: black;
 }
 #expand:hover {
   text-decoration: none;
@@ -38,4 +35,11 @@ input[pattern]:invalid {
 }
 .input-group.btns > .btn {
   margin-right: 1em;
+}
+
+.bottom-right-fixed {
+  position: fixed;
+  bottom: 1em;
+  right: 1em;
+  user-select: none;
 }
