@@ -301,14 +301,6 @@ function master_callback(length, fn, base_url) {
         }
         option.appendChild(document.createTextNode(` (${info})`))
       }
-      else if (stream.params["CODECS"] == "mp4a.40.2") {
-        option.setAttribute("data-filename", fn.replace(".mp4", ".m4a"))
-        const url_fn = extract_filename(stream.url)
-        if (/^index_\d+_a\.m3u8$/.test(url_fn)) {
-          // some tv.nrk.no programs have a separate audio-only stream
-          option.appendChild(document.createTextNode(` (endast ljud)`))
-        }
-      }
       dropdown.insertBefore(option, default_option)
     })
     dropdown.getElementsByTagName("option")[0].selected = true
