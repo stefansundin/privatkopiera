@@ -16,18 +16,16 @@ function nrk_callback(data) {
   console.log(data)
 
   const dropdown = $("#streams")
-  let streams = []
+  const streams = []
   data.playable.parts.forEach(function(part) {
-    streams = streams.concat(part.assets).concat(part.subtitles)
+    streams.push(...part.assets)
+    subtitles.push(...part.subtitles.map(s => s.webVtt))
   })
   console.log(streams)
   streams.forEach(function(stream) {
     const option = document.createElement("option")
-    option.value = stream.url || stream.webVtt
+    option.value = stream.url
     option.appendChild(document.createTextNode(extract_filename(option.value)))
-    if (stream.webVtt) {
-      option.appendChild(document.createTextNode(` (undertexter ${stream.label})`))
-    }
     dropdown.appendChild(option)
 
     if (stream.format == "HLS") {

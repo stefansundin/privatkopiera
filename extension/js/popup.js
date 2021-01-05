@@ -1,5 +1,6 @@
 const version = `v${chrome.runtime.getManifest().version}`
 const isFirefox = navigator.userAgent.includes("Firefox/")
+const subtitles = []
 let matchers = []
 let tab_url, url, site
 
@@ -175,35 +176,26 @@ function download_info(program) {
 
 function update_cmd(e) {
   const filename = $("#filename")
-  const select = $("#streams")
-  const option = select.selectedOptions[0]
-  const audio_stream = option.getAttribute("data-audio-stream")
+  const streams = $("#streams")
+  const stream = streams.selectedOptions[0]
+  const audio_stream = stream.getAttribute("data-audio-stream")
 
-  if ((e && e.target == select) || filename.value == "") {
-    const fn = option.getAttribute("data-filename")
+  if ((e && e.target == streams) || filename.value == "") {
+    const fn = stream.getAttribute("data-filename")
     if (fn) {
       update_filename(fn)
     }
   }
 
   const cmd = $("#cmd")
-  const url = select.value
+  const url = streams.value
   let fn = filename.value
   const ext = extract_extension(fn)
   const stream_fn = extract_filename(url)
   const stream_ext = extract_extension(url)
-  select.title = stream_fn
+  streams.title = stream_fn
   if (stream_ext == "f4m") {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`
-  }
-  else if (stream_ext == "webvtt" || stream_ext == "wsrt" || stream_ext == "vtt") {
-    if (fn.endsWith(".mp4")) {
-      fn = fn.replace(/\.mp4$/, ".srt")
-    }
-    else {
-      fn += ".srt"
-    }
-    cmd.value = `ffmpeg -i "${url}" "${fn}"`
   }
   else if (stream_ext == "m4a" || stream_ext == "mp3" || /^https?:\/\/http-live\.sr\.se/.test(url)) {
     cmd.value = url
@@ -218,11 +210,16 @@ function update_cmd(e) {
   else if (ext == "m4a") {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`
   }
-  else if (audio_stream) {
-    cmd.value = `ffmpeg -i "${url}" -i "${audio_stream}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
+  else if (ext == "srt" && subtitles.length > 0) {
+    cmd.value = `ffmpeg -i "${subtitles[0].url}" "${fn}"`
   }
   else {
-    cmd.value = `ffmpeg -i "${url}" -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
+    const inputs = [url]
+    if (audio_stream) {
+      inputs.push(audio_stream)
+    }
+    inputs.push(...subtitles)
+    cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`
   }
   cmd.setAttribute("data-url", url)
 

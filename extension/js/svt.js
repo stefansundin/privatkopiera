@@ -37,14 +37,13 @@
 function svt_callback(data) {
   console.log(data)
 
-  const dropdown = $("#streams")
-  const formats = "hls,hds,websrt,webvtt".split(",")
-  let streams = data.videoReferences
   if (data.subtitleReferences) {
-    streams = streams.concat(data.subtitleReferences)
+    subtitles.push(...data.subtitleReferences.map(s => s.url))
   }
-  console.log(streams)
-  streams.filter(function(stream) {
+
+  const formats = "hls,hds".split(",")
+  const streams = $("#streams")
+  data.videoReferences.filter(function(stream) {
     return (formats.includes(stream.format))
   })
   .sort(function(a,b) {
@@ -58,10 +57,7 @@ function svt_callback(data) {
     const option = document.createElement("option")
     option.value = stream.url
     option.appendChild(document.createTextNode(extract_filename(stream.url)))
-    if (stream.format == "websrt" || stream.format == "webvtt") {
-      option.appendChild(document.createTextNode(" (undertexter)"))
-    }
-    dropdown.appendChild(option)
+    streams.appendChild(option)
 
     if (stream.format == "hls") {
       const base_url = stream.url.replace(/\/[^/]+$/, "/")
