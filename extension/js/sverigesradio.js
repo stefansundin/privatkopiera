@@ -9,13 +9,12 @@
 // Get audio URL:
 // https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-
 function sr_callback(stream, option) {
   return function(data) {
-    const ext = extract_extension(data.audioUrl) || "mp3"
-    option.value = data.audioUrl
-    option.setAttribute("data-filename", `${stream.title}.${ext}`)
-    update_cmd()
+    const ext = extract_extension(data.audioUrl) || "mp3";
+    option.value = data.audioUrl;
+    option.setAttribute("data-filename", `${stream.title}.${ext}`);
+    update_cmd();
   }
 }
 
@@ -63,20 +62,20 @@ matchers.push({
         return streams;
       })()`
     }, function(streams) {
-      const dropdown = $("#streams")
-      console.log(streams)
+      const dropdown = $("#streams");
+      console.log(streams);
       flatten(streams).forEach(function(stream) {
         // Create the option here so we always get them in the same order
-        const option = document.createElement("option")
-        option.appendChild(document.createTextNode(stream.title))
-        dropdown.appendChild(option)
+        const option = document.createElement("option");
+        option.appendChild(document.createTextNode(stream.title));
+        dropdown.appendChild(option);
 
-        const data_url = `https://sverigesradio.se/sida/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`
-        update_json_url(data_url)
+        const data_url = `https://sverigesradio.se/sida/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
+        update_json_url(data_url);
 
-        console.log(data_url)
-        fetch(data_url).then(get_json).then(sr_callback(stream, option)).catch(api_error)
-      })
-    })
+        console.log(data_url);
+        fetch(data_url).then(get_json).then(sr_callback(stream, option)).catch(api_error);
+      });
+    });
   }
-})
+});

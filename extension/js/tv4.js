@@ -26,32 +26,31 @@
 // https://playback-api.b17g.net/asset/3946707?service=tv4&device=browser&protocol=hls%2Cdash
 // https://playback-api.b17g.net/media/3946707?service=tv4&device=browser&protocol=hls%2Cdash
 
-
 function tv4play_asset_callback(data) {
-  update_filename(`${data.metadata.title}.mp4`)
-  const media_url = `https://playback-api.b17g.net${data.mediaUri}`
-  console.log(media_url)
-  fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error)
+  update_filename(`${data.metadata.title}.mp4`);
+  const media_url = `https://playback-api.b17g.net${data.mediaUri}`;
+  console.log(media_url);
+  fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error);
 }
 
 function tv4play_media_callback(data) {
-  const dropdown = $("#streams")
-  const option = document.createElement("option")
-  option.value = data.playbackItem.manifestUrl
-  option.appendChild(document.createTextNode(data.playbackItem.type))
-  dropdown.appendChild(option)
-  update_cmd()
+  const dropdown = $("#streams");
+  const option = document.createElement("option");
+  option.value = data.playbackItem.manifestUrl;
+  option.appendChild(document.createTextNode(data.playbackItem.type));
+  dropdown.appendChild(option);
+  update_cmd();
 }
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\.?\/.*(?:-|\/)(\d+)/,
   func: function(ret) {
-    const video_id = ret[1]
-    const data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`
-    update_filename(`${video_id}.mp4`)
-    update_json_url(data_url)
+    const video_id = ret[1];
+    const data_url = `https://playback-api.b17g.net/asset/${video_id}?service=tv4&device=browser&drm=widevine&protocol=hls%2Cdash`;
+    update_filename(`${video_id}.mp4`);
+    update_json_url(data_url);
 
-    console.log(data_url)
-    fetch(data_url).then(get_json).then(tv4play_asset_callback).catch(api_error)
+    console.log(data_url);
+    fetch(data_url).then(get_json).then(tv4play_asset_callback).catch(api_error);
   }
-})
+});
