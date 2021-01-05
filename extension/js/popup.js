@@ -173,6 +173,11 @@ function download_info(program) {
   const a = document.createElement("a")
   a.target = "_blank"
   a.href = `https://stefansundin.github.io/privatkopiera/#${program.toLowerCase()}`
+  if (isFirefox) {
+    a.addEventListener("click", () => {
+      setTimeout(window.close, 10)
+    })
+  }
   a.appendChild(document.createTextNode(program))
   el.appendChild(a)
   el.appendChild(document.createTextNode(`.`))
@@ -384,6 +389,14 @@ document.addEventListener("DOMContentLoaded", function() {
 
   $("#streams").addEventListener("input", update_cmd)
   $("#filename").addEventListener("input", update_cmd)
+
+  if (isFirefox) {
+    document.querySelectorAll('#open_json,a[href="https://stefansundin.github.io/privatkopiera/"]').forEach((a) => {
+      a.addEventListener("click", () => {
+        setTimeout(window.close, 10)
+      })
+    })
+  }
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
     tab_url = tabs[0].url
