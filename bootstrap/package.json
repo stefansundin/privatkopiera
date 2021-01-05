@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "bootstrap": "4.5.2",
+    "bootstrap": "^4.5.2",
     "sass": "^1.26.10"
   },
   "scripts": {
