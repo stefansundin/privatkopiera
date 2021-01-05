@@ -162,6 +162,10 @@ function api_error(e) {
 
 function download_info(program) {
   const el = $("#info")
+  if (!program) {
+    el.style.visibility = "hidden"
+    return
+  }
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild)
   }
@@ -228,6 +232,9 @@ function update_cmd(e) {
   }
   else if (cmd.value.startsWith("php AdobeHDS.php")) {
     download_info("AdobeHDS")
+  }
+  else {
+    download_info()
   }
 }
 
