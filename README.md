@@ -1,4 +1,4 @@
-Hemsida: https://stefansundin.github.io/privatkopiera/
+Website: https://stefansundin.github.io/privatkopiera/
 
 Chrome Web Store: https://chrome.google.com/webstore/detail/privatkopiera/jhjhnecocacdbhlkjgpdacoibidhmgdf
 
