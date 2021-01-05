@@ -234,7 +234,7 @@ function update_cmd(e) {
   }
 }
 
-function master_callback(length, fn, base_url) {
+function master_callback(length, base_url) {
   return function(text) {
     console.log(text)
 
@@ -289,7 +289,6 @@ function master_callback(length, fn, base_url) {
       const option = document.createElement("option")
       option.value = stream.url
       option.appendChild(document.createTextNode(`${kbps} kbps`))
-      option.setAttribute("data-filename", fn)
       if (ext_x_media["AUDIO"]) {
         option.setAttribute("data-audio-stream", base_url+ext_x_media["AUDIO"]["URI"])
       }

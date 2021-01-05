@@ -36,13 +36,6 @@
 
 function svt_callback(data) {
   console.log(data)
-  let fn
-  if (data.programTitle && data.programTitle != data.episodeTitle) {
-    fn = `${data.programTitle} - ${data.episodeTitle}.mp4`
-  }
-  else {
-    fn = `${data.episodeTitle}.mp4`
-  }
 
   const dropdown = $("#streams")
   const formats = "hls,hds,websrt,webvtt".split(",")
@@ -64,7 +57,6 @@ function svt_callback(data) {
 
     const option = document.createElement("option")
     option.value = stream.url
-    option.setAttribute("data-filename", fn)
     option.appendChild(document.createTextNode(extract_filename(stream.url)))
     if (stream.format == "websrt" || stream.format == "webvtt") {
       option.appendChild(document.createTextNode(" (undertexter)"))
@@ -73,11 +65,16 @@ function svt_callback(data) {
 
     if (stream.format == "hls") {
       const base_url = stream.url.replace(/\/[^/]+$/, "/")
-      fetch(stream.url).then(get_text).then(master_callback(data.contentDuration, fn, base_url)).catch(api_error)
+      fetch(stream.url).then(get_text).then(master_callback(data.contentDuration, base_url)).catch(api_error)
     }
   })
 
-  update_filename(fn)
+  if (data.programTitle && data.programTitle != data.episodeTitle) {
+    update_filename(`${data.programTitle} - ${data.episodeTitle}.mp4`)
+  }
+  else {
+    update_filename(`${data.episodeTitle}.mp4`)
+  }
   update_cmd()
 }
 

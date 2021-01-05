@@ -14,14 +14,6 @@
 
 function nrk_callback(data) {
   console.log(data)
-  let ext = "mp4"
-  if (data.playable.sourceMedium == "audio") {
-    ext = "m4a"
-  }
-  let fn = `${data.title}.${ext}`
-  if (data.preplay && data.preplay.titles) {
-    fn = `${data.preplay.titles.title} - ${data.preplay.titles.subtitle}.${ext}`
-  }
 
   const dropdown = $("#streams")
   let streams = []
@@ -32,7 +24,6 @@ function nrk_callback(data) {
   streams.forEach(function(stream) {
     const option = document.createElement("option")
     option.value = stream.url || stream.webVtt
-    option.setAttribute("data-filename", fn)
     option.appendChild(document.createTextNode(extract_filename(option.value)))
     if (stream.webVtt) {
       option.appendChild(document.createTextNode(` (undertexter ${stream.label})`))
@@ -41,10 +32,18 @@ function nrk_callback(data) {
 
     if (stream.format == "HLS") {
       const base_url = stream.url.replace(/\/[^/]+$/, "/")
-      fetch(stream.url).then(get_text).then(master_callback(parse_pt(data.duration), fn, base_url)).catch(api_error)
+      fetch(stream.url).then(get_text).then(master_callback(parse_pt(data.duration), base_url)).catch(api_error)
     }
   })
 
+  let ext = "mp4"
+  if (data.playable.sourceMedium == "audio") {
+    ext = "m4a"
+  }
+  let fn = `${data.title}.${ext}`
+  if (data.preplay && data.preplay.titles) {
+    fn = `${data.preplay.titles.title} - ${data.preplay.titles.subtitle}.${ext}`
+  }
   update_filename(fn)
   update_cmd()
 }
