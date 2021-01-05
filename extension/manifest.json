@@ -1,6 +1,7 @@
 {
+  "manifest_version": 2,
   "name": "Privatkopiera",
-  "version": "0.2.4",
+  "version": "0.3.0",
   "description": "Ladda ned från play-tjänster. Kräver ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
@@ -23,6 +24,5 @@
   "optional_permissions": [
     "downloads",
     "https://psapi-ne.nrk.no/"
-  ],
-  "manifest_version": 2
+  ]
 }
