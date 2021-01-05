@@ -376,8 +376,19 @@ document.addEventListener("DOMContentLoaded", function() {
     })
   })
 
-  $("#filename").addEventListener("change", update_cmd)
-  $("#streams").addEventListener("change", update_cmd)
+  const cmd = $("#cmd")
+  const cmd_height = localStorage.getItem("cmd-height")
+  if (cmd_height != undefined) {
+    cmd.style.height = cmd_height
+  }
+  new ResizeObserver((entries) => {
+    for (let entry of entries) {
+      localStorage.setItem("cmd-height", entry.target.style.height)
+    }
+  }).observe(cmd)
+
+  $("#streams").addEventListener("input", update_cmd)
+  $("#filename").addEventListener("input", update_cmd)
 
   chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
     tab_url = tabs[0].url

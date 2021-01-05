@@ -17,11 +17,11 @@ h3 {
   padding-bottom: 0.125em;
 }
 
-input[monospace] {
+[monospace] {
   height: 38px;
   font-family: monospace;
 }
-input[pattern]:invalid {
+[pattern]:invalid {
   color: red;
 }
 
@@ -35,6 +35,12 @@ input[pattern]:invalid {
 }
 .input-group.btns > .btn {
   margin-right: 1em;
+}
+
+#cmd {
+  height: 38px;
+  min-height: 38px;
+  max-height: 250px;
 }
 
 .bottom-right-fixed {
