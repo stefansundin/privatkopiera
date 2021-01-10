@@ -58,8 +58,7 @@
       <li><a href="https://tv.nrk.no/">tv.nrk.no</a> och <a href="https://radio.nrk.no/">radio.nrk.no</a></li>
     </ul>
 
-    <p></p>
-    <p></p>
+    <p><strong>Obs:</strong> Undertexter stöds bara på svtplay.se (dock ej direktsändingar) och nrk.no.</p>
 
     <p>Om du tycker om tillägget, lämna gärna en recension för <a href="https://chrome.google.com/webstore/detail/{{ site.extension_name }}/{{ site.extension_id }}/reviews">Chrome-tillägget</a> eller <a href="https://addons.mozilla.org/firefox/addon/{{ site.extension_name }}/reviews/add">Firefox-tillägget</a>. Tack!</p>
 
@@ -129,7 +128,9 @@
 
     <p>Du kan antingen lägga <tt>ffmpeg.exe</tt> filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <tt>PATH</tt>. I Linux och Mac måste du då använda <tt>./ffmpeg</tt> när du startar en nedladdning. I Windows kan du flytta <tt>ffmpeg.exe</tt> till <tt>C:\Windows\</tt> som redan finns i <tt>PATH</tt>.</p>
 
-    <p><strong>Obs:</strong> ffmpeg spottar gärna (och ofta) ur sig varningar. Om programmet fortsätter att köra så bör du ta det lungt, det finns en bra chans att det fungerar ändå. Ha tålamod och ge det en stund.</p>
+    <p>För mer avancerad användning så kan du modifiera kommandot som Privatkopiera ger dig. <a href="https://ffmpeg.org/ffmpeg.html">Se FFmpeg's dokumentationen för hjälp.</a></p>
+
+    <p><strong>Obs:</strong> FFmpeg spottar gärna (och ofta) ur sig varningar. Om programmet fortsätter att köra så bör du ta det lungt, det finns en bra chans att det fungerar ändå. Ha tålamod och ge det en stund.</p>
 
     <p><strong>Obs:</strong> Kör inte kommandon från <tt>C:\</tt> (eller <tt>C:\Windows\</tt>). I nya versioner av Windows så kan inte vanliga användare skriva här. Jag rekommenderar att du kör kommandon från ditt skrivbord. För att navigera till skrivbordet, skriv först "<tt>cd&nbsp;Skrivbord</tt>".</p>
 
@@ -169,11 +170,12 @@ curl https://raw.githubusercontent.com/K-S-V/Scripts/master/AdobeHDS.php > Adobe
 php AdobeHDS.php ...
 {% endhighlight %}
 
-    <p>Om du vill ladda ned en ström med lägre kvalité, använd <tt>--quality low</tt>.</p>
+    <p>Om du vill ladda ned en ström med lägre kvalité, använd <code>--quality low</code>.</p>
 
+    <p>AdobeHDS kan återuppta avbrutna nedladdningar. Du kan också använda <code>--parallel 1</code>.</p>
 
-    <h2 id="tips">Tips vid dålig uppkoppling</h2>
-    <p>Använd AdobeHDS då det går, då den kan återuppta avbrytna nedladdningar. Använd <tt>--parallel 1</tt> och <tt>--quality low</tt>.</p>
+    <h2 id="tips">Tips</h2>
+    <p>Om du ändrar filändelsen till <tt>.mka</tt> så laddas bara ljudet ned. Likaväl kan du använda <tt>.srt</tt> för att bara ladda ned undertexter.</p>
 
     <h2 id="proxy">Proxy</h2>
     <p>För tips angående användning av proxy, <a href="proxy.html">se separat sida</a>.</p>
