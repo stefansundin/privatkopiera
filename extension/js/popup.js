@@ -219,7 +219,16 @@ function update_cmd(e) {
   else if (ext == "m4a") {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`;
   }
-  else if (ext == "srt" && subtitles.length > 0) {
+  else if (stream_ext == "vtt") {
+    if (ext == "mkv" || ext == "mp4") {
+      fn = fn.replace(/\.(mkv|mp4)$/, ".srt");
+    }
+    else if (ext != "srt") {
+      fn += ".srt";
+    }
+    cmd.value = `ffmpeg -i "${url}" "${fn}"`;
+  }
+  else if ((ext == "srt" || ext == "vtt") && subtitles.length > 0) {
     cmd.value = `ffmpeg -i "${subtitles[0]}" "${fn}"`;
   }
   else {

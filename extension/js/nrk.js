@@ -13,26 +13,32 @@
 function nrk_callback(data) {
   console.log(data);
 
-  const dropdown = $("#streams");
-  const streams = [];
+  const streams = $("#streams");
   data.playable.parts.forEach(function(part) {
-    streams.push(...part.assets);
+    part.assets.forEach(function(stream) {
+      const option = document.createElement("option");
+      option.value = stream.url;
+      option.appendChild(document.createTextNode(extract_filename(stream.url)));
+      streams.appendChild(option);
+
+      if (stream.format == "HLS") {
+        const base_url = stream.url.replace(/\/[^/]+$/, "/");
+        fetch(stream.url).then(get_text).then(master_callback(parse_pt(data.duration), base_url)).catch(api_error);
+      }
+    });
+  });
+
+  data.playable.parts.forEach(function(part) {
     subtitles.push(...part.subtitles.map(s => s.webVtt));
-  });
-  console.log(streams);
-  streams.forEach(function(stream) {
-    const option = document.createElement("option");
-    option.value = stream.url;
-    option.appendChild(document.createTextNode(extract_filename(option.value)));
-    dropdown.appendChild(option);
-
-    if (stream.format == "HLS") {
-      const base_url = stream.url.replace(/\/[^/]+$/, "/");
-      fetch(stream.url).then(get_text).then(master_callback(parse_pt(data.duration), base_url)).catch(api_error);
-    }
+    part.subtitles.forEach((s) => {
+      const option = document.createElement("option");
+      option.value = s.webVtt;
+      option.appendChild(document.createTextNode(extract_filename(s.webVtt)));
+      streams.appendChild(option);
+    });
   });
 
-  let ext = "mp4";
+  let ext = "mkv";
   if (data.playable.sourceMedium == "audio") {
     ext = "m4a";
   }
@@ -46,14 +52,14 @@ function nrk_callback(data) {
 
 function nrk_postcast_callback(data) {
   console.log(data);
-  const dropdown = $("#streams");
+  const streams = $("#streams");
   data.downloadables.forEach(function(stream) {
     const ext = extract_extension(stream.audio.url) || "mp3";
     const option = document.createElement("option");
     option.value = stream.audio.url;
     option.setAttribute("data-filename", `${data.titles.title}.${ext}`);
     option.appendChild(document.createTextNode(data.titles.title));
-    dropdown.appendChild(option);
+    streams.appendChild(option);
   });
   update_cmd();
 }

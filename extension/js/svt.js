@@ -36,10 +36,6 @@
 function svt_callback(data) {
   console.log(data);
 
-  if (data.subtitleReferences) {
-    subtitles.push(...data.subtitleReferences.map(s => s.url));
-  }
-
   const formats = "hls,hds".split(",");
   const streams = $("#streams");
   data.videoReferences.filter(function(stream) {
@@ -63,6 +59,16 @@ function svt_callback(data) {
       fetch(stream.url).then(get_text).then(master_callback(data.contentDuration, base_url)).catch(api_error);
     }
   });
+
+  if (data.subtitleReferences) {
+    subtitles.push(...data.subtitleReferences.map(s => s.url));
+    data.subtitleReferences.forEach((s) => {
+      const option = document.createElement("option");
+      option.value = s.url;
+      option.appendChild(document.createTextNode(extract_filename(s.url)));
+      streams.appendChild(option);
+    });
+  }
 
   if (data.programTitle && data.programTitle != data.episodeTitle) {
     update_filename(`${data.programTitle} - ${data.episodeTitle}.mkv`);
