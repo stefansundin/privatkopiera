@@ -216,11 +216,14 @@ function update_cmd(e) {
     }
     label.appendChild(document.createTextNode("URL"));
   }
-  else if (ext == "mka") {
+  else if (ext == "mka" || ext == "aac") {
     cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy "${fn}"`;
   }
   else if (ext == "m4a" ) {
     cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy -absf aac_adtstoasc "${fn}"`;
+  }
+  else if (ext == "mp3" || ext == "ogg") {
+    cmd.value = `ffmpeg -i "${audio_stream || url}" "${fn}"`;
   }
   else if (stream_ext == "vtt") {
     if (ext == "mkv" || ext == "mp4") {
