@@ -328,6 +328,12 @@ function master_callback(length, base_url) {
       }
       dropdown.insertBefore(option, default_option);
     });
+    if (ext_x_media["AUDIO"]) {
+      const option = document.createElement("option");
+      option.value = base_url+ext_x_media["AUDIO"]["URI"];
+      option.appendChild(document.createTextNode(extract_filename(ext_x_media["AUDIO"]["URI"])));
+      dropdown.insertBefore(option, default_option);
+    }
     dropdown.getElementsByTagName("option")[0].selected = true;
     update_cmd();
   }
