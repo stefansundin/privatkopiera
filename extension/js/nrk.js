@@ -40,7 +40,7 @@ function nrk_callback(data) {
 
   let ext = "mkv";
   if (data.playable.sourceMedium == "audio") {
-    ext = "m4a";
+    ext = "mka";
   }
   let fn = `${data.title}.${ext}`;
   if (data.preplay && data.preplay.titles) {
