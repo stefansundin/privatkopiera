@@ -70,10 +70,13 @@ function svt_callback(data) {
     });
   }
 
-  if (data.programTitle && data.programTitle != data.episodeTitle) {
+  if (data.programTitle && data.episodeTitle && data.programTitle != data.episodeTitle) {
     update_filename(`${data.programTitle} - ${data.episodeTitle}.mkv`);
   }
-  else {
+  else if (data.programTitle) {
+    update_filename(`${data.programTitle}.mkv`);
+  }
+  else if (data.episodeTitle) {
     update_filename(`${data.episodeTitle}.mkv`);
   }
   update_cmd();
@@ -126,6 +129,18 @@ matchers.push({
         fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
       });
     });
+  }
+});
+
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/(\d+)/,
+  func: async function(ret, _) {
+    const video_id = ret[1];
+    const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`;
+    update_filename(`${video_id}.mp4`);
+    update_json_url(data_url);
+    console.log(data_url);
+    fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
   }
 });
 
