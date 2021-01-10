@@ -220,7 +220,7 @@ function update_cmd(e) {
     cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`;
   }
   else if (ext == "srt" && subtitles.length > 0) {
-    cmd.value = `ffmpeg -i "${subtitles[0].url}" "${fn}"`;
+    cmd.value = `ffmpeg -i "${subtitles[0]}" "${fn}"`;
   }
   else {
     const inputs = [url];
