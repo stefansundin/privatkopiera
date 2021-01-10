@@ -65,10 +65,10 @@ function svt_callback(data) {
   });
 
   if (data.programTitle && data.programTitle != data.episodeTitle) {
-    update_filename(`${data.programTitle} - ${data.episodeTitle}.mp4`);
+    update_filename(`${data.programTitle} - ${data.episodeTitle}.mkv`);
   }
   else {
-    update_filename(`${data.episodeTitle}.mp4`);
+    update_filename(`${data.episodeTitle}.mkv`);
   }
   update_cmd();
 }
@@ -114,7 +114,7 @@ matchers.push({
         console.log(variant);
         const svtId = variant.svtId;
         const data_url = `https://api.svt.se/video/${svtId}`;
-        update_filename(`${svtId}.mp4`);
+        update_filename(`${svtId}.mkv`);
         update_json_url(data_url);
         console.log(data_url);
         fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
@@ -128,7 +128,7 @@ matchers.push({
   func: async function(_, url) {
     if (ret = /^(?:\/barnkanalen)?\/barnplay\/([^/]+)\/([^/?]+)/.exec(url.pathname)) {
       const data_url = `https://api.svt.se/video/${ret[2]}`;
-      update_filename(`${ret[1]}.mp4`);
+      update_filename(`${ret[1]}.mkv`);
       update_json_url(data_url);
       console.log(data_url);
       fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
@@ -144,7 +144,7 @@ matchers.push({
 
     ids.forEach(function(svtId) {
       const data_url = `https://api.svt.se/video/${svtId}`;
-      update_filename(`${svtId}.mp4`);
+      update_filename(`${svtId}.mkv`);
       update_json_url(data_url);
       console.log(data_url);
       fetch(data_url).then(get_json).then(svt_callback).catch(api_error);

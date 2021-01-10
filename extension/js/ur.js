@@ -40,7 +40,7 @@ function ur_callback(data) {
       dropdown.appendChild(option);
     });
 
-    update_filename(`${data.currentProduct.seriesTitle} - ${data.currentProduct.title}.mp4`);
+    update_filename(`${data.currentProduct.seriesTitle} - ${data.currentProduct.title}.mkv`);
     update_cmd();
   }
 }

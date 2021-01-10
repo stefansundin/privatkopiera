@@ -66,7 +66,7 @@ matchers.push({
   func: function(ret) {
     const video_id = ret[1];
     const data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`;
-    update_filename(`${video_id}.mp4`);
+    update_filename(`${video_id}.mkv`);
     update_json_url(data_url);
 
     console.log(data_url);
@@ -116,7 +116,7 @@ matchers.push({
       console.log(ids);
       flatten(ids).forEach(function(video_id) {
         const data_url = `https://psapi-ne.nrk.no/mediaelement/${video_id}`;
-        update_filename(`${video_id}.mp4`);
+        update_filename(`${video_id}.mkv`);
         update_json_url(data_url);
 
         console.log(data_url);
