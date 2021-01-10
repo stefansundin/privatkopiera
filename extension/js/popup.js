@@ -216,8 +216,11 @@ function update_cmd(e) {
     }
     label.appendChild(document.createTextNode("URL"));
   }
-  else if (ext == "m4a") {
-    cmd.value = `ffmpeg -i "${url}" -acodec copy -absf aac_adtstoasc "${fn}"`;
+  else if (ext == "mka") {
+    cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy "${fn}"`;
+  }
+  else if (ext == "m4a" ) {
+    cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy -absf aac_adtstoasc "${fn}"`;
   }
   else if (stream_ext == "vtt") {
     if (ext == "mkv" || ext == "mp4") {
@@ -237,7 +240,12 @@ function update_cmd(e) {
       inputs.push(audio_stream);
     }
     inputs.push(...subtitles);
-    cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`;
+    if (ext == "mp4") {
+      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`;
+    }
+    else {
+      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy "${fn}"`;
+    }
   }
   cmd.setAttribute("data-url", url);
 
