@@ -27,7 +27,7 @@
 // https://playback-api.b17g.net/media/3946707?service=tv4&device=browser&protocol=hls%2Cdash
 
 function tv4play_asset_callback(data) {
-  update_filename(`${data.metadata.title}.mkv`);
+  update_filename(`${data.metadata.title.trim()}.mkv`);
   const media_url = `https://playback-api.b17g.net${data.mediaUri}`;
   console.log(media_url);
   fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error);

@@ -71,13 +71,13 @@ function svt_callback(data) {
   }
 
   if (data.programTitle && data.episodeTitle && data.programTitle != data.episodeTitle) {
-    update_filename(`${data.programTitle} - ${data.episodeTitle}.mkv`);
+    update_filename(`${data.programTitle.trim()} - ${data.episodeTitle.trim()}.mkv`);
   }
   else if (data.programTitle) {
-    update_filename(`${data.programTitle}.mkv`);
+    update_filename(`${data.programTitle.trim()}.mkv`);
   }
   else if (data.episodeTitle) {
-    update_filename(`${data.episodeTitle}.mkv`);
+    update_filename(`${data.episodeTitle.trim()}.mkv`);
   }
   update_cmd();
 }
