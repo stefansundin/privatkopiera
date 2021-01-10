@@ -241,10 +241,10 @@ function update_cmd(e) {
     }
     inputs.push(...subtitles);
     if (ext == "mp4") {
-      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy -absf aac_adtstoasc "${fn}"`;
+      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -vcodec copy -acodec copy -absf aac_adtstoasc "${fn}"`;
     }
     else {
-      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -acodec copy -vcodec copy "${fn}"`;
+      cmd.value = `ffmpeg ${inputs.map(url => `-i "${url}"`).join(" ")} -vcodec copy -acodec copy "${fn}"`;
     }
   }
   cmd.setAttribute("data-url", url);
