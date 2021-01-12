@@ -45,7 +45,7 @@ h3 {
 
 .bottom-right-fixed {
   position: fixed;
-  bottom: 1em;
-  right: 1em;
+  bottom: 0.2em;
+  right: 0.5em;
   user-select: none;
 }
