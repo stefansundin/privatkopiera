@@ -105,7 +105,8 @@ function update_json_url(url) {
 }
 
 function call_func() {
-  if (ret = site.re.exec(tab_url)) {
+  let ret = site.re.exec(tab_url);
+  if (ret) {
     site.func(ret, url);
   }
 }
@@ -449,11 +450,14 @@ document.addEventListener("DOMContentLoaded", function() {
             $("#streams").disabled = true;
             $("#filename").disabled = true;
             $("#cmd").disabled = true;
+            error("Fler behörigheter krävs för den här sidan.");
           }
         });
-        return true;
+        return;
       }
-      call_func();
+      else {
+        call_func();
+      }
     }
     else {
       error("Fel: Den här hemsidan stöds ej.");
