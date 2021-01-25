@@ -13,6 +13,9 @@ figure.highlight pre {
 }
 
 .container {
+  padding: 1em 0;
+}
+navbar .container {
   padding: 0;
 }
 
@@ -42,7 +45,7 @@ header h2 {
 
 h2 {
   border-bottom: 1px solid #ccc;
-  margin-top: 1.5em;
+  margin-top: 1em;
   padding-bottom: 0.125em;
 }
 
