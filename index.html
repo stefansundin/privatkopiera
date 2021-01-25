@@ -30,6 +30,10 @@
       <strong>Observera:</strong> Tillägget är endast testat med <a href="https://www.google.com/chrome/">Chrome</a> och <a href="https://getfirefox.com/">Firefox</a>.
     </div>
 
+    <div class="alert alert-info" role="alert">
+      <strong>Är du bra på att göra film?</strong> Jag letar efter någon som kan spela in en kort instruktionsfilm till Privatkopiera, som kan bäddas in direkt här på hemsidan. Om du är intresserad, <a href="https://github.com/stefansundin/privatkopiera/discussions/63">läs mer här</a>.
+    </div>
+
     <h2 id="intro">Hur fungerar Privatkopiera?</h2>
 
     <p>Tillägget tar reda på vilka addresser du kan använda för att ladda ned videoklipp från ett antal Play-tjänster.</p>
@@ -107,7 +111,7 @@
 
     <p>Observera att Chrome har en obligatorisk granskningsprocess för nya versioner. Därför får Chrome uppdateringen först några dagar efter att nyheten är skriven.</p>
 
-    {% for post in site.posts limit:2 %}
+    {% for post in site.posts limit:3 %}
     <p><strong>{{ post.date | date: "%Y-%m-%d" }} - {{ post.title }}</strong></p>
     <div class="post-body">{{ post.content }}</div>
     {% endfor %}
