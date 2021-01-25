@@ -96,7 +96,7 @@ function parse_pt(pt) {
 
 function update_filename(fn) {
   // replace illegal characters
-  $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?"<>|!]/g, '').replace(/\t+/, ' ');
+  $("#filename").value = fn.replace(/[/\\:]/g, '-').replace(/[*?<>|!]/g, '').replace(/\t+/, ' ');
 }
 
 function update_json_url(url) {
@@ -199,7 +199,7 @@ function update_cmd(e) {
 
   const cmd = $("#cmd");
   const url = streams.value;
-  let fn = filename.value;
+  let fn = filename.value.replace(/"/g, '\\"');
   const ext = extract_extension(fn);
   const stream_fn = extract_filename(url);
   const stream_ext = extract_extension(url);
