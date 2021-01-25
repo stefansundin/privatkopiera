@@ -1,33 +1,35 @@
 // https://urplay.se/program/193738-amanda-langtar-sommaren
-// <div data-react-class="components/Player/Player" data-react-props="{...........}">
+// <div data-react-class="routes/Product/components/ProgramContainer/ProgramContainer" data-react-props="{...........}">
 // https://streaming10.ur.se/urplay/_definst_/mp4:193000-193999/193738-22.mp4/playlist.m3u8
 
 function ur_callback(data) {
+  const program = data.program;
+
   return function(lb_data) {
     const domain = lb_data.redirect;
     const streams = [];
-    if (data.currentProduct.streamingInfo.sweComplete && data.currentProduct.streamingInfo.sweComplete.hd) {
+    if (program.streamingInfo.sweComplete && program.streamingInfo.sweComplete.hd) {
       streams.push({
         info: "HD med undertexter",
-        url: `https://${domain}/${data.currentProduct.streamingInfo.sweComplete.hd.location}playlist.m3u8`
+        url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`
       });
     }
-    if (data.currentProduct.streamingInfo.raw && data.currentProduct.streamingInfo.raw.hd) {
+    if (program.streamingInfo.raw && program.streamingInfo.raw.hd) {
       streams.push({
         info: "HD",
-        url: `https://${domain}/${data.currentProduct.streamingInfo.raw.hd.location}playlist.m3u8`
+        url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`
       });
     }
-    if (data.currentProduct.streamingInfo.sweComplete && data.currentProduct.streamingInfo.sweComplete.sd) {
+    if (program.streamingInfo.sweComplete && program.streamingInfo.sweComplete.sd) {
       streams.push({
         info: "SD med undertexter",
-        url: `https://${domain}/${data.currentProduct.streamingInfo.sweComplete.sd.location}playlist.m3u8`
+        url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`
       });
     }
-    if (data.currentProduct.streamingInfo.raw && data.currentProduct.streamingInfo.raw.sd) {
+    if (program.streamingInfo.raw && program.streamingInfo.raw.sd) {
       streams.push({
         info: "SD",
-        url: `https://${domain}/${data.currentProduct.streamingInfo.raw.sd.location}playlist.m3u8`
+        url: `https://${domain}/${program.streamingInfo.raw.sd.location}playlist.m3u8`
       });
     }
     console.log(streams);
@@ -40,7 +42,7 @@ function ur_callback(data) {
       dropdown.appendChild(option);
     });
 
-    update_filename(`${data.currentProduct.seriesTitle.trim()} - ${data.currentProduct.title.trim()}.mkv`);
+    update_filename(`${program.seriesTitle.trim()} - ${program.title.trim()}.mkv`);
     update_cmd();
   }
 }
@@ -50,7 +52,7 @@ matchers.push({
   func: function(ret) {
     chrome.tabs.executeScript({
       code: `(function(){
-        return document.querySelector("div[data-react-class='components/Player/Player']").getAttribute("data-react-props");
+        return document.querySelector("div[data-react-class='routes/Product/components/ProgramContainer/ProgramContainer']").getAttribute("data-react-props");
       })()`
     }, function(ret) {
       console.log(ret);
