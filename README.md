@@ -19,5 +19,5 @@ yarn run build
 If you have trouble building it, you can get the default Bootstrap theme by running:
 
 ```
-curl -o extension/css/bootstrap.min.css https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css
+curl -f -o extension/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css
 ```
