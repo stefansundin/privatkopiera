@@ -11,6 +11,7 @@
 // https://www.svtplay.se/kanaler/svtbarn
 // https://www.svtplay.se/kanaler/kunskapskanalen
 // https://www.svtplay.se/kanaler/svt24
+// https://www.svtplay.se/kanaler?selectedChannel=svt1
 // Data URL:
 // https://api.svt.se/video/ch-svt1
 // https://api.svt.se/video/ch-svt2
@@ -83,9 +84,9 @@ function svt_callback(data) {
 }
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/kanaler\/([^\/?]+)/,
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/kanaler(?:\/([^\/?]+)|\?selectedChannel=([^\/?]+))/,
   func: (ret, _) => {
-    let ch = ret[1];
+    let ch = ret[1] || ret[2];
     if (ch == "svtbarn") {
       ch = "barnkanalen";
     }
