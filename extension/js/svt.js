@@ -102,26 +102,21 @@ matchers.push({
   } : null,
   func: (_, url) => {
     fetch(url.toString()).then(get_text).then((text) => {
-      const re = /root\['__svtplay_apollo'\] = ({.+})/.exec(text);
+      const re = /<script id="__NEXT_DATA__" type="application\/json">({.+})<\/script>/.exec(text);
       if (!re) {
         return
       }
-      const apollo = JSON.parse(re[1]);
-      console.log(apollo);
-      const root = apollo["ROOT_QUERY"];
-      console.log(root);
+      const data = JSON.parse(re[1]);
+      console.log(data);
 
-      const ids = Array.from(new Set(flatten(
-        Object.entries(root).filter(([key, value]) => {
-          return key.startsWith("listablesByEscenicId");
-        }).map(([key, value]) => {
-          console.log(key,value);
-          return value.map(v => v.id);
-        }))));
+      const ids = flatten(
+        Object.values(data.props.urqlState)
+          .map(o => JSON.parse(o.data))
+          .filter(o => "listablesByEscenicId" in o)
+          .map(o => o["listablesByEscenicId"])
+      ).filter(o => "videoSvtId" in o).map(o => o["videoSvtId"]);
       console.log(ids);
-      ids.map(id => apollo[id]).filter(v => v !== undefined).forEach((variant) => {
-        console.log(variant);
-        const svtId = variant.svtId;
+      ids.forEach((svtId) => {
         const data_url = `https://api.svt.se/video/${svtId}`;
         update_filename(`${svtId}.mkv`);
         update_json_url(data_url);
