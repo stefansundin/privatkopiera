@@ -97,40 +97,39 @@ matchers.push({
 });
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
-  permissions: isFirefox ? {
-    origins: ["https://www.svtplay.se/"],
-  } : null,
-  func: (_, url) => {
-    fetch(url.toString()).then(get_text).then((text) => {
-      const re = /<script id="__NEXT_DATA__" type="application\/json">({.+})<\/script>/.exec(text);
-      if (!re) {
-        return
-      }
-      const data = JSON.parse(re[1]);
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/video\/(\d+)/,
+  func: (ret, _) => {
+    console.log(ret);
+    const legacyId = parseInt(ret[1], 10);
+    fetch("https://api.svt.se/contento/graphql", {
+      method: "POST",
+      body: JSON.stringify({
+        "query": `
+          query VideoPage($legacyIds: [Int!]!) {
+            listablesByEscenicId(escenicIds: $legacyIds) {
+              videoSvtId
+            }
+          }
+        `.replace(/\s*\n\s*/g, " ").trim(),
+        "variables": {
+          "legacyIds": [legacyId],
+        },
+      }),
+    }).then(get_json).then((data) => {
       console.log(data);
-
-      const ids = flatten(
-        Object.values(data.props.urqlState)
-          .map(o => JSON.parse(o.data))
-          .filter(o => "listablesByEscenicId" in o)
-          .map(o => o["listablesByEscenicId"])
-      ).filter(o => "videoSvtId" in o).map(o => o["videoSvtId"]);
-      console.log(ids);
-      ids.forEach((svtId) => {
-        const data_url = `https://api.svt.se/video/${svtId}`;
-        update_filename(`${svtId}.mkv`);
-        update_json_url(data_url);
-        console.log(data_url);
-        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
-      });
+      const svtId = data["data"]["listablesByEscenicId"][0]["videoSvtId"];
+      const data_url = `https://api.svt.se/video/${svtId}`;
+      update_filename(`${svtId}.mkv`);
+      update_json_url(data_url);
+      console.log(data_url);
+      fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
     });
   }
 });
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/(\d+)/,
-  func: async function(ret, _) {
+  func: function(ret, _) {
     const video_id = ret[1];
     const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`;
     update_filename(`${video_id}.mp4`);
