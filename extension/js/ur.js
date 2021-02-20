@@ -2,6 +2,8 @@
 // <div data-react-class="routes/Product/components/ProgramContainer/ProgramContainer" data-react-props="{...........}">
 // https://streaming10.ur.se/urplay/_definst_/mp4:193000-193999/193738-22.mp4/playlist.m3u8
 
+// https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
+
 function ur_callback(data) {
   const program = data.program;
 
@@ -42,7 +44,11 @@ function ur_callback(data) {
       dropdown.appendChild(option);
     });
 
-    update_filename(`${program.seriesTitle.trim()} - ${program.title.trim()}.mkv`);
+    let fn = `${program.title?.trim()}.mkv`;
+    if (program.seriesTitle) {
+      fn = `${program.seriesTitle.trim()} - ${fn}`;
+    }
+    update_filename(fn);
     update_cmd();
   }
 }
