@@ -4,6 +4,9 @@
 // Data URL:
 // https://api.svt.se/video/jBDqx98
 //
+// https://www.svtplay.se/klipp/22725758/har-ar-historien-bakom-sma-grodorna
+// https://api.svt.se/video/K16XLAL
+//
 // SVT Play Live:
 // Example URL:
 // https://www.svtplay.se/kanaler/svt1
@@ -97,7 +100,7 @@ matchers.push({
 });
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/video\/(\d+)/,
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?[^\d]+\/(\d+)/,
   func: (ret, _) => {
     console.log(ret);
     const legacyId = parseInt(ret[1], 10);
