@@ -26,9 +26,10 @@
     "https://psapi-ne.nrk.no/",
     "https://sverigesradio.se/"
   ],
-  "applications": {
+  "browser_specific_settings": {
     "gecko": {
-      "id": "privatkopiera@firefox.stefansundin.com"
+      "id": "privatkopiera@firefox.stefansundin.com",
+      "strict_min_version": "75.0"
     }
   }
 }
