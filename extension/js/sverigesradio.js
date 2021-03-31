@@ -70,7 +70,7 @@ matchers.push({
         option.appendChild(document.createTextNode(stream.title));
         dropdown.appendChild(option);
 
-        const data_url = `https://sverigesradio.se/sida/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
+        const data_url = `https://sverigesradio.se/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
         update_json_url(data_url);
 
         console.log(data_url);
