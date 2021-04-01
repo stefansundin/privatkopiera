@@ -30,6 +30,9 @@
 // Media Data URL:
 // https://api.svt.se/video/jE4x6LA
 //
+// https://www.svt.se/recept/saffransrisotto-med-artor-och-vitt-vin
+// https://api.svt.se/videoplayer-api/video/27121781
+//
 // Example URL:
 // https://www.svt.se/barnkanalen/barnplay/bolibompa-drakens-tradgard/KG5RQPG
 // Clicking play on the main episode redirects to this URL that is missing "/barnkanalen" (probably a react bug?)
@@ -139,6 +142,38 @@ matchers.push({
     update_json_url(data_url);
     console.log(data_url);
     fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+  }
+});
+
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
+  func: function(_, url) {
+    chrome.tabs.executeScript({
+      code: `(function(){
+        const ids = [];
+        const videos = document.querySelectorAll("[data-video-id]");
+        for (let i=0; i < videos.length; i++) {
+          const id = videos[i].getAttribute("data-video-id");
+          if (id) {
+            ids.push(id);
+          }
+        }
+        return ids;
+      })()`
+    }, function(ids) {
+      console.log(ids);
+      ids = flatten(ids);
+      ids.forEach(function(video_id) {
+        const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`;
+        update_filename(`${video_id}.mp4`);
+        update_json_url(data_url);
+        console.log(data_url);
+        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+      });
+      if (ids.length == 0) {
+        error("Hittade ingen video.");
+      }
+    });
   }
 });
 
