@@ -252,6 +252,7 @@ function update_cmd(e) {
     }
   }
   cmd.setAttribute("data-url", url);
+  cmd.dispatchEvent(new Event("input"));
 
   if (cmd.value.startsWith("ffmpeg")) {
     download_info("FFmpeg");
@@ -358,17 +359,20 @@ document.addEventListener("DOMContentLoaded", function() {
     $("#expand").click();
   }
 
+  $("#cmd").addEventListener("input", function(e) {
+    $("#copy").disabled = (e.target.value.length == 0);
+    $("#copy").textContent = "Kopiera kommando";
+  });
+
   $("#copy").addEventListener("click", function(e) {
     e.preventDefault();
     const cmd = $("#cmd");
     if (e.shiftKey) {
       // copy only the URL if the shift key is held
-      const url = cmd.getAttribute("data-url");
-      cmd.value = url;
+      cmd.value = cmd.getAttribute("data-url");
     }
-    cmd.select();
-    document.execCommand("copy");
-    cmd.blur();
+    navigator.clipboard.writeText(cmd.value);
+    $("#copy").textContent = "Kopierat!";
   });
 
   $("#grant_permissions").addEventListener("click", function(e) {

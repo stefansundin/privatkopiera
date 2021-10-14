@@ -43,6 +43,10 @@ h3 {
   max-height: 250px;
 }
 
+#copy {
+  min-width: 175px;
+}
+
 .bottom-right-fixed {
   position: fixed;
   bottom: 0.2em;
