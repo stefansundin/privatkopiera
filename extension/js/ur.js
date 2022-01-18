@@ -1,5 +1,5 @@
 // https://urplay.se/program/193738-amanda-langtar-sommaren
-// <div data-react-class="routes/Product/components/ProgramContainer/ProgramContainer" data-react-props="{...........}">
+// <script id="__NEXT_DATA__" type="application/json">{"props":...........}</script>
 // https://streaming10.ur.se/urplay/_definst_/mp4:193000-193999/193738-22.mp4/playlist.m3u8
 
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
@@ -58,7 +58,7 @@ matchers.push({
   func: function(ret) {
     chrome.tabs.executeScript({
       code: `(function(){
-        return document.querySelector("div[data-react-class='routes/Product/components/ProgramContainer/ProgramContainer']").getAttribute("data-react-props");
+        return document.querySelector("#__NEXT_DATA__").textContent;
       })()`
     }, function(ret) {
       console.log(ret);
@@ -67,7 +67,7 @@ matchers.push({
         console.log(data);
 
         const lb_url = "https://streaming-loadbalancer.ur.se/loadbalancer.json";
-        fetch(lb_url).then(get_json).then(ur_callback(data)).catch(api_error);
+        fetch(lb_url).then(get_json).then(ur_callback(data.props.pageProps)).catch(api_error);
       });
     });
   }
