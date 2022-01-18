@@ -110,6 +110,25 @@ kbd {
   user-select: none;
 }
 
+// bootstrap v5 overrides
+:root {
+  scroll-behavior: auto;
+}
+.btn-light:hover {
+  background-color: #e2e6ea;
+  border-color: #dae0e5;
+}
+.form-check-input:focus {
+  box-shadow: none;
+}
+.form-check-input:indeterminate {
+  appearance: auto;
+}
+figure.highlight pre {
+  color: var(--bs-body-color) !important;
+}
+
+
 @import
   "jekyll"
 ;
