@@ -1,7 +1,7 @@
 {
   "dependencies": {
-    "bootstrap": "^4.6.0",
-    "sass": "~1.32.13"
+    "bootstrap": "^4.6.1",
+    "sass": "^1.48.0"
   },
   "scripts": {
     "build": "sass --style compressed bootstrap.scss > ../extension/css/bootstrap.min.css"
