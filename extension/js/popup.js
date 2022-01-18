@@ -217,7 +217,13 @@ function update_cmd(e) {
     }
     label.appendChild(document.createTextNode("URL"));
   }
-  else if (ext == "mka" || ext == "aac") {
+  else if (stream_fn.endsWith("_a.m3u8") || ext == "mka" || ext == "aac") {
+    if (ext == "mkv") {
+      fn = fn.replace(".mkv", ".mka");
+    }
+    else if (ext == "mp4") {
+      fn = fn.replace(".mp4", ".m4a");
+    }
     cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy "${fn}"`;
   }
   else if (ext == "m4a" ) {
@@ -235,7 +241,10 @@ function update_cmd(e) {
     }
     cmd.value = `ffmpeg -i "${url}" "${fn}"`;
   }
-  else if ((ext == "srt" || ext == "vtt") && subtitles.length > 0) {
+  else if (subtitles.length > 0 && (ext == "srt" || ext == "vtt" || url == subtitles[0])) {
+    if (ext == "mkv") {
+      fn = fn.replace(".mkv", ".srt");
+    }
     cmd.value = `ffmpeg -i "${subtitles[0]}" "${fn}"`;
   }
   else {
@@ -323,13 +332,16 @@ function master_callback(length, base_url) {
       if (ext_x_media["AUDIO"]) {
         option.setAttribute("data-audio-stream", base_url+ext_x_media["AUDIO"]["URI"]);
       }
+      const info = [];
       if (stream.params["RESOLUTION"]) {
-        let info = stream.params["RESOLUTION"];
-        if (length) {
-          // the calculation is off by about 5%, probably because of audio and overhead
-          info += `, ~${fmt_filesize(1.05*length*stream.bitrate/8)}`;
-        }
-        option.appendChild(document.createTextNode(` (${info})`));
+        info.push(stream.params["RESOLUTION"]);
+      }
+      if (length) {
+        // the calculation is off by about 5%, probably because of audio and overhead
+        info.push(`~${fmt_filesize(1.05*length*stream.bitrate/8)}`);
+      }
+      if (info.length != 0) {
+        option.appendChild(document.createTextNode(` (${info.join(',')})`));
       }
       dropdown.insertBefore(option, default_option);
     });

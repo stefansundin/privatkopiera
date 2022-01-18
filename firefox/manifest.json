@@ -23,7 +23,7 @@
   ],
   "optional_permissions": [
     "downloads",
-    "https://psapi-ne.nrk.no/",
+    "https://psapi.nrk.no/",
     "https://sverigesradio.se/"
   ],
   "browser_specific_settings": {

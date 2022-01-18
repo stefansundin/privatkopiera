@@ -23,6 +23,6 @@
   ],
   "optional_permissions": [
     "downloads",
-    "https://psapi-ne.nrk.no/"
+    "https://psapi.nrk.no/"
   ]
 }
