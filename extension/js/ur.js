@@ -29,7 +29,7 @@ function ur_callback(data) {
         url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`
       });
     }
-    if (program.streamingInfo.raw && program.streamingInfo) {
+    if (program.streamingInfo.raw) {
       for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
         const url = `https://${domain}/${value.location}playlist.m3u8`;
         if (streams.some(s => s.url === url)) {
