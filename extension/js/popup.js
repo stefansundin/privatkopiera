@@ -165,7 +165,7 @@ function download_info(program) {
   const el = $("#info");
   if (!program) {
     el.style.visibility = "hidden";
-    return
+    return;
   }
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild);
@@ -188,6 +188,10 @@ function update_cmd(e) {
   const filename = $("#filename");
   const streams = $("#streams");
   const stream = streams.selectedOptions[0];
+  if (!stream) {
+    error("Hittade ingen video. Har programmet sänts än?");
+    return;
+  }
   const audio_stream = stream.getAttribute("data-audio-stream");
 
   if ((e && e.target == streams) || filename.value == "") {
@@ -341,7 +345,7 @@ function master_callback(length, base_url) {
         info.push(`~${fmt_filesize(1.05*length*stream.bitrate/8)}`);
       }
       if (info.length != 0) {
-        option.appendChild(document.createTextNode(` (${info.join(',')})`));
+        option.appendChild(document.createTextNode(` (${info.join(', ')})`));
       }
       dropdown.insertBefore(option, default_option);
     });
