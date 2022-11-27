@@ -8,16 +8,18 @@ Icon: https://commons.wikimedia.org/wiki/File:VHS_diagonal.svg
 
 ## Development
 
-To build the custom Bootstrap theme, run:
+To build the custom Bootstrap theme you need Node.js installed and then you can run:
 
 ```
 cd bootstrap
-yarn install
-yarn run build
+npm install
+npm run build
 ```
 
-If you have trouble building it, you can get the default Bootstrap theme by running:
+If you don't have Node.js or you don't want it, then you can get the default Bootstrap theme by running:
 
 ```
-curl -f -o extension/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@4.6.0/dist/css/bootstrap.min.css
+curl -f -o extension/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css
 ```
+
+Or just download the file and put it there manually.
