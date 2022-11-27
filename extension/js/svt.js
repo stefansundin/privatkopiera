@@ -109,7 +109,7 @@ matchers.push({
 });
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/video\/([a-zA-Z0-9]+)\//,
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/(?:video|klipp)\/([a-zA-Z0-9]+)\//,
   func: (ret, _) => {
     console.log(ret);
     const videoId = ret[1];
