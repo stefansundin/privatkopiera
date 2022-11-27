@@ -1,11 +1,16 @@
 // SVT Play:
 // Example URL:
+// https://www.svtplay.se/video/e7Yd7x9/rapport/igar-22-00?id=e7Yd7x9
+// Data URL:
+// https://api.svt.se/video/e7Yd7x9
+//
+// Example URL:
 // https://www.svtplay.se/video/2520376/pippi-langstrump/pippi-langstrump-sasong-1-avsnitt-1
 // Data URL:
-// https://api.svt.se/video/jBDqx98
+// https://api.svt.se/video/2520376
 //
 // https://www.svtplay.se/klipp/22725758/har-ar-historien-bakom-sma-grodorna
-// https://api.svt.se/video/K16XLAL
+// https://api.svt.se/video/22725758
 //
 // SVT Play Live:
 // Example URL:
@@ -30,15 +35,16 @@
 // Media Data URL:
 // https://api.svt.se/video/jE4x6LA
 //
+// https://www.svt.se/recept/julvort
+// Trasig!
+//
 // https://www.svt.se/recept/saffransrisotto-med-artor-och-vitt-vin
 // https://api.svt.se/videoplayer-api/video/27121781
 //
 // Example URL:
-// https://www.svt.se/barnkanalen/barnplay/bolibompa-drakens-tradgard/KG5RQPG
-// Clicking play on the main episode redirects to this URL that is missing "/barnkanalen" (probably a react bug?)
-// https://www.svt.se/barnplay/bolibompa-drakens-tradgard/KG5RQPG
+// https://www.svt.se/barnkanalen/barnplay/gamingdrommar-live/j1a3m2y/
 // Media Data URL:
-// https://api.svt.se/video/KG5RQPG
+// https://api.svt.se/video/j1a3m2y
 
 function svt_callback(data) {
   console.log(data);
@@ -103,33 +109,15 @@ matchers.push({
 });
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?[^\d]+\/(\d+)/,
+  re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/video\/([a-zA-Z0-9]+)\//,
   func: (ret, _) => {
     console.log(ret);
-    const legacyId = parseInt(ret[1], 10);
-    fetch("https://api.svt.se/contento/graphql", {
-      method: "POST",
-      body: JSON.stringify({
-        "query": `
-          query VideoPage($legacyIds: [Int!]!) {
-            listablesByEscenicId(escenicIds: $legacyIds) {
-              videoSvtId
-            }
-          }
-        `.replace(/\s*\n\s*/g, " ").trim(),
-        "variables": {
-          "legacyIds": [legacyId],
-        },
-      }),
-    }).then(get_json).then((data) => {
-      console.log(data);
-      const svtId = data["data"]["listablesByEscenicId"][0]["videoSvtId"];
-      const data_url = `https://api.svt.se/video/${svtId}`;
-      update_filename(`${svtId}.mkv`);
-      update_json_url(data_url);
-      console.log(data_url);
-      fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
-    });
+    const videoId = ret[1];
+    const data_url = `https://api.svt.se/video/${videoId}`;
+    update_filename(`${videoId}.mkv`);
+    update_json_url(data_url);
+    console.log(data_url);
+    fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
   }
 });
 
