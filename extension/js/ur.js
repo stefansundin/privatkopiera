@@ -3,6 +3,7 @@
 // https://streaming10.ur.se/urplay/_definst_/mp4:193000-193999/193738-22.mp4/playlist.m3u8
 
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
+// https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
 function ur_callback(data) {
   const program = data.program;
@@ -28,11 +29,17 @@ function ur_callback(data) {
         url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`
       });
     }
-    if (program.streamingInfo.raw && program.streamingInfo.raw.sd) {
-      streams.push({
-        info: "SD",
-        url: `https://${domain}/${program.streamingInfo.raw.sd.location}playlist.m3u8`
-      });
+    if (program.streamingInfo.raw && program.streamingInfo) {
+      for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
+        const url = `https://${domain}/${value.location}playlist.m3u8`;
+        if (streams.some(s => s.url === url)) {
+          continue;
+        }
+        streams.push({
+          info: key.toUpperCase(),
+          url: url,
+        });
+      }
     }
     console.log(streams);
 
