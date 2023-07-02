@@ -19,7 +19,9 @@
     "default_popup": "popup.html"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "cookies",
+    "https://www.tv4play.se"
   ],
   "optional_permissions": [
     "downloads",
