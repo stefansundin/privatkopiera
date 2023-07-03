@@ -1,9 +1,11 @@
 const default_options = {
-  default_file_extension: 'mkv',
+  default_video_file_extension: 'mkv',
+  default_audio_file_extension: 'mka',
 };
 
 const options = {
-  default_file_extension: localStorage.default_file_extension || default_options.default_file_extension,
+  default_video_file_extension: localStorage.default_video_file_extension || default_options.default_video_file_extension,
+  default_audio_file_extension: localStorage.default_audio_file_extension || default_options.default_audio_file_extension,
 };
 
 const version = `v${chrome.runtime.getManifest().version}`;

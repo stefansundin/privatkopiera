@@ -84,13 +84,13 @@ function svt_callback(data) {
   }
 
   if (data.programTitle && data.episodeTitle && data.programTitle != data.episodeTitle) {
-    update_filename(`${data.programTitle.trim()} - ${data.episodeTitle.trim()}.${options.default_file_extension}`);
+    update_filename(`${data.programTitle.trim()} - ${data.episodeTitle.trim()}.${options.default_video_file_extension}`);
   }
   else if (data.programTitle) {
-    update_filename(`${data.programTitle.trim()}.${options.default_file_extension}`);
+    update_filename(`${data.programTitle.trim()}.${options.default_video_file_extension}`);
   }
   else if (data.episodeTitle) {
-    update_filename(`${data.episodeTitle.trim()}.${options.default_file_extension}`);
+    update_filename(`${data.episodeTitle.trim()}.${options.default_video_file_extension}`);
   }
   update_cmd();
 }
@@ -114,7 +114,7 @@ matchers.push({
     console.log(ret);
     const videoId = ret[1];
     const data_url = `https://api.svt.se/video/${videoId}`;
-    update_filename(`${videoId}.${options.default_file_extension}`);
+    update_filename(`${videoId}.${options.default_video_file_extension}`);
     update_json_url(data_url);
     console.log(data_url);
     fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
@@ -170,7 +170,7 @@ matchers.push({
   func: async function(_, url) {
     if (ret = /^(?:\/barnkanalen)?\/barnplay\/([^/]+)\/([^/?]+)/.exec(url.pathname)) {
       const data_url = `https://api.svt.se/video/${ret[2]}`;
-      update_filename(`${ret[1]}.${options.default_file_extension}`);
+      update_filename(`${ret[1]}.${options.default_video_file_extension}`);
       update_json_url(data_url);
       console.log(data_url);
       fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
@@ -186,7 +186,7 @@ matchers.push({
 
     ids.forEach(function(svtId) {
       const data_url = `https://api.svt.se/video/${svtId}`;
-      update_filename(`${svtId}.${options.default_file_extension}`);
+      update_filename(`${svtId}.${options.default_video_file_extension}`);
       update_json_url(data_url);
       console.log(data_url);
       fetch(data_url).then(get_json).then(svt_callback).catch(api_error);

@@ -24,7 +24,7 @@ function tv4play_asset_callback(data) {
 }
 
 function tv4play_media_callback(data) {
-  update_filename(`${data.metadata.title.trim()}.${options.default_file_extension}`);
+  update_filename(`${data.metadata.title.trim()}.${options.default_video_file_extension}`);
   update_json_url(data.playbackItem.manifestUrl);
 
   const dropdown = $("#streams");
@@ -46,7 +46,7 @@ matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp)\/([0-9a-f]+)/,
   func: function(ret) {
     const video_id = ret[1];
-    update_filename(`${video_id}.${options.default_file_extension}`);
+    update_filename(`${video_id}.${options.default_video_file_extension}`);
 
     chrome.tabs.executeScript({
       code: `document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith("tv4-refresh-token="))?.split("=")[1]`
@@ -90,7 +90,7 @@ matchers.push({
     // This does not work on new URLs
     const video_id = ret[1];
     const data_url = `https://playback2.a2d.tv/asset/${video_id}?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets`;
-    update_filename(`${video_id}.${options.default_file_extension}`);
+    update_filename(`${video_id}.${options.default_video_file_extension}`);
     update_json_url(data_url);
 
     console.log(data_url);

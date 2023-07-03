@@ -31,7 +31,7 @@ matchers.push({
       const token = tokens[0].value;
 
       const data_url = `https://isl.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
-      update_filename(`${title}.${options.default_file_extension}`);
+      update_filename(`${title}.${options.default_video_file_extension}`);
 
       console.log(data_url);
       fetch(data_url, {

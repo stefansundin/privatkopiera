@@ -1,19 +1,24 @@
 const default_options = {
-  default_file_extension: 'mkv',
+  default_video_file_extension: 'mkv',
+  default_audio_file_extension: 'mka',
 };
 
 const options = {
-  default_file_extension: localStorage.default_file_extension || default_options.default_file_extension,
+  default_video_file_extension: localStorage.default_video_file_extension || default_options.default_video_file_extension,
+  default_audio_file_extension: localStorage.default_audio_file_extension || default_options.default_audio_file_extension,
 };
 
 document.addEventListener('DOMContentLoaded', async () => {
-  const default_file_extension_input = document.getElementById('default_file_extension');
+  const default_video_file_extension_input = document.getElementById('default_video_file_extension');
+  const default_audio_file_extension_input = document.getElementById('default_audio_file_extension');
   const save_button = document.getElementById('save');
 
-  default_file_extension_input.value = options.default_file_extension;
+  default_video_file_extension_input.value = options.default_video_file_extension;
+  default_audio_file_extension_input.value = options.default_audio_file_extension;
 
   save_button.addEventListener('click', async () => {
-    localStorage.default_file_extension = default_file_extension_input.value;
+    localStorage.default_video_file_extension = default_video_file_extension_input.value;
+    localStorage.default_audio_file_extension = default_audio_file_extension_input.value;
   });
 
   for (const input of document.querySelectorAll("input[type='text']")) {
@@ -26,7 +31,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   document.getElementById('reset').addEventListener('click', async () => {
-    delete localStorage.default_file_extension;
-    default_file_extension_input.value = default_options.default_file_extension;
+    delete localStorage.default_video_file_extension;
+    delete localStorage.default_audio_file_extension;
+    default_video_file_extension_input.value = default_options.default_video_file_extension;
+    default_audio_file_extension_input.value = default_options.default_audio_file_extension;
   });
 });
