@@ -1,21 +1,29 @@
 // TV4
 // Example URL:
-// https://www.tv4play.se/video/35e58882dbdd430da786/cornelia-jakobs
+// https://www.tv4.se/klipp/va/3349622/namen-har-sover-peter-dalle-under-tommy-korbergs-framtradande
 // Data URL:
+// https://playback2.a2d.tv/asset/3349622?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets
+// https://playback2.a2d.tv/play/3349622?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets
+//
+// TV4 Play
+// Example URL: (login not required)
+// https://www.tv4play.se/klipp/040fd805b89cd0bae2c3
+// Data URL:
+// https://playback2.a2d.tv/play/040fd805b89cd0bae2c3?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=MozillaFirefox&capabilities=live-drm-adstitch-2%2Cyospace3
+// https://vod.streaming.a2d.tv/93160d0a-55ab-4832-980e-ae790483b6ed/8e5f2ae0-47f3-11ed-986d-fd7a5f3ea464_20251151.ism/.m3u8
+//
+// Example URL: (login required)
+// https://www.tv4play.se/video/35e58882dbdd430da786/cornelia-jakobs
+// Data URL: (valid X-Jwt token required)
 // https://playback2.a2d.tv/play/35e58882dbdd430da786?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=MicrosoftEdge&capabilities=live-drm-adstitch-2%2Cyospace3
-// Requires valid X-Jwt token
 
-const localStorageAccessTokenKey = "tv4-access-token";
-function save_access_token(data) {
-  var accessToken = data.access_token;
-  console.log("Ny access token satt");
-  // 4 hours
-  var expireTimeInSeconds = 3600 * 4 * 1000;
-  setWithExpiry(localStorageAccessTokenKey, accessToken, expireTimeInSeconds);
+function tv4play_asset_callback(data) {
+  const media_url = `https://playback2.a2d.tv${data.mediaUri}`;
+  console.log(media_url);
+  fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error);
 }
 
-function tv4play_media_callback(data)
-{
+function tv4play_media_callback(data) {
   update_filename(`${data.metadata.title.trim()}.mkv`);
   update_json_url(data.playbackItem.manifestUrl);
 
@@ -27,80 +35,65 @@ function tv4play_media_callback(data)
   update_cmd();
 }
 
+function tv4_error(e) {
+  console.log(e);
+  // delete the cached access token in case it needs refreshing.. the user can try again and maybe it will work.
+  localStorage.removeItem("tv4-access-token");
+  error("NÃ¥got gick fel. Videon kanske krÃ¤ver att du Ã¤r inloggad?");
+}
 
 matchers.push({
-  re: /^https?:\/\/(?:www\.)?tv4(?:play)?\.se\.?\/video\/([a-f0-9]+)/,
+  re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp)\/([0-9a-f]+)/,
   func: function(ret) {
     const video_id = ret[1];
-    console.log(video_id);
     update_filename(`${video_id}.mkv`);
-    fetchMetaFile = function()
-    {
-        var tv4AccessToken = getWithExpiry(localStorageAccessTokenKey);
-        if (tv4AccessToken == null) {
-            error("Misslyckades hämta en giltig tv4 access token");
-            return;
-        }
-        const metadataURL = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=MicrosoftEdge&capabilities=live-drm-adstitch-2%2Cyospace3`;
-        fetch(metadataURL, {
-            method: 'GET',
-            headers: {
-                'X-Jwt': `Bearer ${tv4AccessToken}`
-            }
-        }).then(get_json).then(tv4play_media_callback).catch(api_error);
-    }
 
-    var tv4AccessTokenValue = getWithExpiry(localStorageAccessTokenKey);
-    if (tv4AccessTokenValue == null) {
-      var filter = { domain: "www.tv4play.se", name: "tv4-refresh-token" };
-      chrome.cookies.getAll(filter, function (cookies) {
-        var tv4RefreshToken = cookies[0].value;
-        if (tv4RefreshToken == null) {
-           error("Ingen tv4-refresh-token är satt. Du är inte inloggad?");
-           return;
-        }
+    chrome.tabs.executeScript({
+      code: `document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith("tv4-refresh-token="))?.split("=")[1]`
+    }, async function(refresh_tokens) {
+      const refresh_token = refresh_tokens[0];
 
-        const refresh_url = "https://avod-auth-alb.a2d.tv/oauth/refresh";
-        fetch(refresh_url, {
+      // if there's a tv4-refresh-token then we always get the access token and include the X-Jwt header
+      // since some video clips do not require a token, we do not error if there isn't a refresh token
+      let access_token;
+      if (refresh_token) {
+        access_token = localStorageGetWithExpiry("tv4-access-token");
+        if (access_token === null) {
+          const access_token_request = await fetch("https://avod-auth-alb.a2d.tv/oauth/refresh", {
             method: 'POST',
-            body: JSON.stringify({ refresh_token: tv4RefreshToken }),
+            body: JSON.stringify({ refresh_token }),
             headers: {
-                'Content-Type': 'application/json'
+              'Content-Type': 'application/json',
             }
-        }).then(get_json).then(save_access_token).then(fetchMetaFile).catch(api_error);
-      });
-    } else {
-        fetchMetaFile();
-    }
+          });
+          if (access_token_request.ok) {
+            const access_token_data = await access_token_request.json();
+            access_token = access_token_data.access_token;
+            localStorageSetWithExpiry("tv4-access-token", access_token, 4 * 3600 * 1000);
+          }
+        }
+      }
+
+      const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=MicrosoftEdge&capabilities=live-drm-adstitch-2%2Cyospace3`;
+      fetch(metadata_url, {
+        headers: access_token ? {
+          'X-Jwt': `Bearer ${access_token}`,
+        } : {}
+      }).then(get_json).then(tv4play_media_callback).catch(tv4_error);
+    })
   }
 });
 
-// LocalStorage with expiry time: https://www.sohamkamani.com/javascript/localstorage-with-ttl-expiry/
-function setWithExpiry(key, value, ttl) {
-    const now = new Date()
+matchers.push({
+  re: /^https?:\/\/(?:www\.)?tv4?\.se\.?\/.*(?:-|\/)(\d+)/,
+  func: function(ret) {
+    // This does not work on new URLs
+    const video_id = ret[1];
+    const data_url = `https://playback2.a2d.tv/asset/${video_id}?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets`;
+    update_filename(`${video_id}.mkv`);
+    update_json_url(data_url);
 
-    // `item` is an object which contains the original value
-    // as well as the time when it's supposed to expire
-    const item = {
-        value: value,
-        expiry: now.getTime() + ttl,
-    }
-    localStorage.setItem(key, JSON.stringify(item))
-}
-function getWithExpiry(key) {
-    const itemStr = localStorage.getItem(key)
-    // if the item doesn't exist, return null
-    if (!itemStr) {
-        return null
-    }
-    const item = JSON.parse(itemStr)
-    const now = new Date()
-    // compare the expiry time of the item with the current time
-    if (now.getTime() > item.expiry) {
-        // If the item is expired, delete the item from storage
-        // and return null
-        localStorage.removeItem(key)
-        return null
-    }
-    return item.value
-}
+    console.log(data_url);
+    fetch(data_url).then(get_json).then(tv4play_asset_callback).catch(api_error);
+  }
+});
