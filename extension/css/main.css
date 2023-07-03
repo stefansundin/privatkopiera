@@ -41,6 +41,7 @@ h3 {
   height: 38px;
   min-height: 38px;
   max-height: 250px;
+  word-break: break-all;
 }
 
 #copy {
