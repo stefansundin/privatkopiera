@@ -1,3 +1,11 @@
+const default_options = {
+  default_file_extension: 'mkv',
+};
+
+const options = {
+  default_file_extension: localStorage.default_file_extension || default_options.default_file_extension,
+};
+
 const version = `v${chrome.runtime.getManifest().version}`;
 const isFirefox = navigator.userAgent.includes("Firefox/");
 const subtitles = [];
@@ -411,6 +419,11 @@ document.addEventListener("DOMContentLoaded", function() {
     }
     navigator.clipboard.writeText(cmd.value);
     $("#copy").textContent = "Kopierat!";
+  });
+
+  $("#open_options").addEventListener("click", function(e) {
+    chrome.runtime.openOptionsPage();
+    window.close(); // Firefox
   });
 
   $("#grant_permissions").addEventListener("click", function(e) {

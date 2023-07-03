@@ -1,0 +1,11 @@
+body {
+  margin: 20px 10px;
+}
+
+.input-group {
+  margin-bottom: 15px;
+}
+
+.input-group-prepend label {
+  margin: 0;
+}

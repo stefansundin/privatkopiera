@@ -51,7 +51,7 @@ function ur_callback(data) {
       dropdown.appendChild(option);
     });
 
-    let fn = `${program.title?.trim()}.mkv`;
+    let fn = `${program.title?.trim()}.${options.default_file_extension}`;
     if (program.seriesTitle) {
       fn = `${program.seriesTitle.trim()} - ${fn}`;
     }

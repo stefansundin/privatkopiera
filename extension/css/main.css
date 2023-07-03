@@ -33,7 +33,7 @@ h3 {
   margin: 0;
   font-weight: bold;
 }
-.input-group.btns > .btn {
+.input-group.btns > .btn:not(:last-child) {
   margin-right: 1em;
 }
 

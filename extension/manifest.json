@@ -18,6 +18,9 @@
     "default_title": "Privatkopiera",
     "default_popup": "popup.html"
   },
+  "options_ui": {
+    "page": "options.html"
+  },
   "permissions": [
     "activeTab"
   ],

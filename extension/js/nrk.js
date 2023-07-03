@@ -34,7 +34,7 @@ function nrk_callback(data) {
     }
   });
 
-  let ext = "mkv";
+  let ext = options.default_file_extension;
   if (data.sourceMedium == 2) {
     ext = "mka";
   }
@@ -68,7 +68,7 @@ matchers.push({
   func: function(ret) {
     const video_id = ret[1];
     const data_url = `https://psapi.nrk.no/programs/${video_id}`;
-    update_filename(`${video_id}.mkv`);
+    update_filename(`${video_id}.${options.default_file_extension}`);
     update_json_url(data_url);
 
     console.log(data_url);
@@ -110,7 +110,7 @@ matchers.push({
       console.log(ids);
       flatten(ids).forEach(function(video_id) {
         const data_url = `https://psapi.nrk.no/programs/${video_id}`;
-        update_filename(`${video_id}.mkv`);
+        update_filename(`${video_id}.${options.default_file_extension}`);
         update_json_url(data_url);
 
         console.log(data_url);
