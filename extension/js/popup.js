@@ -4,6 +4,28 @@ const subtitles = [];
 const matchers = [];
 let tab_url, url, site;
 
+function localStorageSetWithExpiry(key, value, ttl) {
+  const now = new Date();
+  localStorage.setItem(key, JSON.stringify({
+    value,
+    expiry: now.getTime() + ttl,
+  }));
+}
+
+function localStorageGetWithExpiry(key) {
+  const item = localStorage.getItem(key);
+  if (!item) {
+    return null;
+  }
+  const data = JSON.parse(item);
+  const now = new Date();
+  if (now.getTime() > data.expiry) {
+    localStorage.removeItem(key);
+    return null;
+  }
+  return data.value;
+}
+
 function flatten(arr) {
   if (!Array.isArray(arr)) return [];
   return arr.reduce(function(a, b) {
