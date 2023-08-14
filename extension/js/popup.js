@@ -482,9 +482,13 @@ document.addEventListener("DOMContentLoaded", function() {
     });
   }
 
-  chrome.tabs.query({ active: true, lastFocusedWindow: true }, function(tabs) {
+  chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
     tab_url = tabs[0].url;
     if (!tab_url) {
+      // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
+      // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
+      error("Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.");
       return;
     }
     if (tab_url.startsWith("chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html")) {
