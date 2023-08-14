@@ -27,6 +27,7 @@
   "optional_permissions": [
     "downloads",
     "https://psapi.nrk.no/",
+    "https://isl.dr-massive.com/",
     "https://sverigesradio.se/"
   ],
   "browser_specific_settings": {

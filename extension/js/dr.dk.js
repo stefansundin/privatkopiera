@@ -14,6 +14,9 @@ function dr_dk_callback(data) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?dr\.dk\.?\/.*_(\d+)/,
+  permissions: {
+    origins: ["https://isl.dr-massive.com/"],
+  },
   func: function(ret) {
     const video_id = ret[1];
     console.log(video_id);

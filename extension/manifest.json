@@ -26,6 +26,7 @@
   ],
   "optional_permissions": [
     "downloads",
-    "https://psapi.nrk.no/"
+    "https://psapi.nrk.no/",
+    "https://isl.dr-massive.com/"
   ]
 }
