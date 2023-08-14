@@ -88,6 +88,16 @@ function $() {
   }
 }
 
+function getDocumentTitle() {
+  return new Promise((resolve, reject) => {
+    chrome.tabs.executeScript({
+      code: `(function(){ return document.title; })()`
+    }, (data) => {
+      resolve(data[0]);
+    });
+  });
+}
+
 function extract_filename(url) {
   url = url.replace(/\?.+/, "");
   return url.substr(url.lastIndexOf("/")+1).replace(/[?#].*/, "");
