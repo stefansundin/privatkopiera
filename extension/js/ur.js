@@ -31,6 +31,9 @@ function ur_callback(data) {
     }
     if (program.streamingInfo.raw) {
       for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
+        if (!value.location) {
+          continue;
+        }
         const url = `https://${domain}/${value.location}playlist.m3u8`;
         if (streams.some(s => s.url === url)) {
           continue;
