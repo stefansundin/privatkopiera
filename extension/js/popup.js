@@ -98,6 +98,16 @@ function getDocumentTitle() {
   });
 }
 
+async function fetchDOM(url) {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Unexpected response code: ${response.status}`);
+  }
+  const body = await response.text();
+  const doc = new DOMParser().parseFromString(body, "text/html");
+  return doc;
+}
+
 function extract_filename(url) {
   url = url.replace(/\?.+/, "");
   return url.substr(url.lastIndexOf("/")+1).replace(/[?#].*/, "");

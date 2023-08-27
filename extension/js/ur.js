@@ -65,20 +65,10 @@ function ur_callback(data) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
-  func: function(ret) {
-    chrome.tabs.executeScript({
-      code: `(function(){
-        return document.querySelector("#__NEXT_DATA__").textContent;
-      })()`
-    }, function(ret) {
-      console.log(ret);
-      flatten(ret).forEach(function(json) {
-        const data = JSON.parse(json);
-        console.log(data);
-
-        const lb_url = "https://streaming-loadbalancer.ur.se/loadbalancer.json";
-        fetch(lb_url).then(get_json).then(ur_callback(data.props.pageProps)).catch(api_error);
-      });
-    });
+  func: async (ret, url) => {
+    const doc = await fetchDOM(url);
+    const data = JSON.parse(doc.querySelector("#__NEXT_DATA__").textContent);
+    const lb_url = "https://streaming-loadbalancer.ur.se/loadbalancer.json";
+    fetch(lb_url).then(get_json).then(ur_callback(data.props.pageProps)).catch(api_error);
   }
 });
