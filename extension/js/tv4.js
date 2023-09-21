@@ -44,43 +44,58 @@ function tv4_error(e) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp)\/([0-9a-f]+)/,
-  func: function(ret) {
+  // permissions: {
+  //   origins: ["https://avod-auth-alb.a2d.tv/"],
+  // },
+  func: async function(ret) {
     const video_id = ret[1];
     update_filename(`${video_id}.${options.default_video_file_extension}`);
 
-    chrome.tabs.executeScript({
-      code: `document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith("tv4-refresh-token="))?.split("=")[1]`
-    }, async function(refresh_tokens) {
-      const refresh_token = refresh_tokens[0];
+    let access_token = localStorageGetWithExpiry("tv4-access-token");
+    console.log('cached access_token', access_token);
+    if (access_token && !access_token.startsWith('ey')) {
+      access_token = undefined;
+    }
 
-      // if there's a tv4-refresh-token then we always get the access token and include the X-Jwt header
-      // since some video clips do not require a token, we do not error if there isn't a refresh token
-      let access_token;
-      if (refresh_token) {
-        access_token = localStorageGetWithExpiry("tv4-access-token");
-        if (access_token === null) {
-          const access_token_request = await fetch("https://avod-auth-alb.a2d.tv/oauth/refresh", {
-            method: 'POST',
-            body: JSON.stringify({ refresh_token }),
-            headers: {
-              'Content-Type': 'application/json',
-            }
-          });
-          if (access_token_request.ok) {
-            const access_token_data = await access_token_request.json();
-            access_token = access_token_data.access_token;
-            localStorageSetWithExpiry("tv4-access-token", access_token, 4 * 3600 * 1000);
+    if (!access_token) {
+      const injectionResult = await chrome.scripting.executeScript({
+        target: { tabId: tab_id },
+        func: async () => {
+          const refresh_token = document.cookie.split(';').map(c => c.trim()).find(c => c.startsWith('tv4-refresh-token='))?.split('=')[1];
+          if (!refresh_token) {
+            return 'no refresh token';
           }
-        }
+          const response = await fetch('https://avod-auth-alb.a2d.tv/oauth/refresh', {
+            method: 'POST',
+            credentials: 'omit',
+            mode: 'cors',
+            headers: {
+              'accept': 'application/json',
+              'content-type': 'application/json',
+            },
+            body: JSON.stringify({ refresh_token, client_id: 'tv4-web' }),
+          });
+          if (!response.ok) {
+            return `error: ${response.status}`;
+          }
+          const access_token_data = await response.json();
+          return access_token_data.access_token;
+        },
+      });
+      console.log('injectionResult', injectionResult);
+      if (injectionResult[0].result.startsWith('ey')) {
+        access_token = injectionResult[0].result;
+      } else {
+        error('Nu gick något nog fel.. men vi försöker ändå.');
       }
+    }
 
-      const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=MicrosoftEdge&capabilities=live-drm-adstitch-2%2Cyospace3`;
-      fetch(metadata_url, {
-        headers: access_token ? {
-          'X-Jwt': `Bearer ${access_token}`,
-        } : {}
-      }).then(get_json).then(tv4play_media_callback).catch(tv4_error);
-    })
+    const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
+    fetch(metadata_url, {
+      headers: access_token ? {
+        'X-Jwt': `Bearer ${access_token}`,
+      } : {}
+    }).then(get_json).then(tv4play_media_callback).catch(tv4_error);
   }
 });
 

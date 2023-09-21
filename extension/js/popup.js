@@ -12,7 +12,7 @@ const version = `v${chrome.runtime.getManifest().version}`;
 const isFirefox = navigator.userAgent.includes("Firefox/");
 const subtitles = [];
 const matchers = [];
-let tab_url, url, site;
+let tab_id, tab_url, url, site;
 
 function localStorageSetWithExpiry(key, value, ttl) {
   const now = new Date();
@@ -413,7 +413,7 @@ function master_callback(length, base_url) {
 }
 
 document.addEventListener("DOMContentLoaded", function() {
-  $("#extension_version").textContent = version;
+  $("#extension_version").textContent = version + ' (alpha1)';
 
   $("#expand").addEventListener("click", function() {
     document.body.classList.toggle("expand");
@@ -503,6 +503,7 @@ document.addEventListener("DOMContentLoaded", function() {
   }
 
   chrome.tabs.query({ active: true, currentWindow: true }, function(tabs) {
+    tab_id = tabs[0].id;
     tab_url = tabs[0].url;
     if (!tab_url) {
       // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
