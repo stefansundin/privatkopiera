@@ -46,12 +46,11 @@ document.addEventListener('DOMContentLoaded', () => {
     checkbox.click();
   }
   checkbox.indeterminate = (theme === undefined);
-});
 
-window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
-  const checkbox = document.getElementById('dark-mode');
-  if (checkbox.indeterminate && checkbox.checked !== e.matches) {
-    checkbox.click();
-    checkbox.indeterminate = true;
-  }
+  window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
+    if (checkbox.indeterminate && checkbox.checked !== e.matches) {
+      checkbox.click();
+      checkbox.indeterminate = true;
+    }
+  });
 });

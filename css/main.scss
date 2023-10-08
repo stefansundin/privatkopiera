@@ -5,9 +5,6 @@
 body {
   margin-bottom: 100px;
 }
-body.pad {
-  padding: 0 15px;
-}
 figure.highlight pre {
   overflow: auto;
 }
@@ -87,9 +84,6 @@ navbar {
   margin-bottom: 15px;
 }
 
-tt {
-  white-space: nowrap;
-}
 kbd {
   background-color: #eee;
   border-radius: 3px;
@@ -128,7 +122,7 @@ kbd {
   appearance: auto;
 }
 figure.highlight pre {
-  color: var(--bs-body-color) !important;
+  color: var(--bs-dark);
 }
 
 

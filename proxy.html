@@ -6,7 +6,7 @@ permalink: /proxy.html
 
     <h2 id="socks">SOCKS Proxy</h2>
 
-    <p>Du kan använda <tt>tsocks</tt> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Du måste ha en SSH server i Sverige (routrar har ofta stöd för SSH server).</p>
+    <p>Du kan använda <code>tsocks</code> för att ladda ned via en SOCKS server, t.ex. om du befinner dig utomlands och inte kan se vissa program. Du måste ha en SSH server i Sverige (routrar har ofta stöd för SSH server).</p>
 
     <p>Exempel för Ubuntu:</p>
 
@@ -19,13 +19,13 @@ sudo vim /etc/tsocks.conf
 ssh server_i_sverige.se -D 1080
 {% endhighlight %}
 
-    <p>Öppna en till terminal och kör FFmpeg-kommandot med <tt>tsocks</tt>:</p>
+    <p>Öppna en till terminal och kör FFmpeg-kommandot med <code>tsocks</code>:</p>
 
 {% highlight shell %}
 tsocks ffmpeg -i ...
 {% endhighlight %}
 
-    <p>Chrome kan inte hämta listan med strömmar för vissa program om du befinner dig utomlands. Det går bra att använda <tt>master.m3u8</tt>, men du får inte högsta kvalitén. Du kan starta Chrome så här för att gå runt det:</p>
+    <p>Chrome kan inte hämta listan med strömmar för vissa program om du befinner dig utomlands. Det går bra att använda <code>master.m3u8</code>, men du får inte högsta kvalitén. Du kan starta Chrome så här för att gå runt det:</p>
 
 {% highlight shell %}
 google-chrome --proxy-server="socks5://127.0.0.1:1080"
@@ -37,12 +37,12 @@ google-chrome --proxy-server="socks5://127.0.0.1:1080"
 /Applications/Google\ Chrome.app/Contents/MacOS/Google\ Chrome --proxy-server="socks5://127.0.0.1:1080"
 {% endhighlight %}
 
-    <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> och sök efter "<i>socks</i>". Klicka på knappen <i>Inställningar...</i> och kryssa för <i>Manuell proxykonfiguration</i>. Skriv in <tt>localhost</tt> som <i>SOCKS-värd</i> och använd port <tt>1080</tt>. Det är väldigt enkelt att glömma bort den här inställningen! Om du får proxy-fel senare så beror det nog på att du har glömt att återställa inställningen.</p>
+    <p>I Firefox är det enklare att använda SOCKS. Öppna <i>Inställningar</i> och sök efter "<i>socks</i>". Klicka på knappen <i>Inställningar...</i> och kryssa för <i>Manuell proxykonfiguration</i>. Skriv in <code>localhost</code> som <i>SOCKS-värd</i> och använd port <code>1080</code>. Det är väldigt enkelt att glömma bort den här inställningen! Om du får proxy-fel senare så beror det nog på att du har glömt att återställa inställningen.</p>
 
 
     <h2 id="http_proxy">HTTP Proxy</h2>
 
-    <p>I Windows och Mac fungerar inte <tt>tsocks</tt>, så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stöder däremot en vanlig HTTP proxy genom att sätta variabeln <tt>http_proxy</tt>. Exempel för Windows:</p>
+    <p>I Windows och Mac fungerar inte <code>tsocks</code>, så det är lite svårare att använda FFmpeg med en SOCKS server. FFmpeg stöder däremot en vanlig HTTP proxy genom att sätta variabeln <code>http_proxy</code>. Exempel för Windows:</p>
 
 {% highlight shell %}
 set http_proxy=http://server_i_sverige:3128/
@@ -55,9 +55,9 @@ ffmpeg -i ...
 sudo apt-get install squid
 {% endhighlight %}
 
-    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <tt>3128</tt> som <i>Source port</i> och <tt>127.0.0.1:3128</tt> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan på <i>Add</i>. <a href="img/putty.png">Se bild med exempel</a>.</p>
+    <p>Nu måste du skicka vidare en lokal port på din dator till squid på din server. I Windows kan du använda <a href="https://www.chiark.greenend.org.uk/~sgtatham/putty/latest.html">PuTTY</a> och ställa in det i <i>Connection</i> » <i>SSH</i> » <i>Tunnels</i>. Skriv in <code>3128</code> som <i>Source port</i> och <code>127.0.0.1:3128</code> som <i>Destination</i>. Lämna <i>Local</i> ikryssad. Klicka sedan på <i>Add</i>. <a href="img/putty.png">Se bild med exempel</a>.</p>
 
-    <p>Efter detta kan du använda <tt>127.0.0.1</tt> istället för <tt>server_i_sverige</tt> i exemplet ovan:</p>
+    <p>Efter detta kan du använda <code>127.0.0.1</code> istället för <code>server_i_sverige</code> i exemplet ovan:</p>
 
 {% highlight shell %}
 set http_proxy=http://127.0.0.1:3128/
@@ -70,7 +70,7 @@ ffmpeg -i ...
 ssh server_i_sverige.se -L 3128:127.0.0.1:3128
 {% endhighlight %}
 
-    <p>I Mac eller Linux använder du <tt>export</tt> istället för <tt>set</tt>.</p>
+    <p>I Mac eller Linux använder du <code>export</code> istället för <code>set</code>.</p>
 
     <p>Om du har en SOCKS-anslutning men du kan inte installera squid på servern så kan du installera en HTTP proxy lokalt som kan skicka HTTP över SOCKS. Ett exempel på program som kan göra detta är privoxy. För att installera på Mac kan du köra följande kommandon:</p>
 
@@ -83,7 +83,7 @@ export http_proxy=http://127.0.0.1:8118/
 ffmpeg -i ...
 {% endhighlight %}
 
-    <p>AdobeHDS stöder tyvärr inte <tt>http_proxy</tt> variabeln, men du kan använda följande argument:</p>
+    <p>AdobeHDS stöder tyvärr inte <code>http_proxy</code> variabeln, men du kan använda följande argument:</p>
 
 {% highlight shell %}
 php AdobeHDS.php ... --fproxy --proxy http://127.0.0.1:8118/
