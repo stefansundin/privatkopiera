@@ -36,4 +36,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     default_video_file_extension_input.value = default_options.default_video_file_extension;
     default_audio_file_extension_input.value = default_options.default_audio_file_extension;
   });
+
+  const theme =
+    localStorage.getItem('theme') ??
+    (window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light');
+  document.documentElement.setAttribute('data-bs-theme', theme);
 });
