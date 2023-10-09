@@ -28,7 +28,8 @@
     "downloads",
     "https://psapi.nrk.no/",
     "https://isl.dr-massive.com/",
-    "https://sverigesradio.se/"
+    "https://sverigesradio.se/",
+    "https://urplay.se/"
   ],
   "browser_specific_settings": {
     "gecko": {

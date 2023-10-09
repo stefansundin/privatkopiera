@@ -71,6 +71,11 @@ function ur_callback(data) {
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
+  permissions: isFirefox
+    ? {
+        origins: ['https://urplay.se/'],
+      }
+    : null,
   func: async (ret, url) => {
     const doc = await fetchDOM(url);
     const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
