@@ -15,29 +15,34 @@
 async function nrk_callback(data) {
   console.log(data);
 
-  const streams = $("#streams");
+  const streams = $('#streams');
   const duration = parse_pt(data.playable.duration);
   for (const asset of data.playable.assets) {
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = asset.url;
     option.appendChild(document.createTextNode(extract_filename(asset.url)));
     streams.appendChild(option);
 
-    const base_url = asset.url.replace(/\/[^/]+$/, "/");
-    fetch(asset.url).then(get_text).then(master_callback(duration, base_url)).catch(api_error);
+    const base_url = asset.url.replace(/\/[^/]+$/, '/');
+    fetch(asset.url)
+      .then(get_text)
+      .then(master_callback(duration, base_url))
+      .catch(api_error);
   }
 
   for (const subtitle of data.playable.subtitles) {
     const url = subtitle.webVtt;
     subtitles.push(url);
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = url;
-    option.appendChild(document.createTextNode(`Undertext (${subtitle.label})`));
+    option.appendChild(
+      document.createTextNode(`Undertext (${subtitle.label})`),
+    );
     streams.appendChild(option);
   }
 
   let ext = options.default_video_file_extension;
-  if (data.sourceMedium == "audio") {
+  if (data.sourceMedium == 'audio') {
     ext = options.default_audio_file_extension;
   }
   const title = await getDocumentTitle();
@@ -50,15 +55,15 @@ async function nrk_callback(data) {
 
 function nrk_postcast_callback(data) {
   console.log(data);
-  const streams = $("#streams");
+  const streams = $('#streams');
   for (const [i, stream] of data.downloadables.entries()) {
     const fn = extract_filename(stream.audio.url);
     if (i === 0) {
       update_filename(fn);
     }
-    const option = document.createElement("option");
+    const option = document.createElement('option');
     option.value = stream.audio.url;
-    option.setAttribute("data-filename", fn);
+    option.setAttribute('data-filename', fn);
     option.appendChild(document.createTextNode(data.titles.title));
     streams.appendChild(option);
   }
@@ -68,7 +73,7 @@ function nrk_postcast_callback(data) {
 matchers.push({
   re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\/(?:program|serie)[^A-Z]*\/([A-Z][A-Z0-9]+)/,
   permissions: {
-    origins: ["https://psapi.nrk.no/"],
+    origins: ['https://psapi.nrk.no/'],
   },
   func: (ret) => {
     const video_id = ret[1];
@@ -78,13 +83,13 @@ matchers.push({
 
     console.log(data_url);
     fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
-  }
+  },
 });
 
 matchers.push({
   re: /^https?:\/\/radio\.nrk\.no\.?\/pod[ck]ast\/([^/]+)\/([^/?]+)/,
   permissions: {
-    origins: ["https://psapi.nrk.no/"],
+    origins: ['https://psapi.nrk.no/'],
   },
   func: (ret) => {
     const data_url = `https://psapi.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`;
@@ -93,34 +98,39 @@ matchers.push({
 
     console.log(data_url);
     fetch(data_url).then(get_json).then(nrk_postcast_callback).catch(api_error);
-  }
+  },
 });
 
 matchers.push({
   re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\//,
   permissions: {
-    origins: ["https://psapi.nrk.no/"],
+    origins: ['https://psapi.nrk.no/'],
   },
   func: (ret) => {
     // <div id="series-program-id-container" data-program-id="MSPO30080518">
-    chrome.tabs.executeScript({
-      code: `(function(){
-        const div = document.querySelector("[data-program-id]");
-        if (!div) {
-          return null;
-        }
-        return div.getAttribute("data-program-id");
-      })()`
-    }, (ids) => {
-      console.log(ids);
-      flatten(ids).forEach((video_id) => {
-        const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
-        update_filename(`${video_id}.${options.default_video_file_extension}`);
-        update_json_url(data_url);
+    chrome.tabs.executeScript(
+      {
+        code: `(function(){
+          const div = document.querySelector("[data-program-id]");
+          if (!div) {
+            return null;
+          }
+          return div.getAttribute("data-program-id");
+        })()`,
+      },
+      (ids) => {
+        console.log(ids);
+        flatten(ids).forEach((video_id) => {
+          const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
+          update_filename(
+            `${video_id}.${options.default_video_file_extension}`,
+          );
+          update_json_url(data_url);
 
-        console.log(data_url);
-        fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
-      });
-    });
-  }
+          console.log(data_url);
+          fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
+        });
+      },
+    );
+  },
 });

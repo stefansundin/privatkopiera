@@ -8,25 +8,31 @@
 function ur_callback(data) {
   const program = data.program;
 
-  return function(lb_data) {
+  return function (lb_data) {
     const domain = lb_data.redirect;
     const streams = [];
-    if (program.streamingInfo.sweComplete && program.streamingInfo.sweComplete.hd) {
+    if (
+      program.streamingInfo.sweComplete &&
+      program.streamingInfo.sweComplete.hd
+    ) {
       streams.push({
-        info: "HD med undertexter",
-        url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`
+        info: 'HD med undertexter',
+        url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`,
       });
     }
     if (program.streamingInfo.raw && program.streamingInfo.raw.hd) {
       streams.push({
-        info: "HD",
-        url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`
+        info: 'HD',
+        url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`,
       });
     }
-    if (program.streamingInfo.sweComplete && program.streamingInfo.sweComplete.sd) {
+    if (
+      program.streamingInfo.sweComplete &&
+      program.streamingInfo.sweComplete.sd
+    ) {
       streams.push({
-        info: "SD med undertexter",
-        url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`
+        info: 'SD med undertexter',
+        url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`,
       });
     }
     if (program.streamingInfo.raw) {
@@ -35,7 +41,7 @@ function ur_callback(data) {
           continue;
         }
         const url = `https://${domain}/${value.location}playlist.m3u8`;
-        if (streams.some(s => s.url === url)) {
+        if (streams.some((s) => s.url === url)) {
           continue;
         }
         streams.push({
@@ -46,9 +52,9 @@ function ur_callback(data) {
     }
     console.log(streams);
 
-    const dropdown = $("#streams");
-    streams.forEach(function(stream) {
-      const option = document.createElement("option");
+    const dropdown = $('#streams');
+    streams.forEach(function (stream) {
+      const option = document.createElement('option');
       option.value = stream.url;
       option.appendChild(document.createTextNode(stream.info));
       dropdown.appendChild(option);
@@ -60,15 +66,18 @@ function ur_callback(data) {
     }
     update_filename(fn);
     update_cmd();
-  }
+  };
 }
 
 matchers.push({
   re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
   func: async (ret, url) => {
     const doc = await fetchDOM(url);
-    const data = JSON.parse(doc.querySelector("#__NEXT_DATA__").textContent);
-    const lb_url = "https://streaming-loadbalancer.ur.se/loadbalancer.json";
-    fetch(lb_url).then(get_json).then(ur_callback(data.props.pageProps)).catch(api_error);
-  }
+    const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
+    const lb_url = 'https://streaming-loadbalancer.ur.se/loadbalancer.json';
+    fetch(lb_url)
+      .then(get_json)
+      .then(ur_callback(data.props.pageProps))
+      .catch(api_error);
+  },
 });
