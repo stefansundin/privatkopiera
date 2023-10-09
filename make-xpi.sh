@@ -1,6 +1,6 @@
 #!/bin/bash -ex
 cp -r extension/{js,img,css,*.html} firefox
-find firefox -type f -name '*.js' | xargs sed -i.bak '/console\.log/d'
+# find firefox -type f -name '*.js' | xargs sed -i.bak '/console\.log/d'
 
 V=$(cat firefox/manifest.json | jq -Mr .version)
 rm -f "privatkopiera-$V.xpi"
