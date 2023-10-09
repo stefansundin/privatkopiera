@@ -1,4 +1,12 @@
-#!/bin/bash -ex
+#!/bin/bash -e
+
+if [[ ! -f extension/css/bootstrap.min.css ]]; then
+  echo "The bootstrap file is missing. Please follow the instructions in README.md."
+  exit 1
+fi
+
+set -x
+
 cp -r extension/{js,img,css,*.html} firefox
 # find firefox -type f -name '*.js' | xargs sed -i.bak '/console\.log/d'
 
