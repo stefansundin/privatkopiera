@@ -1,6 +1,8 @@
-// https://getbootstrap.com/docs/4.6/getting-started/theming/#sass-options
+// https://getbootstrap.com/docs/5.3/customize/options/
 
-$enable-gradients: true;
 $enable-shadows: true;
+$enable-gradients: true;
+$enable-transitions: false;
+$enable-smooth-scroll: false;
 
-@import "node_modules/bootstrap/scss/bootstrap";
+@import 'node_modules/bootstrap/scss/bootstrap';
