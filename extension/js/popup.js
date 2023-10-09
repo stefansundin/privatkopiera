@@ -1,9 +1,26 @@
+import dr from './sites/dr.dk.js';
+import nrk from './sites/nrk.js';
+import sverigesradio from './sites/sverigesradio.js';
+import svt from './sites/svt.js';
+import tv4 from './sites/tv4.js';
+import ur from './sites/ur.js';
+import {
+  $,
+  extract_extension,
+  extract_filename,
+  fmt_filesize,
+  isFirefox,
+  toObject,
+} from './utils.js';
+
+const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
+
 const default_options = {
   default_video_file_extension: 'mkv',
   default_audio_file_extension: 'mka',
 };
 
-const options = {
+export const options = {
   default_video_file_extension:
     localStorage.default_video_file_extension ||
     default_options.default_video_file_extension,
@@ -12,146 +29,10 @@ const options = {
     default_options.default_audio_file_extension,
 };
 
-const version = `v${chrome.runtime.getManifest().version}`;
-const isFirefox = navigator.userAgent.includes('Firefox/');
-const subtitles = [];
-const matchers = [];
+export const subtitles = [];
 let tab_url, url, site;
 
-function localStorageSetWithExpiry(key, value, ttl) {
-  const now = new Date();
-  localStorage.setItem(
-    key,
-    JSON.stringify({
-      value,
-      expiry: now.getTime() + ttl,
-    }),
-  );
-}
-
-function localStorageGetWithExpiry(key) {
-  const item = localStorage.getItem(key);
-  if (!item) {
-    return null;
-  }
-  const data = JSON.parse(item);
-  const now = new Date();
-  if (now.getTime() > data.expiry) {
-    localStorage.removeItem(key);
-    return null;
-  }
-  return data.value;
-}
-
-function flatten(arr) {
-  if (!Array.isArray(arr)) return [];
-  return arr.reduce(function (a, b) {
-    if (!b) {
-      return a;
-    } else if (b.constructor === Array) {
-      return a.concat(b);
-    } else {
-      return a.concat([b]);
-    }
-  }, []);
-}
-
-function toObject(arr) {
-  const obj = {};
-  arr.forEach(function (e) {
-    obj[e[0]] = e[1];
-  });
-  return obj;
-}
-
-function fmt_filesize(bytes, digits = 2) {
-  const units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-  let i = 0;
-  while (bytes > 1024 && i < units.length) {
-    bytes = bytes / 1024;
-    i++;
-  }
-  if (i < 3) {
-    digits = 0;
-  }
-  if (i > 0) {
-    size = bytes.toFixed(digits);
-  } else {
-    size = bytes;
-  }
-  return `${size} ${units[i]}`;
-}
-
-function $() {
-  const elements = document.querySelectorAll.apply(document, arguments);
-  if (arguments[0][0] === '#') {
-    return elements[0];
-  } else {
-    return elements;
-  }
-}
-
-function getDocumentTitle() {
-  return new Promise((resolve, reject) => {
-    chrome.tabs.executeScript(
-      {
-        code: `(function(){ return document.title; })()`,
-      },
-      (data) => {
-        resolve(data[0]);
-      },
-    );
-  });
-}
-
-async function fetchDOM(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Unexpected response code: ${response.status}`);
-  }
-  const body = await response.text();
-  const doc = new DOMParser().parseFromString(body, 'text/html');
-  return doc;
-}
-
-function extract_filename(url) {
-  url = url.replace(/\?.+/, '');
-  return url.substr(url.lastIndexOf('/') + 1).replace(/[?#].*/, '');
-}
-
-function extract_extension(url) {
-  const fn = extract_filename(url);
-  const dot = fn.lastIndexOf('.');
-  if (dot !== -1) {
-    return fn.substr(dot + 1).toLowerCase();
-  }
-}
-
-function add_param(url, param) {
-  if (url.includes('?')) {
-    return `${url}&${param}`;
-  } else {
-    return `${url}?${param}`;
-  }
-}
-
-function parse_pt(pt) {
-  const ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt);
-  if (ret === null) return 0;
-  let duration = 0;
-  if (ret[1]) {
-    duration += 60 * 60 * parseInt(ret[1], 10);
-  }
-  if (ret[2]) {
-    duration += 60 * parseInt(ret[2], 10);
-  }
-  if (ret[3]) {
-    duration += parseFloat(ret[3]);
-  }
-  return duration;
-}
-
-function update_filename(fn) {
+export function update_filename(fn) {
   // replace illegal characters
   $('#filename').value = fn
     .replace(/[/\\:]/g, '-')
@@ -160,35 +41,12 @@ function update_filename(fn) {
     .replace(/\t+/, ' ');
 }
 
-function update_json_url(url) {
+export function update_json_url(url) {
   $('#open_json').href = url;
   $('#open_json').classList.remove('d-none');
 }
 
-function call_func() {
-  let ret = site.re.exec(tab_url);
-  if (ret) {
-    site.func(ret, url);
-  }
-}
-
-function get_json(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.json();
-  }
-  throw response;
-}
-
-function get_text(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.text();
-  }
-  throw response;
-}
-
-function error(text) {
+export function info(text) {
   const el = $('#info');
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild);
@@ -196,7 +54,7 @@ function error(text) {
   el.appendChild(document.createTextNode(text));
 }
 
-function api_error(e) {
+export function api_error(e) {
   console.log(e);
   const el = $('#info');
   while (el.hasChildNodes()) {
@@ -246,12 +104,12 @@ function download_info(program) {
   el.appendChild(document.createTextNode(`.`));
 }
 
-function update_cmd(e) {
+export function update_cmd(e) {
   const filename = $('#filename');
   const streams = $('#streams');
   const stream = streams.selectedOptions[0];
   if (!stream) {
-    error('Hittade ingen video. Har programmet sänts än?');
+    info('Hittade ingen video. Har programmet sänts än?');
     return;
   }
   const audio_stream = stream.getAttribute('data-audio-stream');
@@ -280,7 +138,7 @@ function update_cmd(e) {
     cmd.value = url;
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
-    label = $("label[for='cmd']")[0];
+    const label = $("label[for='cmd']")[0];
     while (label.hasChildNodes()) {
       label.removeChild(label.firstChild);
     }
@@ -341,27 +199,27 @@ function update_cmd(e) {
   }
 }
 
-function master_callback(length, base_url) {
+export function master_callback(length, base_url) {
   return function (text) {
     console.log(text);
 
     const ext_x_media = {};
     const streams = [];
     let params;
-    text.split('\n').forEach(function (line) {
+    for (const line of text.split('\n')) {
       if (line.length === 0) {
-        return;
+        continue;
       }
       console.log(line);
       if (line.startsWith('#')) {
-        if (!line.includes(':')) return;
+        if (!line.includes(':')) continue;
         const type = line.substring(1, line.indexOf(':'));
         const args = line
           .substring(line.indexOf(':') + 1)
           .match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
-        if (!args) return;
+        if (!args) continue;
         const obj = toObject(
-          args.map(function (arg) {
+          args.map((arg) => {
             const k = arg.substring(0, arg.indexOf('='));
             let v = arg.substring(arg.indexOf('=') + 1);
             if (v.startsWith('"') && v.endsWith('"')) {
@@ -388,40 +246,36 @@ function master_callback(length, base_url) {
           url: url,
         });
       }
-    });
+    }
     console.log(streams);
 
     const dropdown = $('#streams');
     const default_option = dropdown.getElementsByTagName('option')[0];
 
-    streams
-      .sort(function (a, b) {
-        return b.bitrate - a.bitrate;
-      })
-      .forEach(function (stream) {
-        const kbps = Math.round(stream.bitrate / 1000);
-        const option = document.createElement('option');
-        option.value = stream.url;
-        option.appendChild(document.createTextNode(`${kbps} kbps`));
-        if (ext_x_media['AUDIO']) {
-          option.setAttribute(
-            'data-audio-stream',
-            base_url + ext_x_media['AUDIO']['URI'],
-          );
-        }
-        const info = [];
-        if (stream.params['RESOLUTION']) {
-          info.push(stream.params['RESOLUTION']);
-        }
-        if (length) {
-          // the calculation is off by about 5%, probably because of audio and overhead
-          info.push(`~${fmt_filesize((1.05 * length * stream.bitrate) / 8)}`);
-        }
-        if (info.length !== 0) {
-          option.appendChild(document.createTextNode(` (${info.join(', ')})`));
-        }
-        dropdown.insertBefore(option, default_option);
-      });
+    for (const stream of streams.sort((a, b) => b.bitrate - a.bitrate)) {
+      const kbps = Math.round(stream.bitrate / 1000);
+      const option = document.createElement('option');
+      option.value = stream.url;
+      option.appendChild(document.createTextNode(`${kbps} kbps`));
+      if (ext_x_media['AUDIO']) {
+        option.setAttribute(
+          'data-audio-stream',
+          base_url + ext_x_media['AUDIO']['URI'],
+        );
+      }
+      const extra = [];
+      if (stream.params['RESOLUTION']) {
+        extra.push(stream.params['RESOLUTION']);
+      }
+      if (length) {
+        // the calculation is off by about 5%, probably because of audio and overhead
+        extra.push(`~${fmt_filesize((1.05 * length * stream.bitrate) / 8)}`);
+      }
+      if (extra.length !== 0) {
+        option.appendChild(document.createTextNode(` (${extra.join(', ')})`));
+      }
+      dropdown.insertBefore(option, default_option);
+    }
     if (ext_x_media['AUDIO']) {
       const option = document.createElement('option');
       option.value = base_url + ext_x_media['AUDIO']['URI'];
@@ -435,10 +289,25 @@ function master_callback(length, base_url) {
   };
 }
 
-document.addEventListener('DOMContentLoaded', function () {
-  $('#extension_version').textContent = version;
+async function call_func() {
+  info('Laddar, var god vänta...');
+  const ret = site.re.exec(tab_url);
+  if (ret) {
+    try {
+      await site.func(ret, url);
+    } catch (err) {
+      info(`Error: ${err.message}`);
+      throw err;
+    }
+  }
+}
 
-  $('#expand').addEventListener('click', function () {
+document.addEventListener('DOMContentLoaded', () => {
+  $('#extension_version').textContent = `v${
+    chrome.runtime.getManifest().version
+  }`;
+
+  $('#expand').addEventListener('click', () => {
     document.body.classList.toggle('expand');
     const expanded = document.body.classList.contains('expand');
     $('#expand').textContent = expanded ? '»' : '«';
@@ -450,13 +319,12 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#expand').click();
   }
 
-  $('#cmd').addEventListener('input', function (e) {
+  $('#cmd').addEventListener('input', (e) => {
     $('#copy').disabled = e.target.value.length === 0;
     $('#copy').textContent = 'Kopiera kommando';
   });
 
-  $('#copy').addEventListener('click', function (e) {
-    e.preventDefault();
+  $('#copy').addEventListener('click', (e) => {
     const cmd = $('#cmd');
     if (e.shiftKey) {
       // copy only the URL if the shift key is held
@@ -466,13 +334,12 @@ document.addEventListener('DOMContentLoaded', function () {
     $('#copy').textContent = 'Kopierat!';
   });
 
-  $('#open_options').addEventListener('click', function (e) {
+  $('#open_options').addEventListener('click', () => {
     chrome.runtime.openOptionsPage();
-    window.close(); // Firefox
   });
 
-  $('#grant_permissions').addEventListener('click', function (e) {
-    chrome.permissions.request(site.permissions, function (granted) {
+  $('#grant_permissions').addEventListener('click', () => {
+    chrome.permissions.request(site.permissions, (granted) => {
       // The popup is automatically closed, so this does not really matter
       // It stays open if "Inspect Popup" is used
       if (granted) {
@@ -483,17 +350,17 @@ document.addEventListener('DOMContentLoaded', function () {
         $('#cmd').disabled = false;
         call_func();
       } else {
-        error('Fel: Behörigheter ej beviljade.');
+        info('Fel: Behörigheter ej beviljade.');
       }
     });
   });
 
-  $('#download').addEventListener('click', function () {
+  $('#download').addEventListener('click', () => {
     chrome.permissions.request(
       {
         permissions: ['downloads'],
       },
-      function (granted) {
+      (granted) => {
         if (!granted) {
           return;
         }
@@ -511,7 +378,7 @@ document.addEventListener('DOMContentLoaded', function () {
     cmd.style.height = cmd_height;
   }
   new ResizeObserver((entries) => {
-    for (let entry of entries) {
+    for (const entry of entries) {
       localStorage.setItem('cmd-height', entry.target.style.height);
     }
   }).observe(cmd);
@@ -522,7 +389,7 @@ document.addEventListener('DOMContentLoaded', function () {
   if (isFirefox) {
     document
       .querySelectorAll(
-        '#open_json,a[href="https://stefansundin.github.io/privatkopiera/"]',
+        '#open_json,#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]',
       )
       .forEach((a) => {
         a.addEventListener('click', () => {
@@ -537,7 +404,7 @@ document.addEventListener('DOMContentLoaded', function () {
       // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
       // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
       // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
-      error(
+      info(
         'Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.',
       );
       return;
@@ -556,8 +423,8 @@ document.addEventListener('DOMContentLoaded', function () {
 
     if ((site = matchers.find((m) => m.re.test(tab_url)))) {
       if (site.permissions) {
-        chrome.permissions.contains(site.permissions, function (result) {
-          if (result) {
+        chrome.permissions.contains(site.permissions, (granted) => {
+          if (granted) {
             call_func();
           } else {
             $('#copy').classList.add('d-none');
@@ -565,7 +432,7 @@ document.addEventListener('DOMContentLoaded', function () {
             $('#streams').disabled = true;
             $('#filename').disabled = true;
             $('#cmd').disabled = true;
-            error('Fler behörigheter krävs för den här sidan.');
+            info('Fler behörigheter krävs för den här sidan.');
           }
         });
         return;
@@ -573,7 +440,7 @@ document.addEventListener('DOMContentLoaded', function () {
         call_func();
       }
     } else {
-      error('Fel: Den här hemsidan stöds ej.');
+      info('Fel: Den här hemsidan stöds ej.');
     }
   });
 });

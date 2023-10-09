@@ -8,6 +8,10 @@ Icon: https://commons.wikimedia.org/wiki/File:VHS_diagonal.svg
 
 ## Development
 
+The [extension](extension) directory contains the source code, which you can load directly in Chrome.
+
+The [firefox](firefox) directory contains modifications necessary for the extension to run in Firefox (currently only the manifest file is different). You must run `./make-xpi.sh` to copy over the other files, after which you can load the extension in `about:debugging`.
+
 ### Bootstrap
 
 To build the custom Bootstrap theme you need Node.js installed and then you can run:
