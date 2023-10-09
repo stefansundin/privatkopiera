@@ -48,7 +48,7 @@ function flatten(arr) {
   return arr.reduce(function (a, b) {
     if (!b) {
       return a;
-    } else if (b.constructor == Array) {
+    } else if (b.constructor === Array) {
       return a.concat(b);
     } else {
       return a.concat([b]);
@@ -84,7 +84,7 @@ function fmt_filesize(bytes, digits = 2) {
 
 function $() {
   const elements = document.querySelectorAll.apply(document, arguments);
-  if (arguments[0][0] == '#') {
+  if (arguments[0][0] === '#') {
     return elements[0];
   } else {
     return elements;
@@ -122,7 +122,7 @@ function extract_filename(url) {
 function extract_extension(url) {
   const fn = extract_filename(url);
   const dot = fn.lastIndexOf('.');
-  if (dot != -1) {
+  if (dot !== -1) {
     return fn.substr(dot + 1).toLowerCase();
   }
 }
@@ -137,7 +137,7 @@ function add_param(url, param) {
 
 function parse_pt(pt) {
   const ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt);
-  if (ret == null) return 0;
+  if (ret === null) return 0;
   let duration = 0;
   if (ret[1]) {
     duration += 60 * 60 * parseInt(ret[1], 10);
@@ -256,7 +256,7 @@ function update_cmd(e) {
   }
   const audio_stream = stream.getAttribute('data-audio-stream');
 
-  if ((e && e.target == streams) || filename.value == '') {
+  if ((e && e.target === streams) || filename.value === '') {
     const fn = stream.getAttribute('data-filename');
     if (fn) {
       update_filename(fn);
@@ -270,11 +270,11 @@ function update_cmd(e) {
   const stream_fn = extract_filename(url);
   const stream_ext = extract_extension(url);
   streams.title = stream_fn;
-  if (stream_ext == 'f4m') {
+  if (stream_ext === 'f4m') {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`;
   } else if (
-    stream_ext == 'm4a' ||
-    stream_ext == 'mp3' ||
+    stream_ext === 'm4a' ||
+    stream_ext === 'mp3' ||
     /^https?:\/\/http-live\.sr\.se/.test(url)
   ) {
     cmd.value = url;
@@ -285,31 +285,31 @@ function update_cmd(e) {
       label.removeChild(label.firstChild);
     }
     label.appendChild(document.createTextNode('URL'));
-  } else if (stream_fn.endsWith('_a.m3u8') || ext == 'mka' || ext == 'aac') {
-    if (ext == 'mkv') {
+  } else if (stream_fn.endsWith('_a.m3u8') || ext === 'mka' || ext === 'aac') {
+    if (ext === 'mkv') {
       fn = fn.replace('.mkv', '.mka');
-    } else if (ext == 'mp4') {
+    } else if (ext === 'mp4') {
       fn = fn.replace('.mp4', '.m4a');
     }
     cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy "${fn}"`;
-  } else if (ext == 'm4a') {
+  } else if (ext === 'm4a') {
     cmd.value = `ffmpeg -i "${
       audio_stream || url
     }" -acodec copy -absf aac_adtstoasc "${fn}"`;
-  } else if (ext == 'mp3' || ext == 'ogg') {
+  } else if (ext === 'mp3' || ext === 'ogg') {
     cmd.value = `ffmpeg -i "${audio_stream || url}" "${fn}"`;
-  } else if (stream_ext == 'vtt') {
-    if (ext == 'mkv' || ext == 'mp4') {
+  } else if (stream_ext === 'vtt') {
+    if (ext === 'mkv' || ext === 'mp4') {
       fn = fn.replace(/\.(mkv|mp4)$/, '.srt');
-    } else if (ext != 'srt') {
+    } else if (ext !== 'srt') {
       fn += '.srt';
     }
     cmd.value = `ffmpeg -i "${url}" "${fn}"`;
   } else if (
     subtitles.length > 0 &&
-    (ext == 'srt' || ext == 'vtt' || url == subtitles[0])
+    (ext === 'srt' || ext === 'vtt' || url === subtitles[0])
   ) {
-    if (ext == 'mkv') {
+    if (ext === 'mkv') {
       fn = fn.replace('.mkv', '.srt');
     }
     cmd.value = `ffmpeg -i "${subtitles[0]}" "${fn}"`;
@@ -319,7 +319,7 @@ function update_cmd(e) {
       inputs.push(audio_stream);
     }
     inputs.push(...subtitles);
-    if (ext == 'mp4') {
+    if (ext === 'mp4') {
       cmd.value = `ffmpeg ${inputs
         .map((url) => `-i "${url}"`)
         .join(' ')} -vcodec copy -acodec copy -absf aac_adtstoasc "${fn}"`;
@@ -349,7 +349,7 @@ function master_callback(length, base_url) {
     const streams = [];
     let params;
     text.split('\n').forEach(function (line) {
-      if (line.length == 0) {
+      if (line.length === 0) {
         return;
       }
       console.log(line);
@@ -371,10 +371,10 @@ function master_callback(length, base_url) {
           }),
         );
         console.log(obj);
-        if (type == 'EXT-X-MEDIA') {
-          // && obj["TYPE"] == "AUDIO") {
+        if (type === 'EXT-X-MEDIA') {
+          // && obj["TYPE"] === "AUDIO") {
           ext_x_media[obj['TYPE']] = obj;
-        } else if (type == 'EXT-X-STREAM-INF') {
+        } else if (type === 'EXT-X-STREAM-INF') {
           params = obj;
         }
       } else {
@@ -417,7 +417,7 @@ function master_callback(length, base_url) {
           // the calculation is off by about 5%, probably because of audio and overhead
           info.push(`~${fmt_filesize((1.05 * length * stream.bitrate) / 8)}`);
         }
-        if (info.length != 0) {
+        if (info.length !== 0) {
           option.appendChild(document.createTextNode(` (${info.join(', ')})`));
         }
         dropdown.insertBefore(option, default_option);
@@ -445,13 +445,13 @@ document.addEventListener('DOMContentLoaded', function () {
     localStorage.setItem('expanded', expanded.toString());
   });
 
-  const expanded = localStorage.getItem('expanded') == 'true';
+  const expanded = localStorage.getItem('expanded') === 'true';
   if (expanded) {
     $('#expand').click();
   }
 
   $('#cmd').addEventListener('input', function (e) {
-    $('#copy').disabled = e.target.value.length == 0;
+    $('#copy').disabled = e.target.value.length === 0;
     $('#copy').textContent = 'Kopiera kommando';
   });
 
@@ -507,7 +507,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
   const cmd = $('#cmd');
   const cmd_height = localStorage.getItem('cmd-height');
-  if (cmd_height != undefined) {
+  if (cmd_height !== undefined) {
     cmd.style.height = cmd_height;
   }
   new ResizeObserver((entries) => {

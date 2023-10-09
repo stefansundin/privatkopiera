@@ -52,7 +52,7 @@ matchers.push({
             }
             else {
               const dash = title.lastIndexOf("-");
-              if (dash != -1) {
+              if (dash !== -1) {
                 title = title.substr(0, dash).trim();
               }
             }

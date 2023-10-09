@@ -42,7 +42,7 @@ async function nrk_callback(data) {
   }
 
   let ext = options.default_video_file_extension;
-  if (data.sourceMedium == 'audio') {
+  if (data.sourceMedium === 'audio') {
     ext = options.default_audio_file_extension;
   }
   const title = await getDocumentTitle();

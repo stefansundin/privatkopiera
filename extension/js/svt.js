@@ -59,7 +59,7 @@ function svt_callback(data) {
       return formats.indexOf(a.format) - formats.indexOf(b.format);
     })
     .forEach(function (stream) {
-      if (stream.format == 'hds') {
+      if (stream.format === 'hds') {
         stream.url = add_param(stream.url, 'hdcore=3.5.0'); // ¯\_(ツ)_/¯
       }
 
@@ -68,7 +68,7 @@ function svt_callback(data) {
       option.appendChild(document.createTextNode(extract_filename(stream.url)));
       streams.appendChild(option);
 
-      if (stream.format == 'hls') {
+      if (stream.format === 'hls') {
         const base_url = stream.url.replace(/\/[^/]+$/, '/');
         fetch(stream.url)
           .then(get_text)
@@ -90,7 +90,7 @@ function svt_callback(data) {
   if (
     data.programTitle &&
     data.episodeTitle &&
-    data.programTitle != data.episodeTitle
+    data.programTitle !== data.episodeTitle
   ) {
     update_filename(
       `${data.programTitle.trim()} - ${data.episodeTitle.trim()}.${
@@ -113,7 +113,7 @@ matchers.push({
   re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/kanaler(?:\/([^\/?]+)|\?selectedChannel=([^\/?]+))/,
   func: (ret, _) => {
     let ch = ret[1] || ret[2];
-    if (ch == 'svtbarn') {
+    if (ch === 'svtbarn') {
       ch = 'barnkanalen';
     }
     const data_url = `https://api.svt.se/video/ch-${ch}`;
@@ -174,7 +174,7 @@ matchers.push({
           console.log(data_url);
           fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
         });
-        if (ids.length == 0) {
+        if (ids.length === 0) {
           error('Hittade ingen video.');
         }
       },
