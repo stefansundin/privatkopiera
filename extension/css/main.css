@@ -32,13 +32,10 @@ h3 {
 .input-group {
   margin-bottom: 15px;
 }
-.input-group-prepend label {
+.input-group label {
   min-width: 100px;
   margin: 0;
   font-weight: bold;
-}
-.input-group.btns > .btn:not(:last-child) {
-  margin-right: 1em;
 }
 
 #cmd {

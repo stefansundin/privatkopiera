@@ -1,5 +1,6 @@
-<!doctype html>
+<!DOCTYPE html>
 <html>
+
 <head>
   <meta charset="utf-8">
   <link rel="stylesheet" href="css/bootstrap.min.css">
@@ -13,55 +14,70 @@
   <script src="js/nrk.js"></script>
   <script src="js/dr.dk.js"></script>
 </head>
+
 <body>
   <h3>
     <a id="expand">«</a>
     <span>Privatkopiera</span>
-    <small id="extension_version" class="float-right"></small>
+    <small id="extension_version" class="float-end"></small>
   </h3>
 
   <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"><label for="url">URL</label></span>
-    </div>
+    <span class="input-group-text">
+      <label for="url">URL</label>
+    </span>
     <input class="form-control" type="text" id="url" readonly>
   </div>
 
   <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"><label for="streams">Ström</label></span>
-    </div>
+    <span class="input-group-text">
+      <label for="streams">Ström</label>
+    </span>
     <select class="form-control" id="streams"></select>
   </div>
 
   <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"><label for="filename">Filnamn</label></span>
-    </div>
-    <input class="form-control" type="text" id="filename" placeholder="Filnamn.mkv" pattern='^[^\t:*?"<>\|]*$' spellcheck="false">
+    <span class="input-group-text">
+      <label for="filename">Filnamn</label>
+    </span>
+    <input class="form-control" type="text" id="filename" placeholder="Filnamn.mkv" pattern='^[^\t:*?"<>\|]*$'
+      spellcheck="false">
   </div>
 
   <div class="input-group">
-    <div class="input-group-prepend">
-      <span class="input-group-text"><label for="cmd">Kommando</label></span>
-    </div>
+    <span class="input-group-text">
+      <label for="cmd">Kommando</label>
+    </span>
     <textarea class="form-control" id="cmd" placeholder="ffmpeg ..." spellcheck="false" monospace></textarea>
   </div>
 
-  <div class="input-group btns">
-    <button class="btn btn-primary" id="copy" disabled>Kopiera kommando</button>
-    <button class="btn btn-primary d-none" id="download">Ladda ned</button>
-    <button class="btn btn-primary d-none" id="grant_permissions">Bevilja behörigheter</button>
-    <a class="btn btn-light d-none" id="open_json" target="_blank">Öppna JSON</a>
-    <a class="btn btn-light" href="https://stefansundin.github.io/privatkopiera/" target="_blank">Hjälp</a>
-    <button class="btn btn-light ml-auto" id="open_options">Inställningar</button>
+  <div>
+    <button class="btn btn-primary me-3" id="copy" disabled>
+      Kopiera kommando
+    </button>
+    <button class="btn btn-primary me-3 d-none" id="download">
+      Ladda ned
+    </button>
+    <button class="btn btn-primary me-3 d-none" id="grant_permissions">
+      Bevilja behörigheter
+    </button>
+    <a class="btn btn-light me-3 d-none" id="open_json" target="_blank">
+      Öppna JSON
+    </a>
+    <a class="btn btn-light me-3" href="https://stefansundin.github.io/privatkopiera/" target="_blank">
+      Hjälp
+    </a>
+    <button class="btn btn-light me-3 ml-auto" id="open_options">
+      Inställningar
+    </button>
   </div>
 
-  <p id="info">Laddar, var god vänta...</p>
+  <p class="mt-2" id="info">Laddar, var god vänta...</p>
 
   <div class="form-check bottom-right-fixed" title="Nollställ med shift-klick">
     <input class="form-check-input" type="checkbox" id="dark-mode" autocomplete="off">
     <label class="form-check-label" for="dark-mode">Dark mode</label>
   </div>
 </body>
+
 </html>
