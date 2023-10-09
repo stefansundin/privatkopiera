@@ -26,6 +26,7 @@ export const options = {
 };
 
 export const subtitles = [];
+export let tab_id;
 let tab_url, url, site;
 
 export function update_filename(fn) {
@@ -395,6 +396,7 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
+    tab_id = tabs[0].id;
     tab_url = tabs[0].url;
     if (!tab_url) {
       // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
