@@ -56,7 +56,7 @@ import {
   update_filename,
   update_json_url,
 } from '../popup.js';
-import { $, extract_filename, get_json, get_text } from '../utils.js';
+import { $, extract_filename, flatten, get_json, get_text } from '../utils.js';
 
 function svt_callback(data) {
   console.log(data);
@@ -189,6 +189,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\//,
     func: async (_, url) => {
+      let ret;
       if (
         (ret = /^(?:\/barnkanalen)?\/barnplay\/([^/]+)\/([^/?]+)/.exec(
           url.pathname,
