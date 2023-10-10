@@ -7,6 +7,7 @@ body {
 }
 figure.highlight pre {
   overflow: auto;
+  color: var(--bs-dark);
 }
 
 .container {
@@ -106,25 +107,6 @@ kbd {
   user-select: none;
   z-index: 1100;
 }
-
-// bootstrap v5 overrides
-:root {
-  scroll-behavior: auto;
-}
-.btn-light:hover {
-  background-color: #e2e6ea;
-  border-color: #dae0e5;
-}
-.form-check-input:focus {
-  box-shadow: none;
-}
-.form-check-input:indeterminate {
-  appearance: auto;
-}
-figure.highlight pre {
-  color: var(--bs-dark);
-}
-
 
 @import
   "jekyll"

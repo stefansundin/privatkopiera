@@ -1,0 +1,20 @@
+/* https://getbootstrap.com/docs/5.3/customize/css-variables/ */
+
+:root {
+  scroll-behavior: auto;
+}
+.form-check-input:focus {
+  box-shadow: none;
+}
+.form-check-input:indeterminate {
+  appearance: auto;
+}
+
+[data-bs-theme=light] .btn-light {
+  --bs-btn-bg: #e9eaeb;
+  --bs-btn-border-color: #e7e8e9;
+}
+[data-bs-theme=dark] .btn-light {
+  --bs-btn-bg: #a8aaac;
+  --bs-btn-border-color: #a2a2a2;
+}
