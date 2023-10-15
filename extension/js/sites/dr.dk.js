@@ -5,6 +5,7 @@ import {
   api_error,
   options,
   subtitles,
+  tab_id,
   update_cmd,
   update_filename,
 } from '../popup.js';
@@ -43,38 +44,35 @@ export default [
     permissions: {
       origins: ['https://isl.dr-massive.com/'],
     },
-    func: (ret) => {
+    func: async (ret) => {
       const video_id = ret[1];
       console.log(video_id);
 
       // Grab the page title and the required token from the page's localStorage
-      chrome.tabs.executeScript(
-        {
-          code: `(function(){
-            return [document.title, localStorage["session.tokens"]];
-          })()`,
-        },
-        function (data) {
-          console.log(data);
-          const title = data[0][0].split('|')[0].trim();
-          const tokens = JSON.parse(data[0][1]);
-          console.log(tokens);
-          const token = tokens[0].value;
+      const injectionResult = await chrome.scripting.executeScript({
+        target: { tabId: tab_id },
+        func: () => [document.title, localStorage['session.tokens']],
+      });
+      console.log('injectionResult', injectionResult);
+      const tabResult = injectionResult[0].result;
 
-          const data_url = `https://isl.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
-          update_filename(`${title}.${options.default_video_file_extension}`);
+      const title = tabResult[0].split('|')[0].trim();
+      const tokens = JSON.parse(tabResult[1]);
+      console.log(tokens);
+      const token = tokens[0].value;
 
-          console.log(data_url);
-          fetch(data_url, {
-            headers: {
-              'x-authorization': `Bearer ${token}`,
-            },
-          })
-            .then(get_json)
-            .then(dr_dk_callback)
-            .catch(api_error);
+      const data_url = `https://isl.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
+      update_filename(`${title}.${options.default_video_file_extension}`);
+
+      console.log(data_url);
+      fetch(data_url, {
+        headers: {
+          'x-authorization': `Bearer ${token}`,
         },
-      );
+      })
+        .then(get_json)
+        .then(dr_dk_callback)
+        .catch(api_error);
     },
   },
 ];

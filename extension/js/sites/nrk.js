@@ -20,6 +20,7 @@ import {
   master_callback,
   options,
   subtitles,
+  tab_id,
   update_cmd,
   update_filename,
   update_json_url,
@@ -66,7 +67,7 @@ async function nrk_callback(data) {
   if (data.sourceMedium === 'audio') {
     ext = options.default_audio_file_extension;
   }
-  const title = await getDocumentTitle();
+  const title = await getDocumentTitle(tab_id);
   if (title) {
     const fn = `${title}.${ext}`;
     update_filename(fn);
@@ -133,32 +134,28 @@ export default [
     permissions: {
       origins: ['https://psapi.nrk.no/'],
     },
-    func: () => {
+    func: async () => {
       // <div id="series-program-id-container" data-program-id="MSPO30080518">
-      chrome.tabs.executeScript(
-        {
-          code: `(function(){
-            const div = document.querySelector("[data-program-id]");
-            if (!div) {
-              return null;
-            }
-            return div.getAttribute("data-program-id");
-          })()`,
+      const injectionResult = await chrome.scripting.executeScript({
+        target: { tabId: tab_id },
+        func: () => {
+          const div = document.querySelector('[data-program-id]');
+          if (!div) {
+            return null;
+          }
+          return div.getAttribute('data-program-id');
         },
-        (ids) => {
-          console.log(ids);
-          flatten(ids).forEach((video_id) => {
-            const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
-            update_filename(
-              `${video_id}.${options.default_video_file_extension}`,
-            );
-            update_json_url(data_url);
+      });
+      console.log('injectionResult', injectionResult);
+      const tabResult = injectionResult[0].result;
 
-            console.log(data_url);
-            fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
-          });
-        },
-      );
+      const video_id = tabResult;
+      const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
+      update_filename(`${video_id}.${options.default_video_file_extension}`);
+      update_json_url(data_url);
+
+      console.log(data_url);
+      fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
     },
   },
 ];

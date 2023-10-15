@@ -303,10 +303,10 @@ async function call_func() {
   }
 }
 
-document.addEventListener('DOMContentLoaded', () => {
+document.addEventListener('DOMContentLoaded', async () => {
   $('#extension_version').textContent = `v${
     chrome.runtime.getManifest().version
-  } (alpha2)`;
+  } (alpha3)`;
 
   $('#expand').addEventListener('click', () => {
     document.body.classList.toggle('expand');
@@ -339,38 +339,33 @@ document.addEventListener('DOMContentLoaded', () => {
     chrome.runtime.openOptionsPage();
   });
 
-  $('#grant_permissions').addEventListener('click', () => {
-    chrome.permissions.request(site.permissions, (granted) => {
-      // The popup is automatically closed, so this does not really matter
-      // It stays open if "Inspect Popup" is used
-      if (granted) {
-        $('#copy').classList.remove('d-none');
-        $('#grant_permissions').classList.add('d-none');
-        $('#streams').disabled = false;
-        $('#filename').disabled = false;
-        $('#cmd').disabled = false;
-        call_func();
-      } else {
-        info('Fel: Behörigheter ej beviljade.');
-      }
-    });
+  $('#grant_permissions').addEventListener('click', async () => {
+    const granted = await chrome.permissions.request(site.permissions);
+    // The popup is automatically closed, so this does not really matter
+    // It stays open if "Inspect Popup" is used
+    if (granted) {
+      $('#copy').classList.remove('d-none');
+      $('#grant_permissions').classList.add('d-none');
+      $('#streams').disabled = false;
+      $('#filename').disabled = false;
+      $('#cmd').disabled = false;
+      call_func();
+    } else {
+      info('Fel: Behörigheter ej beviljade.');
+    }
   });
 
-  $('#download').addEventListener('click', () => {
-    chrome.permissions.request(
-      {
-        permissions: ['downloads'],
-      },
-      (granted) => {
-        if (!granted) {
-          return;
-        }
-        chrome.downloads.download({
-          url: $('#cmd').value,
-          filename: $('#filename').value,
-        });
-      },
-    );
+  $('#download').addEventListener('click', async () => {
+    const granted = await chrome.permissions.request({
+      permissions: ['downloads'],
+    });
+    if (!granted) {
+      return;
+    }
+    chrome.downloads.download({
+      url: $('#cmd').value,
+      filename: $('#filename').value,
+    });
   });
 
   const cmd = $('#cmd');
@@ -399,50 +394,50 @@ document.addEventListener('DOMContentLoaded', () => {
       });
   }
 
-  chrome.tabs.query({ active: true, currentWindow: true }, function (tabs) {
-    tab_id = tabs[0].id;
-    tab_url = tabs[0].url;
-    if (!tab_url) {
-      // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
-      // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
-      // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
-      info(
-        'Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.',
-      );
-      return;
-    }
-    if (
-      tab_url.startsWith(
-        'chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html',
-      )
-    ) {
-      // Tab suspended with The Great Suspender. Your mileage may vary.
-      tab_url = tab_url.split('&uri=')[1];
-    }
-    url = new URL(tab_url);
-    $('#url').value = tab_url;
-    console.log(tab_url);
+  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
+  tab_id = tab.id;
+  tab_url = tab.url;
 
-    if ((site = matchers.find((m) => m.re.test(tab_url)))) {
-      if (site.permissions) {
-        chrome.permissions.contains(site.permissions, (granted) => {
-          if (granted) {
-            call_func();
-          } else {
-            $('#copy').classList.add('d-none');
-            $('#grant_permissions').classList.remove('d-none');
-            $('#streams').disabled = true;
-            $('#filename').disabled = true;
-            $('#cmd').disabled = true;
-            info('Fler behörigheter krävs för den här sidan.');
-          }
-        });
-        return;
-      } else {
+  if (!tab_url) {
+    // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
+    info(
+      'Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.',
+    );
+    return;
+  }
+  if (
+    tab_url.startsWith(
+      'chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html',
+    )
+  ) {
+    // Tab suspended with The Great Suspender. Your mileage may vary.
+    tab_url = tab_url.split('&uri=')[1];
+  }
+  url = new URL(tab_url);
+  $('#url').value = tab_url;
+  console.log(tab_url);
+
+  site = matchers.find((m) => m.re.test(tab_url));
+  if (site) {
+    if (site.permissions) {
+      const granted = await chrome.permissions.contains(site.permissions);
+      if (granted) {
         call_func();
+      } else {
+        $('#copy').classList.add('d-none');
+        $('#grant_permissions').classList.remove('d-none');
+        $('#streams').disabled = true;
+        $('#filename').disabled = true;
+        $('#cmd').disabled = true;
+        info('Fler behörigheter krävs för den här sidan.');
       }
+      return;
     } else {
-      info('Fel: Den här hemsidan stöds ej.');
+      call_func();
     }
-  });
+  } else {
+    info('Fel: Den här hemsidan stöds ej.');
+  }
 });

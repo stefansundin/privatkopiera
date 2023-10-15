@@ -30,7 +30,8 @@
     "https://psapi.nrk.no/",
     "https://isl.dr-massive.com/",
     "https://sverigesradio.se/",
-    "https://urplay.se/"
+    "https://urplay.se/",
+    "https://www.svt.se/"
   ],
   "browser_specific_settings": {
     "gecko": {

@@ -56,7 +56,15 @@ import {
   update_filename,
   update_json_url,
 } from '../popup.js';
-import { $, extract_filename, flatten, get_json, get_text } from '../utils.js';
+import {
+  $,
+  extract_filename,
+  fetchDOM,
+  flatten,
+  get_json,
+  get_text,
+  isFirefox,
+} from '../utils.js';
 
 function svt_callback(data) {
   console.log(data);
@@ -154,36 +162,31 @@ export default [
   },
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
-    func: () => {
-      chrome.tabs.executeScript(
-        {
-          code: `(function(){
-            const ids = [];
-            const videos = document.querySelectorAll("[data-video-id]");
-            for (let i=0; i < videos.length; i++) {
-              const id = videos[i].getAttribute("data-video-id");
-              if (id) {
-                ids.push(id);
-              }
-            }
-            return ids;
-          })()`,
-        },
-        function (ids) {
-          console.log(ids);
-          ids = flatten(ids);
-          ids.forEach(function (video_id) {
-            const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`;
-            update_filename(`${video_id}.mp4`);
-            update_json_url(data_url);
-            console.log(data_url);
-            fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
-          });
-          if (ids.length === 0) {
-            info('Hittade ingen video.');
-          }
-        },
-      );
+    permissions: isFirefox
+      ? {
+          origins: ['https://www.svt.se/'],
+        }
+      : null,
+    func: async (ret, url) => {
+      const doc = await fetchDOM(url);
+      const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
+      console.log(data);
+
+      const videoIds = Object.values(data.props.pageProps.__APOLLO_STATE__)
+        .map((v) => v.videoId)
+        .filter(Boolean);
+
+      for (const videoId of videoIds) {
+        const data_url = `https://api.svt.se/video/${videoId}`;
+        update_filename(`${videoId}.${options.default_video_file_extension}`);
+        update_json_url(data_url);
+        console.log(data_url);
+        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+      }
+
+      if (videoIds.length === 0) {
+        info('Hittade ingen video.');
+      }
     },
   },
   {
