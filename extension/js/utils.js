@@ -72,17 +72,12 @@ export function $() {
   }
 }
 
-export function getDocumentTitle() {
-  return new Promise((resolve, reject) => {
-    chrome.tabs.executeScript(
-      {
-        code: `(function(){ return document.title; })()`,
-      },
-      (data) => {
-        resolve(data[0]);
-      },
-    );
+export async function getDocumentTitle(tab_id) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: () => document.title,
   });
+  return injectionResult[0].result;
 }
 
 export async function fetchDOM(url) {
