@@ -97,14 +97,14 @@ export async function fetchDOM(url) {
 
 export function extract_filename(url) {
   url = url.replace(/\?.+/, '');
-  return url.substr(url.lastIndexOf('/') + 1).replace(/[?#].*/, '');
+  return url.substring(url.lastIndexOf('/') + 1).replace(/[?#].*/, '');
 }
 
 export function extract_extension(url) {
   const fn = extract_filename(url);
   const dot = fn.lastIndexOf('.');
   if (dot !== -1) {
-    return fn.substr(dot + 1).toLowerCase();
+    return fn.substring(dot + 1).toLowerCase();
   }
 }
 

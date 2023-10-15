@@ -63,7 +63,7 @@ export default [
               else {
                 const dash = title.lastIndexOf("-");
                 if (dash !== -1) {
-                  title = title.substr(0, dash).trim();
+                  title = title.substring(0, dash).trim();
                 }
               }
               streams.push({

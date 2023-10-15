@@ -29,17 +29,17 @@
 //
 // SVT:
 // Example URL:
-// https://www.svt.se/nyheter/utrikes/har-ar-bron-som-nastan-snuddar-husen
+// https://www.svt.se/nyheter/utrikes/ovanlig-eldring-over-nord-och-sydamerika
 // Article Data URL:
-// https://api.svt.se/nss-api/page/nyheter/utrikes/har-ar-bron-som-nastan-snuddar-husen?q=articles
+// https://api.svt.se/nss-api/page/nyheter/utrikes/ovanlig-eldring-over-nord-och-sydamerika?q=articles
 // Media Data URL:
-// https://api.svt.se/video/jE4x6LA
+// https://api.svt.se/video/KrQbGGd
 //
 // https://www.svt.se/recept/julvort
 // Trasig!
 //
-// https://www.svt.se/recept/saffransrisotto-med-artor-och-vitt-vin
-// https://api.svt.se/videoplayer-api/video/27121781
+// https://www.svt.se/recept/nyponvinager
+// https://api.svt.se/video/33001262
 //
 // Example URL:
 // https://www.svt.se/barnkanalen/barnplay/gamingdrommar-live/j1a3m2y/
@@ -228,6 +228,10 @@ export default [
         update_json_url(data_url);
         console.log(data_url);
         fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+      }
+
+      if (ids.length === 0) {
+        info('Hittade ingen video.');
       }
     },
   },

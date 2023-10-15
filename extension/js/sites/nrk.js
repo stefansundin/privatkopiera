@@ -1,7 +1,7 @@
 // Example URL:
 // https://tv.nrk.no/serie/ardna-tv/2016/SAPP67004716
 // https://tv.nrk.no/serie/lindmo/2017/MUHU12005817
-// https://radio.nrk.no/serie/tett-paa-norske-artister/MYNF51000518/04-01-2018
+// https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
 // https://tv.nrk.no/serie/ski-nm
 // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
 // https://radio.nrk.no/podkast/bjoernen_lyver/sesong/1/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
