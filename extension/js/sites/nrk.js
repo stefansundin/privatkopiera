@@ -3,6 +3,7 @@
 // https://tv.nrk.no/serie/lindmo/2017/MUHU12005817
 // https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
 // https://tv.nrk.no/serie/ski-nm
+// https://tv.nrk.no/serie/side-om-side/sesong/10/episode/1/avspiller
 // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
 // https://radio.nrk.no/podkast/bjoernen_lyver/sesong/1/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
 // Data URL:
@@ -94,16 +95,15 @@ function nrk_postcast_callback(data) {
 
 export default [
   {
-    re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\/(?:program|serie)[^A-Z]*\/([A-Z][A-Z0-9]+)/,
+    re: /^https?:\/\/radio\.nrk\.no\.?\/serie[^A-Z]*\/([A-Z][A-Z0-9]+)/,
     permissions: {
       origins: ['https://psapi.nrk.no/'],
     },
     func: (ret) => {
-      const video_id = ret[1];
-      const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
-      update_filename(`${video_id}.${options.default_video_file_extension}`);
+      const id = ret[1];
+      const data_url = `https://psapi.nrk.no/playback/manifest/program/${id}`;
+      update_filename(`${id}.${options.default_audio_file_extension}`);
       update_json_url(data_url);
-
       console.log(data_url);
       fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
     },
