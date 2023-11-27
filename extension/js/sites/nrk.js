@@ -27,6 +27,7 @@ import {
 import {
   $,
   extract_filename,
+  flatten,
   get_json,
   get_text,
   getDocumentTitle,
