@@ -27,7 +27,7 @@
   "optional_permissions": [
     "downloads",
     "https://psapi.nrk.no/",
-    "https://isl.dr-massive.com/",
+    "https://production.dr-massive.com/",
     "https://sverigesradio.se/",
     "https://urplay.se/"
   ],

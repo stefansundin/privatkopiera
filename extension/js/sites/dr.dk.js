@@ -1,5 +1,5 @@
 // https://www.dr.dk/drtv/se/hjernemassage-med-jan-hellesoee_-dagens-gaest-er-thomas-eje_242600
-// https://isl.dr-massive.com/api/account/items/242600/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous
+// https://production.dr-massive.com/api/account/items/242600/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous
 
 import {
   api_error,
@@ -41,7 +41,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?dr\.dk\.?\/.*_(\d+)/,
     permissions: {
-      origins: ['https://isl.dr-massive.com/'],
+      origins: ['https://production.dr-massive.com/'],
     },
     func: (ret) => {
       const video_id = ret[1];
@@ -61,7 +61,7 @@ export default [
           console.log(tokens);
           const token = tokens.find((t) => t.type === 'UserAccount').value;
 
-          const data_url = `https://isl.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
+          const data_url = `https://production.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
           update_filename(`${title}.${options.default_video_file_extension}`);
 
           console.log(data_url);
