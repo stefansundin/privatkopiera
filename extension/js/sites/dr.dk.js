@@ -59,7 +59,7 @@ export default [
           const title = data[0][0].split('|')[0].trim();
           const tokens = JSON.parse(data[0][1]);
           console.log(tokens);
-          const token = tokens[0].value;
+          const token = tokens.find((t) => t.type === 'UserAccount').value;
 
           const data_url = `https://isl.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
           update_filename(`${title}.${options.default_video_file_extension}`);
