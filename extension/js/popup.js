@@ -55,7 +55,7 @@ export function info(text) {
 }
 
 export function api_error(e) {
-  console.log(e);
+  console.error(e);
   const el = $('#info');
   while (el.hasChildNodes()) {
     el.removeChild(el.firstChild);
