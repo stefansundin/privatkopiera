@@ -142,10 +142,11 @@ export default [
     },
   },
   {
-    re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/(\d+)/,
+    re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/([^/?]+)/,
     func: (ret) => {
+      // https://www.svt.se/videoplayer-embed/jXApWXa
       const video_id = ret[1];
-      const data_url = `https://api.svt.se/videoplayer-api/video/${video_id}`;
+      const data_url = `https://api.svt.se/video/${video_id}`;
       update_filename(`${video_id}.mp4`);
       update_json_url(data_url);
       console.log(data_url);
