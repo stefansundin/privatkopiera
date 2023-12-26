@@ -66,11 +66,18 @@ export default [
               title: title,
             });
           }
-          return streams;
+          return { result: streams };
         },
       });
-      console.log('injectionResult', injectionResult);
-      const streams = injectionResult[0].result;
+      console.debug('injectionResult', injectionResult);
+      if (injectionResult[0].error) {
+        throw injectionResult[0].error;
+      } else if (injectionResult[0].result === null) {
+        throw new Error('Script injection error.');
+      } else if (injectionResult[0].result.error) {
+        throw new Error(injectionResult[0].result.error);
+      }
+      const streams = injectionResult[0].result.result;
 
       for (const stream of streams) {
         const data_url = `https://sverigesradio.se/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;

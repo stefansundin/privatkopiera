@@ -79,6 +79,11 @@ export async function getDocumentTitle(tab_id) {
     target: { tabId: tab_id },
     func: () => document.title,
   });
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script injection error.');
+  }
   return injectionResult[0].result;
 }
 
@@ -94,15 +99,26 @@ export async function fetchDOM(url, ...args) {
     func: async (...args) => {
       const response = await fetch(...args);
       if (!response.ok) {
-        throw new Error(
-          `Invalid response: ${response.status} ${await response.text()}`,
-        );
+        return {
+          error: `Invalid response: ${
+            response.status
+          } ${await response.text()}`,
+        };
       }
-      return response.text();
+      return { result: await response.text() };
     },
     args: [url, ...args],
   });
-  const body = injectionResult[0].result;
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script injection error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+
+  const body = injectionResult[0].result.result;
   const doc = new DOMParser().parseFromString(body, 'text/html');
   return doc;
 }
@@ -113,16 +129,25 @@ export async function fetchText(...args) {
     func: async (...args) => {
       const response = await fetch(...args);
       if (!response.ok) {
-        throw new Error(
-          `Invalid response: ${response.status} ${await response.text()}`,
-        );
+        return {
+          error: `Invalid response: ${
+            response.status
+          } ${await response.text()}`,
+        };
       }
-      return response.text();
+      return { result: await response.text() };
     },
     args,
   });
-  console.log('injectionResult', injectionResult);
-  return injectionResult[0].result;
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script injection error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+  return injectionResult[0].result.result;
 }
 
 export async function fetchJson(...args) {
@@ -131,16 +156,25 @@ export async function fetchJson(...args) {
     func: async (...args) => {
       const response = await fetch(...args);
       if (!response.ok) {
-        throw new Error(
-          `Invalid response: ${response.status} ${await response.text()}`,
-        );
+        return {
+          error: `Invalid response: ${
+            response.status
+          } ${await response.text()}`,
+        };
       }
-      return response.json();
+      return { result: await response.json() };
     },
     args,
   });
-  console.log('injectionResult', injectionResult);
-  return injectionResult[0].result;
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script injection error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+  return injectionResult[0].result.result;
 }
 
 export function extract_filename(url) {

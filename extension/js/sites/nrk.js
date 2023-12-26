@@ -157,13 +157,20 @@ export default [
           // <div id="series-program-id-container" data-program-id="MSPO30080518">
           const div = document.querySelector('[data-program-id]');
           if (!div) {
-            return null;
+            return { error: 'data-program-id not found on page' };
           }
-          return div.getAttribute('data-program-id');
+          return { result: div.getAttribute('data-program-id') };
         },
       });
-      console.log('injectionResult', injectionResult);
-      const video_id = injectionResult[0].result;
+      console.debug('injectionResult', injectionResult);
+      if (injectionResult[0].error) {
+        throw injectionResult[0].error;
+      } else if (injectionResult[0].result === null) {
+        throw new Error('Script injection error.');
+      } else if (injectionResult[0].result.error) {
+        throw new Error(injectionResult[0].result.error);
+      }
+      const video_id = injectionResult[0].result.result;
 
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
       update_filename(`${video_id}.${options.default_video_file_extension}`);

@@ -49,7 +49,12 @@ export default [
         target: { tabId: tab_id },
         func: () => [document.title, localStorage['session.tokens']],
       });
-      console.log('injectionResult', injectionResult);
+      console.debug('injectionResult', injectionResult);
+      if (injectionResult[0].error) {
+        throw injectionResult[0].error;
+      } else if (injectionResult[0].result === null) {
+        throw new Error('Script injection error.');
+      }
       const tabResult = injectionResult[0].result;
       const title = tabResult[0].split('|')[0].trim();
       const tokens = JSON.parse(tabResult[1]);
