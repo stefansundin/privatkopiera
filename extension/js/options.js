@@ -1,7 +1,4 @@
-const default_options = {
-  default_video_file_extension: 'mkv',
-  default_audio_file_extension: 'mka',
-};
+import default_options from './default_options.js';
 
 const options = {
   default_video_file_extension:

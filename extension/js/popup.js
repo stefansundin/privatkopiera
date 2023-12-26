@@ -1,3 +1,4 @@
+import default_options from './default_options.js';
 import dr from './sites/dr.dk.js';
 import nrk from './sites/nrk.js';
 import sverigesradio from './sites/sverigesradio.js';
@@ -14,11 +15,6 @@ import {
 } from './utils.js';
 
 const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
-
-const default_options = {
-  default_video_file_extension: 'mkv',
-  default_audio_file_extension: 'mka',
-};
 
 export const options = {
   default_video_file_extension:
