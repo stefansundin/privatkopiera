@@ -6,7 +6,7 @@
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
 import { api_error, options, update_cmd, update_filename } from '../popup.js';
-import { $, fetchDOM, get_json, isFirefox } from '../utils.js';
+import { $, fetchDOM, fetchJson } from '../utils.js';
 
 function ur_callback(data) {
   const program = data.program;
@@ -75,17 +75,11 @@ function ur_callback(data) {
 export default [
   {
     re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
-    permissions: isFirefox
-      ? {
-          origins: ['https://urplay.se/'],
-        }
-      : null,
     func: async (ret, url) => {
       const doc = await fetchDOM(url);
       const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
       const lb_url = 'https://streaming-loadbalancer.ur.se/loadbalancer.json';
-      fetch(lb_url)
-        .then(get_json)
+      fetchJson(lb_url)
         .then(ur_callback(data.props.pageProps))
         .catch(api_error);
     },

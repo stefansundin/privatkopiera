@@ -26,12 +26,7 @@
     "scripting"
   ],
   "optional_permissions": [
-    "downloads",
-    "https://psapi.nrk.no/",
-    "https://production.dr-massive.com/",
-    "https://sverigesradio.se/",
-    "https://urplay.se/",
-    "https://www.svt.se/"
+    "downloads"
   ],
   "browser_specific_settings": {
     "gecko": {

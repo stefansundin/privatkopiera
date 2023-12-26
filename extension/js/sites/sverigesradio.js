@@ -1,5 +1,3 @@
-// In Chrome, activeTab permissions automatically grants access to https://sverigesradio.se/, but this is not true for Firefox.
-//
 // Example URL:
 // https://sverigesradio.se/artikel/6411195
 // Example URL with multiple streams:
@@ -9,27 +7,23 @@
 // Get audio URL:
 // https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { api_error, tab_id, update_cmd, update_json_url } from '../popup.js';
-import { $, extract_extension, get_json, isFirefox } from '../utils.js';
+import { tab_id, update_cmd, update_json_url } from '../popup.js';
+import { $, extract_extension, fetchJson } from '../utils.js';
 
-function sr_callback(stream, option) {
-  return function (data) {
-    const ext = extract_extension(data.audioUrl) || 'mp3';
-    option.value = data.audioUrl;
-    option.setAttribute('data-filename', `${stream.title}.${ext}`);
-    update_cmd();
-  };
+function sr_callback(stream, data) {
+  const dropdown = $('#streams');
+  const ext = extract_extension(data.audioUrl) || 'mp3';
+  const option = document.createElement('option');
+  option.appendChild(document.createTextNode(stream.title));
+  dropdown.appendChild(option);
+  option.value = data.audioUrl;
+  option.setAttribute('data-filename', `${stream.title}.${ext}`);
+  update_cmd();
 }
 
 export default [
   {
     re: /^https?:\/\/(?:www\.)?sverigesradio\.se\.?(\/.*)/,
-    permissions: isFirefox
-      ? {
-          permissions: ['downloads'],
-          origins: ['https://sverigesradio.se/'],
-        }
-      : null,
     func: async () => {
       // Find audio streams by looking for data-audio-id attributes
       const injectionResult = await chrome.scripting.executeScript({
@@ -76,23 +70,18 @@ export default [
         },
       });
       console.log('injectionResult', injectionResult);
-      const tabResult = injectionResult[0].result;
+      const streams = injectionResult[0].result;
 
-      const dropdown = $('#streams');
-      for (const stream of tabResult) {
-        // Create the option here so we always get them in the same order
-        const option = document.createElement('option');
-        option.appendChild(document.createTextNode(stream.title));
-        dropdown.appendChild(option);
-
+      for (const stream of streams) {
         const data_url = `https://sverigesradio.se/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
         update_json_url(data_url);
 
-        console.log(data_url);
-        fetch(data_url)
-          .then(get_json)
-          .then(sr_callback(stream, option))
-          .catch(api_error);
+        const data = await fetchJson(data_url, {
+          headers: {
+            accept: 'application/json',
+          },
+        });
+        sr_callback(stream, data);
       }
     },
   },

@@ -28,9 +28,5 @@
   "optional_permissions": [
     "downloads"
   ],
-  "optional_host_permissions": [
-    "https://psapi.nrk.no/",
-    "https://production.dr-massive.com/"
-  ],
   "minimum_chrome_version": "102"
 }

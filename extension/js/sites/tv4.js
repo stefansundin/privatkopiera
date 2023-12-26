@@ -20,6 +20,7 @@
 import {
   api_error,
   info,
+  master_callback,
   options,
   tab_id,
   update_cmd,
@@ -28,32 +29,39 @@ import {
 } from '../popup.js';
 import {
   $,
-  get_json,
+  fetchDOM,
+  fetchJson,
+  fetchText,
   localStorageGetWithExpiry,
   localStorageSetWithExpiry,
 } from '../utils.js';
 
-function tv4play_asset_callback(data) {
-  const media_url = `https://playback2.a2d.tv${data.mediaUri}`;
-  console.log(media_url);
-  fetch(media_url).then(get_json).then(tv4play_media_callback).catch(api_error);
-}
-
-function tv4play_media_callback(data) {
-  update_filename(
-    `${data.metadata.title.trim()}.${options.default_video_file_extension}`,
-  );
-
+function tv4play_media_callback(data, expand = false) {
   const dropdown = $('#streams');
+  const fn = `${data.metadata.title.trim()}.${
+    options.default_video_file_extension
+  }`;
+  if (dropdown.childNodes.length === 0) {
+    update_filename(fn);
+  }
+
   const option = document.createElement('option');
   option.value = data.playbackItem.manifestUrl;
-  option.appendChild(document.createTextNode(data.playbackItem.type));
+  option.appendChild(document.createTextNode(data.metadata.title.trim()));
+  option.setAttribute('data-filename', fn);
   dropdown.appendChild(option);
   update_cmd();
+
+  if (expand && data.playbackItem.type === 'hls') {
+    const base_url = data.playbackItem.manifestUrl.replace(/\/[^/]+$/, '/');
+    fetchText(data.playbackItem.manifestUrl)
+      .then(master_callback(data.contentDuration, base_url))
+      .catch(api_error);
+  }
 }
 
-function tv4_error(e) {
-  console.log(e);
+function tv4_error(err) {
+  console.log(err);
   // delete the cached access token in case it needs refreshing.. the user can try again and maybe it will work.
   localStorage.removeItem('tv4-access-token');
   info('Något gick fel. Videon kanske kräver att du är inloggad?');
@@ -118,32 +126,43 @@ export default [
 
       const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
       update_json_url(metadata_url);
-      fetch(metadata_url, {
+      const data = await fetchJson(metadata_url, {
         headers: access_token
           ? {
               'X-Jwt': `Bearer ${access_token}`,
             }
           : {},
-      })
-        .then(get_json)
-        .then(tv4play_media_callback)
-        .catch(tv4_error);
+      }).catch(tv4_error);
+      tv4play_media_callback(data, true);
     },
   },
   {
-    re: /^https?:\/\/(?:www\.)?tv4?\.se\.?\/.*(?:-|\/)(\d+)/,
-    func: (ret) => {
-      // This does not work on new URLs
-      const video_id = ret[1];
-      const data_url = `https://playback2.a2d.tv/asset/${video_id}?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets`;
-      update_filename(`${video_id}.${options.default_video_file_extension}`);
-      update_json_url(data_url);
+    re: /^https?:\/\/(?:www\.)?tv4\.se\.?\//,
+    func: async (ret, url) => {
+      const doc = await fetchDOM(url);
+      const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
+      console.log(data);
 
-      console.log(data_url);
-      fetch(data_url)
-        .then(get_json)
-        .then(tv4play_asset_callback)
-        .catch(api_error);
+      const videoIds = Object.values(data.props.apolloState)
+        .filter((thing) => thing.type === 'clipvideo')
+        .map((v) => v.id);
+
+      for (const videoId of videoIds) {
+        const metadata_url = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
+        console.log(metadata_url);
+        update_json_url(metadata_url);
+        fetchJson(metadata_url, {
+          headers: {
+            accept: 'application/json',
+          },
+        })
+          .then(tv4play_media_callback)
+          .catch(tv4_error);
+      }
+
+      if (videoIds.length === 0) {
+        info('Hittade ingen video.');
+      }
     },
   },
 ];

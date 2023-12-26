@@ -1,3 +1,5 @@
+import { tab_id } from './popup.js';
+
 export const isFirefox = navigator.userAgent.includes('Firefox/');
 
 export function localStorageSetWithExpiry(key, value, ttl) {
@@ -80,14 +82,65 @@ export async function getDocumentTitle(tab_id) {
   return injectionResult[0].result;
 }
 
-export async function fetchDOM(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Unexpected response code: ${response.status}`);
+export async function fetchDOM(url, ...args) {
+  // The `url` argument passed to the site function is a URL and not a string, so when it is used here it causes an error in Chrome.
+  // TODO: Refactor stuff to make this less weird.
+  if (url instanceof URL) {
+    url = url.toString();
   }
-  const body = await response.text();
+
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      const response = await fetch(...args);
+      if (!response.ok) {
+        throw new Error(
+          `Invalid response: ${response.status} ${await response.text()}`,
+        );
+      }
+      return response.text();
+    },
+    args: [url, ...args],
+  });
+  const body = injectionResult[0].result;
   const doc = new DOMParser().parseFromString(body, 'text/html');
   return doc;
+}
+
+export async function fetchText(...args) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      const response = await fetch(...args);
+      if (!response.ok) {
+        throw new Error(
+          `Invalid response: ${response.status} ${await response.text()}`,
+        );
+      }
+      return response.text();
+    },
+    args,
+  });
+  console.log('injectionResult', injectionResult);
+  return injectionResult[0].result;
+}
+
+export async function fetchJson(...args) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      const response = await fetch(...args);
+      if (!response.ok) {
+        throw new Error(
+          `Invalid response: ${response.status} ${await response.text()}`,
+        );
+      }
+      return response.json();
+    },
+    args,
+  });
+  console.log('injectionResult', injectionResult);
+  return injectionResult[0].result;
 }
 
 export function extract_filename(url) {

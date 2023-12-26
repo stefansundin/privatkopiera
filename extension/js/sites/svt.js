@@ -9,8 +9,8 @@
 // Data URL:
 // https://api.svt.se/video/2520376
 //
-// https://www.svtplay.se/klipp/22725758/har-ar-historien-bakom-sma-grodorna
-// https://api.svt.se/video/22725758
+// https://www.svtplay.se/klipp/jVwXaEx/vem-ar-han-egentligen
+// https://api.svt.se/video/jVwXaEx
 //
 // SVT Play Live:
 // Example URL:
@@ -36,7 +36,7 @@
 // https://api.svt.se/video/KrQbGGd
 //
 // https://www.svt.se/recept/julvort
-// Trasig!
+// https://api.svt.se/video/1398771-001A
 //
 // https://www.svt.se/recept/nyponvinager
 // https://api.svt.se/video/33001262
@@ -60,10 +60,8 @@ import {
   $,
   extract_filename,
   fetchDOM,
-  flatten,
-  get_json,
-  get_text,
-  isFirefox,
+  fetchJson,
+  fetchText,
 } from '../utils.js';
 
 function svt_callback(data) {
@@ -85,8 +83,7 @@ function svt_callback(data) {
 
     if (stream.format === 'hls') {
       const base_url = stream.url.replace(/\/[^/]+$/, '/');
-      fetch(stream.url)
-        .then(get_text)
+      fetchText(stream.url)
         .then(master_callback(data.contentDuration, base_url))
         .catch(api_error);
     }
@@ -134,7 +131,13 @@ export default [
       }
       const data_url = `https://api.svt.se/video/ch-${ch}`;
       update_json_url(data_url);
-      fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+      fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+        },
+      })
+        .then(svt_callback)
+        .catch(api_error);
     },
   },
   {
@@ -146,7 +149,14 @@ export default [
       update_filename(`${videoId}.${options.default_video_file_extension}`);
       update_json_url(data_url);
       console.log(data_url);
-      fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+
+      fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+        },
+      })
+        .then(svt_callback)
+        .catch(api_error);
     },
   },
   {
@@ -158,16 +168,18 @@ export default [
       update_filename(`${video_id}.mp4`);
       update_json_url(data_url);
       console.log(data_url);
-      fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+
+      fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+        },
+      })
+        .then(svt_callback)
+        .catch(api_error);
     },
   },
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
-    permissions: isFirefox
-      ? {
-          origins: ['https://www.svt.se/'],
-        }
-      : null,
     func: async (ret, url) => {
       const doc = await fetchDOM(url);
       const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
@@ -182,7 +194,14 @@ export default [
         update_filename(`${videoId}.${options.default_video_file_extension}`);
         update_json_url(data_url);
         console.log(data_url);
-        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+
+        fetchJson(data_url, {
+          headers: {
+            accept: 'application/json',
+          },
+        })
+          .then(svt_callback)
+          .catch(api_error);
       }
 
       if (videoIds.length === 0) {
@@ -203,38 +222,50 @@ export default [
         update_filename(`${ret[1]}.${options.default_video_file_extension}`);
         update_json_url(data_url);
         console.log(data_url);
-        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+        fetchJson(data_url, {
+          headers: {
+            accept: 'application/json',
+          },
+        })
+          .then(svt_callback)
+          .catch(api_error);
         return;
       }
 
-      const data = await fetch(
-        `https://api.svt.se/nss-api/page${url.pathname}?q=articles`,
-      )
-        .then(get_json)
-        .catch(api_error);
-      console.log(data);
-      if (!data) return;
-
-      let ids = flatten(
-        data.articles.content
-          .filter((a) => a.media)
-          .map((article) =>
-            article.media
-              .filter((m) => m.image && m.image.isVideo && m.image.svtId)
-              .map((m) => m.image.svtId),
-          ),
+      // WARNING: This can probably break at any time..
+      // TODO: Figure out actual query instead of the persistedQuery and remove hard coded stuff
+      const variables = {
+        allocationsCacheKey: '{}',
+        direktcenterLinkedPostId: null,
+        path: url.pathname,
+        searchTerm: null,
+        version: '0dd165ab',
+      };
+      const data = await fetchJson(
+        `https://api.svt.se/newsqlear/graphql?operationName=RootQuery&variables=${encodeURI(
+          JSON.stringify(variables),
+        )}&extensions=%7B%22persistedQuery%22%3A%7B%22sha256Hash%22%3A%222841cd56db9c6ef22166c80c4269ebbb1fc8de24044c100e5581d3b8956e324e%22%2C%22version%22%3A1%7D%7D`,
+        {
+          headers: {
+            accept:
+              'application/graphql-response+json, application/graphql+json, application/json, text/event-stream, multipart/mixed',
+          },
+        },
       );
-      console.log(ids);
+      console.log(data);
 
-      for (const svtId of ids) {
+      const videoIds = [data?.data?.page?.topMedia?.svtId].filter(Boolean);
+      console.log('videoIds', videoIds);
+
+      for (const svtId of videoIds) {
         const data_url = `https://api.svt.se/video/${svtId}`;
         update_filename(`${svtId}.${options.default_video_file_extension}`);
         update_json_url(data_url);
         console.log(data_url);
-        fetch(data_url).then(get_json).then(svt_callback).catch(api_error);
+        fetchJson(data_url).then(svt_callback).catch(api_error);
       }
 
-      if (ids.length === 0) {
+      if (videoIds.length === 0) {
         info('Hittade ingen video.');
       }
     },

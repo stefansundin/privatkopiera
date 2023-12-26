@@ -17,7 +17,6 @@
 // https://podkast.nrk.no/fil/bjoernen_lyver/bjoernen_lyver_2018-02-16_1300_760.MP3
 
 import {
-  api_error,
   master_callback,
   options,
   subtitles,
@@ -29,8 +28,8 @@ import {
 import {
   $,
   extract_filename,
-  get_json,
-  get_text,
+  fetchJson,
+  fetchText,
   getDocumentTitle,
   parse_pt,
 } from '../utils.js';
@@ -47,10 +46,8 @@ async function nrk_callback(data) {
     streams.appendChild(option);
 
     const base_url = asset.url.replace(/\/[^/]+$/, '/');
-    fetch(asset.url)
-      .then(get_text)
-      .then(master_callback(duration, base_url))
-      .catch(api_error);
+    const data = await fetchText(asset.url);
+    master_callback(duration, base_url)(data);
   }
 
   for (const subtitle of data.playable.subtitles) {
@@ -96,49 +93,68 @@ function nrk_postcast_callback(data) {
 export default [
   {
     re: /^https?:\/\/radio\.nrk\.no\.?\/serie[^A-Z]*\/([A-Z][A-Z0-9]+)/,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
-    func: (ret) => {
+    func: async (ret) => {
       const id = ret[1];
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${id}`;
       update_filename(`${id}.${options.default_audio_file_extension}`);
       update_json_url(data_url);
       console.log(data_url);
-      fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
+      await nrk_callback(data);
     },
   },
   {
     re: /^https?:\/\/radio\.nrk\.no\.?\/pod[ck]ast\/.+\/(l_[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)/,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
-    func: (ret) => {
+    func: async (ret) => {
       // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
       // https://psapi.nrk.no/playback/metadata/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
       // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
-      // const data_url = `https://psapi.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`;
       const data_url = `https://psapi.nrk.no/playback/manifest/podcast/${ret[1]}`;
-      // update_filename(`${ret[1]}-${ret[2]}.mp3`);
+      console.log(data_url);
       update_json_url(data_url);
 
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
+        },
+      });
+      await nrk_postcast_callback(data);
+    },
+  },
+  {
+    re: /^https?:\/\/radio\.nrk\.no\.?\/serie\/.+\/(l_[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)/,
+    func: async (ret) => {
+      // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
+      // https://psapi.nrk.no/playback/metadata/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
+      // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
+      const data_url = `https://psapi.nrk.no/playback/manifest/podcast/${ret[1]}`;
       console.log(data_url);
-      fetch(data_url)
-        .then(get_json)
-        .then(nrk_postcast_callback)
-        .catch(api_error);
+      update_json_url(data_url);
+
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
+        },
+      });
+      await nrk_postcast_callback(data);
     },
   },
   {
     re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\//,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
     func: async () => {
-      // <div id="series-program-id-container" data-program-id="MSPO30080518">
+      // Grab the video id from the DOM
       const injectionResult = await chrome.scripting.executeScript({
         target: { tabId: tab_id },
         func: () => {
+          // <div id="series-program-id-container" data-program-id="MSPO30080518">
           const div = document.querySelector('[data-program-id]');
           if (!div) {
             return null;
@@ -147,15 +163,20 @@ export default [
         },
       });
       console.log('injectionResult', injectionResult);
-      const tabResult = injectionResult[0].result;
+      const video_id = injectionResult[0].result;
 
-      const video_id = tabResult;
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
       update_filename(`${video_id}.${options.default_video_file_extension}`);
       update_json_url(data_url);
 
-      console.log(data_url);
-      fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: '*/*',
+        },
+      });
+      await nrk_callback(data);
     },
   },
 ];
