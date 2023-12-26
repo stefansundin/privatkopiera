@@ -358,10 +358,15 @@ document.addEventListener('DOMContentLoaded', async () => {
     if (!granted) {
       return;
     }
-    chrome.downloads.download({
-      url: $('#cmd').value,
-      filename: $('#filename').value,
-    });
+    try {
+      $('#download').disabled = true;
+      await chrome.downloads.download({
+        url: $('#cmd').value,
+        filename: $('#filename').value,
+      });
+    } finally {
+      $('#download').disabled = false;
+    }
   });
 
   const cmd = $('#cmd');
