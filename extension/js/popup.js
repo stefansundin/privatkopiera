@@ -128,11 +128,7 @@ export function update_cmd(e) {
   streams.title = stream_fn;
   if (stream_ext === 'f4m') {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`;
-  } else if (
-    stream_ext === 'm4a' ||
-    stream_ext === 'mp3' ||
-    /^https?:\/\/http-live\.sr\.se/.test(url)
-  ) {
+  } else if (stream_ext === 'm4a' || stream_ext === 'mp3') {
     cmd.value = url;
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
