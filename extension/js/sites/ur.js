@@ -7,68 +7,66 @@
 import { api_error, options, update_cmd, update_filename } from '../popup.js';
 import { $, fetchJson, fetchNextData } from '../utils.js';
 
-function ur_callback(data) {
+function ur_callback(domain, data) {
   const program = data.program;
+  console.log('program', program);
 
-  return function (lb_data) {
-    const domain = lb_data.redirect;
-    const streams = [];
-    if (
-      program.streamingInfo.sweComplete &&
-      program.streamingInfo.sweComplete.hd
-    ) {
-      streams.push({
-        info: 'HD med undertexter',
-        url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`,
-      });
-    }
-    if (program.streamingInfo.raw && program.streamingInfo.raw.hd) {
-      streams.push({
-        info: 'HD',
-        url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`,
-      });
-    }
-    if (
-      program.streamingInfo.sweComplete &&
-      program.streamingInfo.sweComplete.sd
-    ) {
-      streams.push({
-        info: 'SD med undertexter',
-        url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`,
-      });
-    }
-    if (program.streamingInfo.raw) {
-      for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
-        if (!value.location) {
-          continue;
-        }
-        const url = `https://${domain}/${value.location}playlist.m3u8`;
-        if (streams.some((s) => s.url === url)) {
-          continue;
-        }
-        streams.push({
-          info: key.toUpperCase(),
-          url: url,
-        });
+  const streams = [];
+  if (
+    program.streamingInfo.sweComplete &&
+    program.streamingInfo.sweComplete.hd
+  ) {
+    streams.push({
+      info: 'HD med undertexter',
+      url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`,
+    });
+  }
+  if (program.streamingInfo.raw && program.streamingInfo.raw.hd) {
+    streams.push({
+      info: 'HD',
+      url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`,
+    });
+  }
+  if (
+    program.streamingInfo.sweComplete &&
+    program.streamingInfo.sweComplete.sd
+  ) {
+    streams.push({
+      info: 'SD med undertexter',
+      url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`,
+    });
+  }
+  if (program.streamingInfo.raw) {
+    for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
+      if (!value.location) {
+        continue;
       }
+      const url = `https://${domain}/${value.location}playlist.m3u8`;
+      if (streams.some((s) => s.url === url)) {
+        continue;
+      }
+      streams.push({
+        info: key.toUpperCase(),
+        url: url,
+      });
     }
-    console.log(streams);
+  }
+  console.log('stream', streams);
 
-    const dropdown = $('#streams');
-    for (const stream of streams) {
-      const option = document.createElement('option');
-      option.value = stream.url;
-      option.appendChild(document.createTextNode(stream.info));
-      dropdown.appendChild(option);
-    }
+  const dropdown = $('#streams');
+  for (const stream of streams) {
+    const option = document.createElement('option');
+    option.value = stream.url;
+    option.appendChild(document.createTextNode(stream.info));
+    dropdown.appendChild(option);
+  }
 
-    let fn = `${program.title?.trim()}.${options.default_video_file_extension}`;
-    if (program.seriesTitle) {
-      fn = `${program.seriesTitle.trim()} - ${fn}`;
-    }
-    update_filename(fn);
-    update_cmd();
-  };
+  let fn = `${program.title?.trim()}.${options.default_video_file_extension}`;
+  if (program.seriesTitle) {
+    fn = `${program.seriesTitle.trim()} - ${fn}`;
+  }
+  update_filename(fn);
+  update_cmd();
 }
 
 export default [
@@ -78,7 +76,7 @@ export default [
       const data = await fetchNextData(url);
       const lb_url = 'https://streaming-loadbalancer.ur.se/loadbalancer.json';
       fetchJson(lb_url)
-        .then(ur_callback(data.props.pageProps))
+        .then((lb_data) => ur_callback(lb_data.redirect, data.props.pageProps))
         .catch(api_error);
     },
   },
