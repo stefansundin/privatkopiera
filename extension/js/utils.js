@@ -82,7 +82,7 @@ export async function getDocumentTitle(tab_id) {
   if (injectionResult[0].error) {
     throw injectionResult[0].error;
   } else if (injectionResult[0].result === null) {
-    throw new Error('Script injection error.');
+    throw new Error('Script error.');
   }
   return injectionResult[0].result;
 }
@@ -113,7 +113,7 @@ export async function fetchDOM(url, ...args) {
   if (injectionResult[0].error) {
     throw injectionResult[0].error;
   } else if (injectionResult[0].result === null) {
-    throw new Error('Script injection error.');
+    throw new Error('Script error.');
   } else if (injectionResult[0].result.error) {
     throw new Error(injectionResult[0].result.error);
   }
@@ -156,7 +156,7 @@ export async function fetchText(...args) {
   if (injectionResult[0].error) {
     throw injectionResult[0].error;
   } else if (injectionResult[0].result === null) {
-    throw new Error('Script injection error.');
+    throw new Error('Script error.');
   } else if (injectionResult[0].result.error) {
     throw new Error(injectionResult[0].result.error);
   }
@@ -183,7 +183,7 @@ export async function fetchJson(...args) {
   if (injectionResult[0].error) {
     throw injectionResult[0].error;
   } else if (injectionResult[0].result === null) {
-    throw new Error('Script injection error.');
+    throw new Error('Script error.');
   } else if (injectionResult[0].result.error) {
     throw new Error(injectionResult[0].result.error);
   }

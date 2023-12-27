@@ -53,7 +53,7 @@ export default [
       if (injectionResult[0].error) {
         throw injectionResult[0].error;
       } else if (injectionResult[0].result === null) {
-        throw new Error('Script injection error.');
+        throw new Error('Script error.');
       }
       const tabResult = injectionResult[0].result;
       const title = tabResult[0].split('|')[0].trim();
