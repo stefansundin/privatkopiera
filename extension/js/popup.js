@@ -198,7 +198,7 @@ export function update_cmd(e) {
 
 export function master_callback(length, base_url) {
   return function (text) {
-    console.log(text);
+    console.debug(text);
 
     const ext_x_media = {};
     const streams = [];
@@ -207,7 +207,7 @@ export function master_callback(length, base_url) {
       if (line.length === 0) {
         continue;
       }
-      console.log(line);
+      console.debug(line);
       if (line.startsWith('#')) {
         if (!line.includes(':')) continue;
         const type = line.substring(1, line.indexOf(':'));
@@ -225,7 +225,7 @@ export function master_callback(length, base_url) {
             return [k, v];
           }),
         );
-        console.log(obj);
+        console.debug(obj);
         if (type === 'EXT-X-MEDIA') {
           // && obj["TYPE"] === "AUDIO") {
           ext_x_media[obj['TYPE']] = obj;
@@ -244,7 +244,7 @@ export function master_callback(length, base_url) {
         });
       }
     }
-    console.log(streams);
+    console.debug(streams);
 
     const dropdown = $('#streams');
     const default_option = dropdown.getElementsByTagName('option')[0];
