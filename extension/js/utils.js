@@ -213,19 +213,3 @@ export function parse_pt(pt) {
   }
   return duration;
 }
-
-export function get_json(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.json();
-  }
-  throw response;
-}
-
-export function get_text(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.text();
-  }
-  throw response;
-}
