@@ -59,8 +59,8 @@ import {
 import {
   $,
   extract_filename,
-  fetchDOM,
   fetchJson,
+  fetchNextData,
   fetchText,
 } from '../utils.js';
 
@@ -181,10 +181,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
     func: async (ret, url) => {
-      const doc = await fetchDOM(url);
-      const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
-      console.log(data);
-
+      const data = await fetchNextData(url);
       const videoIds = Object.values(data.props.pageProps.__APOLLO_STATE__)
         .map((v) => v.videoId)
         .filter(Boolean);

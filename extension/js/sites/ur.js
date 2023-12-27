@@ -1,12 +1,11 @@
 // https://urplay.se/program/193738-amanda-langtar-sommaren
-// <script id="__NEXT_DATA__" type="application/json">{"props":...........}</script>
 // https://streaming10.ur.se/urplay/_definst_/mp4:193000-193999/193738-22.mp4/playlist.m3u8
 
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
 import { api_error, options, update_cmd, update_filename } from '../popup.js';
-import { $, fetchDOM, fetchJson } from '../utils.js';
+import { $, fetchJson, fetchNextData } from '../utils.js';
 
 function ur_callback(data) {
   const program = data.program;
@@ -76,8 +75,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
     func: async (ret, url) => {
-      const doc = await fetchDOM(url);
-      const data = JSON.parse(doc.querySelector('#__NEXT_DATA__').textContent);
+      const data = await fetchNextData(url);
       const lb_url = 'https://streaming-loadbalancer.ur.se/loadbalancer.json';
       fetchJson(lb_url)
         .then(ur_callback(data.props.pageProps))
