@@ -49,20 +49,14 @@
 import {
   api_error,
   info,
-  master_callback,
   options,
+  processPlaylist,
   subtitles,
   update_cmd,
   update_filename,
   update_json_url,
 } from '../popup.js';
-import {
-  $,
-  extract_filename,
-  fetchJson,
-  fetchNextData,
-  fetchText,
-} from '../utils.js';
+import { $, extract_filename, fetchJson, fetchNextData } from '../utils.js';
 
 function svt_callback(data) {
   console.log(data);
@@ -82,10 +76,7 @@ function svt_callback(data) {
     streams.appendChild(option);
 
     if (stream.format === 'hls') {
-      const base_url = stream.url.replace(/\/[^/]+$/, '/');
-      fetchText(stream.url)
-        .then(master_callback(data.contentDuration, base_url))
-        .catch(api_error);
+      processPlaylist(stream.url, data.contentDuration).catch(api_error);
     }
   }
 

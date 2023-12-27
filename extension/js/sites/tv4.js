@@ -20,8 +20,8 @@
 import {
   api_error,
   info,
-  master_callback,
   options,
+  processPlaylist,
   tab_id,
   update_cmd,
   update_filename,
@@ -31,7 +31,6 @@ import {
   $,
   fetchJson,
   fetchNextData,
-  fetchText,
   localStorageGetWithExpiry,
   localStorageSetWithExpiry,
 } from '../utils.js';
@@ -53,10 +52,9 @@ function tv4play_media_callback(data, expand = false) {
   update_cmd();
 
   if (expand && data.playbackItem.type === 'hls') {
-    const base_url = data.playbackItem.manifestUrl.replace(/\/[^/]+$/, '/');
-    fetchText(data.playbackItem.manifestUrl)
-      .then(master_callback(data.contentDuration, base_url))
-      .catch(api_error);
+    processPlaylist(data.playbackItem.manifestUrl, data.contentDuration).catch(
+      api_error,
+    );
   }
 }
 

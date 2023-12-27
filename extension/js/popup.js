@@ -9,6 +9,7 @@ import {
   $,
   extract_extension,
   extract_filename,
+  fetchText,
   fmt_filesize,
   isFirefox,
   toObject,
@@ -196,94 +197,98 @@ export function update_cmd(e) {
   }
 }
 
-export function master_callback(length, base_url) {
-  return function (text) {
-    console.debug(text);
+export async function processPlaylist(url, mediaDuration) {
+  const baseUrl = url.replace(/\/[^/]+$/, '/');
+  const text = await fetchText(url);
+  console.debug(text);
 
-    const ext_x_media = {};
-    const streams = [];
-    let params;
-    for (const line of text.split('\n')) {
-      if (line.length === 0) {
+  const ext_x_media = {};
+  const streams = [];
+  let params;
+  for (const line of text.split('\n')) {
+    if (line.length === 0) {
+      continue;
+    }
+    console.debug(line);
+    if (line.startsWith('#')) {
+      if (!line.includes(':')) {
         continue;
       }
-      console.debug(line);
-      if (line.startsWith('#')) {
-        if (!line.includes(':')) continue;
-        const type = line.substring(1, line.indexOf(':'));
-        const args = line
-          .substring(line.indexOf(':') + 1)
-          .match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
-        if (!args) continue;
-        const obj = toObject(
-          args.map((arg) => {
-            const k = arg.substring(0, arg.indexOf('='));
-            let v = arg.substring(arg.indexOf('=') + 1);
-            if (v.startsWith('"') && v.endsWith('"')) {
-              v = v.substring(1, v.length - 1);
-            }
-            return [k, v];
-          }),
-        );
-        console.debug(obj);
-        if (type === 'EXT-X-MEDIA') {
-          // && obj["TYPE"] === "AUDIO") {
-          ext_x_media[obj['TYPE']] = obj;
-        } else if (type === 'EXT-X-STREAM-INF') {
-          params = obj;
-        }
-      } else {
-        let url = line;
-        if (!/^https?:\/\//.test(url)) {
-          url = base_url + url;
-        }
-        streams.push({
-          bitrate: parseInt(params['BANDWIDTH'], 10),
-          params: params,
-          url: url,
-        });
-      }
-    }
-    console.debug(streams);
-
-    const dropdown = $('#streams');
-    const default_option = dropdown.getElementsByTagName('option')[0];
-
-    for (const stream of streams.sort((a, b) => b.bitrate - a.bitrate)) {
-      const kbps = Math.round(stream.bitrate / 1000);
-      const option = document.createElement('option');
-      option.value = stream.url;
-      option.appendChild(document.createTextNode(`${kbps} kbps`));
-      if (ext_x_media['AUDIO']) {
-        option.setAttribute(
-          'data-audio-stream',
-          base_url + ext_x_media['AUDIO']['URI'],
-        );
-      }
-      const extra = [];
-      if (stream.params['RESOLUTION']) {
-        extra.push(stream.params['RESOLUTION']);
-      }
-      if (length) {
-        // the calculation is off by about 5%, probably because of audio and overhead
-        extra.push(`~${fmt_filesize((1.05 * length * stream.bitrate) / 8)}`);
-      }
-      if (extra.length !== 0) {
-        option.appendChild(document.createTextNode(` (${extra.join(', ')})`));
-      }
-      dropdown.insertBefore(option, default_option);
-    }
-    if (ext_x_media['AUDIO']) {
-      const option = document.createElement('option');
-      option.value = base_url + ext_x_media['AUDIO']['URI'];
-      option.appendChild(
-        document.createTextNode(extract_filename(ext_x_media['AUDIO']['URI'])),
+      const type = line.substring(1, line.indexOf(':'));
+      const args = line
+        .substring(line.indexOf(':') + 1)
+        .match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
+      if (!args) continue;
+      const obj = toObject(
+        args.map((arg) => {
+          const k = arg.substring(0, arg.indexOf('='));
+          let v = arg.substring(arg.indexOf('=') + 1);
+          if (v.startsWith('"') && v.endsWith('"')) {
+            v = v.substring(1, v.length - 1);
+          }
+          return [k, v];
+        }),
       );
-      dropdown.insertBefore(option, default_option);
+      console.debug(obj);
+      if (type === 'EXT-X-MEDIA') {
+        // && obj["TYPE"] === "AUDIO") {
+        ext_x_media[obj['TYPE']] = obj;
+      } else if (type === 'EXT-X-STREAM-INF') {
+        params = obj;
+      }
+    } else {
+      let url = line;
+      if (!/^https?:\/\//.test(url)) {
+        url = baseUrl + url;
+      }
+      streams.push({
+        bitrate: parseInt(params['BANDWIDTH'], 10),
+        params: params,
+        url: url,
+      });
     }
-    dropdown.getElementsByTagName('option')[0].selected = true;
-    update_cmd();
-  };
+  }
+  console.debug(streams);
+
+  const dropdown = $('#streams');
+  const default_option = dropdown.getElementsByTagName('option')[0];
+
+  for (const stream of streams.sort((a, b) => b.bitrate - a.bitrate)) {
+    const kbps = Math.round(stream.bitrate / 1000);
+    const option = document.createElement('option');
+    option.value = stream.url;
+    option.appendChild(document.createTextNode(`${kbps} kbps`));
+    if (ext_x_media['AUDIO']) {
+      option.setAttribute(
+        'data-audio-stream',
+        baseUrl + ext_x_media['AUDIO']['URI'],
+      );
+    }
+    const extra = [];
+    if (stream.params['RESOLUTION']) {
+      extra.push(stream.params['RESOLUTION']);
+    }
+    if (mediaDuration) {
+      // the calculation is off by about 5%, probably because of audio and overhead
+      extra.push(
+        `~${fmt_filesize((1.05 * mediaDuration * stream.bitrate) / 8)}`,
+      );
+    }
+    if (extra.length !== 0) {
+      option.appendChild(document.createTextNode(` (${extra.join(', ')})`));
+    }
+    dropdown.insertBefore(option, default_option);
+  }
+  if (ext_x_media['AUDIO']) {
+    const option = document.createElement('option');
+    option.value = baseUrl + ext_x_media['AUDIO']['URI'];
+    option.appendChild(
+      document.createTextNode(extract_filename(ext_x_media['AUDIO']['URI'])),
+    );
+    dropdown.insertBefore(option, default_option);
+  }
+  dropdown.getElementsByTagName('option')[0].selected = true;
+  update_cmd();
 }
 
 async function call_func() {

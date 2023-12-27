@@ -17,8 +17,9 @@
 // https://podkast.nrk.no/fil/bjoernen_lyver/bjoernen_lyver_2018-02-16_1300_760.MP3
 
 import {
-  master_callback,
+  api_error,
   options,
+  processPlaylist,
   subtitles,
   tab_id,
   update_cmd,
@@ -29,7 +30,6 @@ import {
   $,
   extract_filename,
   fetchJson,
-  fetchText,
   getDocumentTitle,
   parse_pt,
 } from '../utils.js';
@@ -45,9 +45,7 @@ async function nrk_callback(data) {
     option.appendChild(document.createTextNode(extract_filename(asset.url)));
     streams.appendChild(option);
 
-    const base_url = asset.url.replace(/\/[^/]+$/, '/');
-    const data = await fetchText(asset.url);
-    master_callback(duration, base_url)(data);
+    processPlaylist(asset.url, duration).catch(api_error);
   }
 
   for (const subtitle of data.playable.subtitles) {
