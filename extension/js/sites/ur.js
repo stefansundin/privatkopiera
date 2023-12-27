@@ -61,7 +61,11 @@ function ur_callback(domain, data) {
     dropdown.appendChild(option);
   }
 
-  let fn = `${program.title?.trim()}.${options.default_video_file_extension}`;
+  const ext =
+    program.format === 'video'
+      ? options.default_video_file_extension
+      : options.default_audio_file_extension;
+  let fn = `${program.title?.trim()}.${ext}`;
   if (program.seriesTitle) {
     fn = `${program.seriesTitle.trim()} - ${fn}`;
   }
