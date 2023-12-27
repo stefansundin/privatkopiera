@@ -84,36 +84,43 @@ export default [
           const injectionResult = await chrome.scripting.executeScript({
             target: { tabId: tab_id },
             func: async () => {
-              const refresh_token = document.cookie
-                .split(';')
-                .map((c) => c.trim())
-                .find((c) => c.startsWith('tv4-refresh-token='))
-                ?.split('=')[1];
-              if (!refresh_token) {
-                return { error: 'no refresh token' };
-              }
-              const response = await fetch(
-                'https://avod-auth-alb.a2d.tv/oauth/refresh',
-                {
-                  method: 'POST',
-                  credentials: 'omit',
-                  mode: 'cors',
-                  headers: {
-                    accept: 'application/json',
-                    'content-type': 'application/json',
+              try {
+                const refresh_token = document.cookie
+                  .split(';')
+                  .map((c) => c.trim())
+                  .find((c) => c.startsWith('tv4-refresh-token='))
+                  ?.split('=')[1];
+                if (!refresh_token) {
+                  return { error: 'no refresh token' };
+                }
+                const response = await fetch(
+                  'https://avod-auth-alb.a2d.tv/oauth/refresh',
+                  {
+                    method: 'POST',
+                    credentials: 'omit',
+                    mode: 'cors',
+                    headers: {
+                      accept: 'application/json',
+                      'content-type': 'application/json',
+                    },
+                    body: JSON.stringify({
+                      refresh_token,
+                      client_id: 'tv4-web',
+                    }),
                   },
-                  body: JSON.stringify({ refresh_token, client_id: 'tv4-web' }),
-                },
-              );
-              if (!response.ok) {
-                return {
-                  error: `Invalid response: ${
-                    response.status
-                  } ${await response.text()}`,
-                };
+                );
+                if (!response.ok) {
+                  return {
+                    error: `Invalid response: ${
+                      response.status
+                    } ${await response.text()}`,
+                  };
+                }
+                const access_token_data = await response.json();
+                return { result: access_token_data.access_token };
+              } catch (err) {
+                return { error: err.message };
               }
-              const access_token_data = await response.json();
-              return { result: access_token_data.access_token };
             },
           });
           console.debug('injectionResult', injectionResult);

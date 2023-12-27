@@ -97,15 +97,19 @@ export async function fetchDOM(url, ...args) {
   const injectionResult = await chrome.scripting.executeScript({
     target: { tabId: tab_id },
     func: async (...args) => {
-      const response = await fetch(...args);
-      if (!response.ok) {
-        return {
-          error: `Invalid response: ${
-            response.status
-          } ${await response.text()}`,
-        };
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.text() };
+      } catch (err) {
+        return { error: err.message };
       }
-      return { result: await response.text() };
     },
     args: [url, ...args],
   });
@@ -140,15 +144,19 @@ export async function fetchText(...args) {
   const injectionResult = await chrome.scripting.executeScript({
     target: { tabId: tab_id },
     func: async (...args) => {
-      const response = await fetch(...args);
-      if (!response.ok) {
-        return {
-          error: `Invalid response: ${
-            response.status
-          } ${await response.text()}`,
-        };
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.text() };
+      } catch (err) {
+        return { error: err.message };
       }
-      return { result: await response.text() };
     },
     args,
   });
@@ -167,15 +175,19 @@ export async function fetchJson(...args) {
   const injectionResult = await chrome.scripting.executeScript({
     target: { tabId: tab_id },
     func: async (...args) => {
-      const response = await fetch(...args);
-      if (!response.ok) {
-        return {
-          error: `Invalid response: ${
-            response.status
-          } ${await response.text()}`,
-        };
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.json() };
+      } catch (err) {
+        return { error: err.message };
       }
-      return { result: await response.json() };
     },
     args,
   });

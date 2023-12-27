@@ -46,4 +46,4 @@ The extension performs all of its network requests through the host page, using 
 
 Firefox has better error handling in its `chrome.scripting.executeScript()` implementation and populates an [`error`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/executeScript#error) key in the `InjectionResult` if an error was raised in the script. An [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1271527) has been filed to hopefully get the same support in Chrome.
 
-Due to this, where appropriate, return values from `executeScript` are an object with `result` or `error` keys depending on what happened. This looks funky but will have to do until the situation in Chrome improves.
+Due to this, where appropriate, return values from `executeScript` are an object with `result` or `error` keys depending on what happened. The complicated scripts are also wrapped in a `try-catch` clause. This looks funky but will have to do until the situation in Chrome improves.

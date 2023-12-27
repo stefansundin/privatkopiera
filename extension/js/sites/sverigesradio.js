@@ -29,44 +29,48 @@ export default [
       const injectionResult = await chrome.scripting.executeScript({
         target: { tabId: tab_id },
         func: () => {
-          const ids = [];
-          const streams = [];
-          const related = document
-            .getElementsByTagName('article')[0]
-            .querySelectorAll('[data-audio-id]');
-          for (let i = 0; i < related.length; i++) {
-            const link = related[i];
-            const id = link.getAttribute('data-audio-id');
-            if (ids.includes(id)) {
-              continue;
-            }
-            ids.push(id);
-            let header = link;
-            while (header.children.length < 2) {
-              header = header.parentNode;
-            }
-            let title = document.title;
-            const title_element =
-              header.getElementsByClassName('main-audio-new__title')[0] ||
-              header.getElementsByClassName('related-audio__title')[0] ||
-              header.getElementsByClassName(
-                'article-audio-details__header-title',
-              )[0];
-            if (title_element) {
-              title = title_element.textContent.trim();
-            } else {
-              const dash = title.lastIndexOf('-');
-              if (dash !== -1) {
-                title = title.substring(0, dash).trim();
+          try {
+            const ids = [];
+            const streams = [];
+            const related = document
+              .getElementsByTagName('article')[0]
+              .querySelectorAll('[data-audio-id]');
+            for (let i = 0; i < related.length; i++) {
+              const link = related[i];
+              const id = link.getAttribute('data-audio-id');
+              if (ids.includes(id)) {
+                continue;
               }
+              ids.push(id);
+              let header = link;
+              while (header.children.length < 2) {
+                header = header.parentNode;
+              }
+              let title = document.title;
+              const title_element =
+                header.getElementsByClassName('main-audio-new__title')[0] ||
+                header.getElementsByClassName('related-audio__title')[0] ||
+                header.getElementsByClassName(
+                  'article-audio-details__header-title',
+                )[0];
+              if (title_element) {
+                title = title_element.textContent.trim();
+              } else {
+                const dash = title.lastIndexOf('-');
+                if (dash !== -1) {
+                  title = title.substring(0, dash).trim();
+                }
+              }
+              streams.push({
+                id: id,
+                type: link.getAttribute('data-audio-type'),
+                title: title,
+              });
             }
-            streams.push({
-              id: id,
-              type: link.getAttribute('data-audio-type'),
-              title: title,
-            });
+            return { result: streams };
+          } catch (err) {
+            return { error: err.message };
           }
-          return { result: streams };
         },
       });
       console.debug('injectionResult', injectionResult);
