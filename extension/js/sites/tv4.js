@@ -80,67 +80,73 @@ export default [
       }
 
       if (!access_token) {
-        const injectionResult = await chrome.scripting.executeScript({
-          target: { tabId: tab_id },
-          func: async () => {
-            const refresh_token = document.cookie
-              .split(';')
-              .map((c) => c.trim())
-              .find((c) => c.startsWith('tv4-refresh-token='))
-              ?.split('=')[1];
-            if (!refresh_token) {
-              return { error: 'no refresh token' };
-            }
-            const response = await fetch(
-              'https://avod-auth-alb.a2d.tv/oauth/refresh',
-              {
-                method: 'POST',
-                credentials: 'omit',
-                mode: 'cors',
-                headers: {
-                  accept: 'application/json',
-                  'content-type': 'application/json',
+        try {
+          const injectionResult = await chrome.scripting.executeScript({
+            target: { tabId: tab_id },
+            func: async () => {
+              const refresh_token = document.cookie
+                .split(';')
+                .map((c) => c.trim())
+                .find((c) => c.startsWith('tv4-refresh-token='))
+                ?.split('=')[1];
+              if (!refresh_token) {
+                return { error: 'no refresh token' };
+              }
+              const response = await fetch(
+                'https://avod-auth-alb.a2d.tv/oauth/refresh',
+                {
+                  method: 'POST',
+                  credentials: 'omit',
+                  mode: 'cors',
+                  headers: {
+                    accept: 'application/json',
+                    'content-type': 'application/json',
+                  },
+                  body: JSON.stringify({ refresh_token, client_id: 'tv4-web' }),
                 },
-                body: JSON.stringify({ refresh_token, client_id: 'tv4-web' }),
-              },
-            );
-            if (!response.ok) {
-              return {
-                error: `Invalid response: ${
-                  response.status
-                } ${await response.text()}`,
-              };
-            }
-            const access_token_data = await response.json();
-            return { result: access_token_data.access_token };
-          },
-        });
-        console.debug('injectionResult', injectionResult);
-        if (injectionResult[0].error) {
-          throw injectionResult[0].error;
-        } else if (injectionResult[0].result === null) {
-          throw new Error('Script injection error.');
-        } else if (injectionResult[0].result.error) {
-          throw new Error(injectionResult[0].result.error);
+              );
+              if (!response.ok) {
+                return {
+                  error: `Invalid response: ${
+                    response.status
+                  } ${await response.text()}`,
+                };
+              }
+              const access_token_data = await response.json();
+              return { result: access_token_data.access_token };
+            },
+          });
+          console.debug('injectionResult', injectionResult);
+          if (injectionResult[0].error) {
+            throw injectionResult[0].error;
+          } else if (injectionResult[0].result === null) {
+            throw new Error('Script injection error.');
+          } else if (injectionResult[0].result.error) {
+            throw new Error(injectionResult[0].result.error);
+          }
+          access_token = injectionResult[0].result.result;
+          localStorageSetWithExpiry(
+            'tv4-access-token',
+            access_token,
+            4 * 3600 * 1000,
+          );
+        } catch (err) {
+          // Not all videos require a login, so even if there's an error above we still continue, just log the error in the console
+          console.error(err);
         }
-        const access_token = injectionResult[0].result.result;
-        localStorageSetWithExpiry(
-          'tv4-access-token',
-          access_token,
-          4 * 3600 * 1000,
-        );
       }
 
       const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
       update_json_url(metadata_url);
-      const data = await fetchJson(metadata_url, {
+      fetchJson(metadata_url, {
         headers: access_token
           ? {
               'X-Jwt': `Bearer ${access_token}`,
             }
           : {},
-      }).catch(tv4_error);
-      tv4play_media_callback(data, true);
+      })
+        .then((data) => tv4play_media_callback(data, true))
+        .catch(tv4_error);
     },
   },
   {
