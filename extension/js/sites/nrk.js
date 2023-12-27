@@ -73,7 +73,7 @@ async function nrk_callback(data) {
   update_cmd();
 }
 
-function nrk_postcast_callback(data) {
+function nrk_podcast_callback(data) {
   console.log(data);
   const streams = $('#streams');
   for (const [i, asset] of data.playable.assets.entries()) {
@@ -124,16 +124,14 @@ export default [
           // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
         },
       });
-      await nrk_postcast_callback(data);
+      await nrk_podcast_callback(data);
     },
   },
   {
     re: /^https?:\/\/radio\.nrk\.no\.?\/serie\/.+\/(l_[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)/,
     func: async (ret) => {
-      // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
-      // https://psapi.nrk.no/playback/metadata/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
-      // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
-      const data_url = `https://psapi.nrk.no/playback/manifest/podcast/${ret[1]}`;
+      // https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
+      const data_url = `https://psapi.nrk.no/playback/manifest/program/${ret[1]}`;
       console.log(data_url);
       update_json_url(data_url);
 
@@ -144,7 +142,7 @@ export default [
           // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
         },
       });
-      await nrk_postcast_callback(data);
+      await nrk_podcast_callback(data);
     },
   },
   {
