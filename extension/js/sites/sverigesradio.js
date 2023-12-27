@@ -7,7 +7,7 @@
 // Get audio URL:
 // https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { tab_id, update_cmd, update_json_url } from '../popup.js';
+import { info, tab_id, update_cmd, update_json_url } from '../popup.js';
 import { $, extract_extension, fetchJson } from '../utils.js';
 
 function sr_callback(stream, data) {
@@ -32,9 +32,10 @@ export default [
           try {
             const ids = [];
             const streams = [];
-            const related = document
-              .getElementsByTagName('article')[0]
-              .querySelectorAll('[data-audio-id]');
+            const related =
+              document
+                .getElementsByTagName('article')[0]
+                ?.querySelectorAll('[data-audio-id]') ?? [];
             for (let i = 0; i < related.length; i++) {
               const link = related[i];
               const id = link.getAttribute('data-audio-id');
@@ -93,6 +94,10 @@ export default [
           },
         });
         sr_callback(stream, data);
+      }
+
+      if (streams.length === 0) {
+        info('Hittade ingenting. Försök från en artikel.');
       }
     },
   },
