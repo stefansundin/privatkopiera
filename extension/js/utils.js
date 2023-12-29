@@ -1,3 +1,5 @@
+import { tab_id } from './popup.js';
+
 export const isFirefox = navigator.userAgent.includes('Firefox/');
 
 export function localStorageSetWithExpiry(key, value, ttl) {
@@ -72,27 +74,132 @@ export function $() {
   }
 }
 
-export function getDocumentTitle() {
-  return new Promise((resolve, reject) => {
-    chrome.tabs.executeScript(
-      {
-        code: `(function(){ return document.title; })()`,
-      },
-      (data) => {
-        resolve(data[0]);
-      },
-    );
+export async function getDocumentTitle(tab_id) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: () => document.title,
   });
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  }
+  return injectionResult[0].result;
 }
 
-export async function fetchDOM(url) {
-  const response = await fetch(url);
-  if (!response.ok) {
-    throw new Error(`Unexpected response code: ${response.status}`);
+export async function fetchDOM(url, ...args) {
+  // The `url` argument passed to the site function is a URL and not a string, so when it is used here it causes an error in Chrome.
+  // TODO: Refactor stuff to make this less weird.
+  if (url instanceof URL) {
+    url = url.toString();
   }
-  const body = await response.text();
+
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.text() };
+      } catch (err) {
+        return { error: err.message };
+      }
+    },
+    args: [url, ...args],
+  });
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+
+  const body = injectionResult[0].result.result;
   const doc = new DOMParser().parseFromString(body, 'text/html');
   return doc;
+}
+
+export async function fetchNextData(url) {
+  // We always want to perform a network request rather than executing a script to pull the page's data, since that
+  // has a chance of fetching old data if the user has navigated around on the website before opening the extension.
+  const doc = await fetchDOM(url);
+  const nextData = doc.querySelector('#__NEXT_DATA__');
+  if (!nextData) {
+    throw new Error('__NEXT_DATA__ not found on page');
+  }
+  const data = JSON.parse(nextData.textContent);
+  console.debug(data);
+  return data;
+}
+
+export async function fetchText(...args) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.text() };
+      } catch (err) {
+        return { error: err.message };
+      }
+    },
+    args,
+  });
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+  return injectionResult[0].result.result;
+}
+
+export async function fetchJson(...args) {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: async (...args) => {
+      try {
+        const response = await fetch(...args);
+        if (!response.ok) {
+          return {
+            error: `Invalid response: ${
+              response.status
+            } ${await response.text()}`,
+          };
+        }
+        return { result: await response.json() };
+      } catch (err) {
+        return { error: err.message };
+      }
+    },
+    args,
+  });
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+  return injectionResult[0].result.result;
 }
 
 export function extract_filename(url) {
@@ -130,20 +237,4 @@ export function parse_pt(pt) {
     duration += parseFloat(ret[3]);
   }
   return duration;
-}
-
-export function get_json(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.json();
-  }
-  throw response;
-}
-
-export function get_text(response) {
-  console.log(response);
-  if (response.ok) {
-    return response.text();
-  }
-  throw response;
 }

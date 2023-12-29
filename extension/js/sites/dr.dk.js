@@ -2,13 +2,13 @@
 // https://production.dr-massive.com/api/account/items/242600/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous
 
 import {
-  api_error,
   options,
   subtitles,
+  tab_id,
   update_cmd,
   update_filename,
 } from '../popup.js';
-import { $, extract_filename, get_json } from '../utils.js';
+import { $, extract_filename, fetchJson } from '../utils.js';
 
 function dr_dk_callback(streams) {
   const dropdown = $('#streams');
@@ -40,41 +40,38 @@ function dr_dk_callback(streams) {
 export default [
   {
     re: /^https?:\/\/(?:www\.)?dr\.dk\.?\/.*_(\d+)/,
-    permissions: {
-      origins: ['https://production.dr-massive.com/'],
-    },
-    func: (ret) => {
+    func: async (ret) => {
       const video_id = ret[1];
-      console.log(video_id);
+      console.log('video_id', video_id);
 
       // Grab the page title and the required token from the page's localStorage
-      chrome.tabs.executeScript(
-        {
-          code: `(function(){
-            return [document.title, localStorage["session.tokens"]];
-          })()`,
-        },
-        function (data) {
-          console.log(data);
-          const title = data[0][0].split('|')[0].trim();
-          const tokens = JSON.parse(data[0][1]);
-          console.log(tokens);
-          const token = tokens.find((t) => t.type === 'UserAccount').value;
+      const injectionResult = await chrome.scripting.executeScript({
+        target: { tabId: tab_id },
+        func: () => [document.title, localStorage['session.tokens']],
+      });
+      console.debug('injectionResult', injectionResult);
+      if (injectionResult[0].error) {
+        throw injectionResult[0].error;
+      } else if (injectionResult[0].result === null) {
+        throw new Error('Script error.');
+      }
+      const tabResult = injectionResult[0].result;
+      const title = tabResult[0].split('|')[0].trim();
+      const tokens = JSON.parse(tabResult[1]);
+      console.log('tokens', tokens);
+      const token = tokens.find((t) => t.type === 'UserAccount').value;
 
-          const data_url = `https://production.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
-          update_filename(`${title}.${options.default_video_file_extension}`);
+      const data_url = `https://production.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
+      console.log(data_url);
+      update_filename(`${title}.${options.default_video_file_extension}`);
 
-          console.log(data_url);
-          fetch(data_url, {
-            headers: {
-              'x-authorization': `Bearer ${token}`,
-            },
-          })
-            .then(get_json)
-            .then(dr_dk_callback)
-            .catch(api_error);
+      const streams = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          'x-authorization': `Bearer ${token}`,
         },
-      );
+      });
+      await dr_dk_callback(streams);
     },
   },
 ];

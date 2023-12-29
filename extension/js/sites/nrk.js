@@ -18,9 +18,10 @@
 
 import {
   api_error,
-  master_callback,
   options,
+  processPlaylist,
   subtitles,
+  tab_id,
   update_cmd,
   update_filename,
   update_json_url,
@@ -28,9 +29,7 @@ import {
 import {
   $,
   extract_filename,
-  flatten,
-  get_json,
-  get_text,
+  fetchJson,
   getDocumentTitle,
   parse_pt,
 } from '../utils.js';
@@ -46,11 +45,7 @@ async function nrk_callback(data) {
     option.appendChild(document.createTextNode(extract_filename(asset.url)));
     streams.appendChild(option);
 
-    const base_url = asset.url.replace(/\/[^/]+$/, '/');
-    fetch(asset.url)
-      .then(get_text)
-      .then(master_callback(duration, base_url))
-      .catch(api_error);
+    processPlaylist(asset.url, duration).catch(api_error);
   }
 
   for (const subtitle of data.playable.subtitles) {
@@ -68,7 +63,7 @@ async function nrk_callback(data) {
   if (data.sourceMedium === 'audio') {
     ext = options.default_audio_file_extension;
   }
-  const title = await getDocumentTitle();
+  const title = await getDocumentTitle(tab_id);
   if (title) {
     const fn = `${title}.${ext}`;
     update_filename(fn);
@@ -76,7 +71,7 @@ async function nrk_callback(data) {
   update_cmd();
 }
 
-function nrk_postcast_callback(data) {
+function nrk_podcast_callback(data) {
   console.log(data);
   const streams = $('#streams');
   for (const [i, asset] of data.playable.assets.entries()) {
@@ -96,70 +91,95 @@ function nrk_postcast_callback(data) {
 export default [
   {
     re: /^https?:\/\/radio\.nrk\.no\.?\/serie[^A-Z]*\/([A-Z][A-Z0-9]+)/,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
-    func: (ret) => {
+    func: async (ret) => {
       const id = ret[1];
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${id}`;
       update_filename(`${id}.${options.default_audio_file_extension}`);
       update_json_url(data_url);
       console.log(data_url);
-      fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
+      await nrk_callback(data);
     },
   },
   {
     re: /^https?:\/\/radio\.nrk\.no\.?\/pod[ck]ast\/.+\/(l_[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)/,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
-    func: (ret) => {
+    func: async (ret) => {
       // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
       // https://psapi.nrk.no/playback/metadata/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
       // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
-      // const data_url = `https://psapi.nrk.no/podcasts/${ret[1]}/episodes/${ret[2]}`;
       const data_url = `https://psapi.nrk.no/playback/manifest/podcast/${ret[1]}`;
-      // update_filename(`${ret[1]}-${ret[2]}.mp3`);
+      console.log(data_url);
       update_json_url(data_url);
 
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
+        },
+      });
+      await nrk_podcast_callback(data);
+    },
+  },
+  {
+    re: /^https?:\/\/radio\.nrk\.no\.?\/serie\/.+\/(l_[0-9a-f]{8}\b-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-\b[0-9a-f]{12}\b)/,
+    func: async (ret) => {
+      // https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
+      const data_url = `https://psapi.nrk.no/playback/manifest/program/${ret[1]}`;
       console.log(data_url);
-      fetch(data_url)
-        .then(get_json)
-        .then(nrk_postcast_callback)
-        .catch(api_error);
+      update_json_url(data_url);
+
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: 'application/vnd.nrk.psapi+json; version=9; player=radio-web-player; device=player-core',
+        },
+      });
+      await nrk_podcast_callback(data);
     },
   },
   {
     re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\//,
-    permissions: {
-      origins: ['https://psapi.nrk.no/'],
-    },
-    func: () => {
-      // <div id="series-program-id-container" data-program-id="MSPO30080518">
-      chrome.tabs.executeScript(
-        {
-          code: `(function(){
-            const div = document.querySelector("[data-program-id]");
-            if (!div) {
-              return null;
-            }
-            return div.getAttribute("data-program-id");
-          })()`,
+    func: async () => {
+      // Grab the video id from the DOM
+      const injectionResult = await chrome.scripting.executeScript({
+        target: { tabId: tab_id },
+        func: () => {
+          // <div id="series-program-id-container" data-program-id="MSPO30080518">
+          const div = document.querySelector('[data-program-id]');
+          if (!div) {
+            return { error: 'data-program-id not found on page' };
+          }
+          return { result: div.getAttribute('data-program-id') };
         },
-        (ids) => {
-          console.log(ids);
-          flatten(ids).forEach((video_id) => {
-            const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
-            update_filename(
-              `${video_id}.${options.default_video_file_extension}`,
-            );
-            update_json_url(data_url);
+      });
+      console.debug('injectionResult', injectionResult);
+      if (injectionResult[0].error) {
+        throw injectionResult[0].error;
+      } else if (injectionResult[0].result === null) {
+        throw new Error('Script error.');
+      } else if (injectionResult[0].result.error) {
+        throw new Error(injectionResult[0].result.error);
+      }
+      const video_id = injectionResult[0].result.result;
 
-            console.log(data_url);
-            fetch(data_url).then(get_json).then(nrk_callback).catch(api_error);
-          });
+      const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
+      update_filename(`${video_id}.${options.default_video_file_extension}`);
+      update_json_url(data_url);
+
+      const data = await fetchJson(data_url, {
+        headers: {
+          accept: 'application/json',
+          // This is what the website normally sends:
+          // accept: '*/*',
         },
-      );
+      });
+      await nrk_callback(data);
     },
   },
 ];

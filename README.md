@@ -33,3 +33,17 @@ Or just download the file and put it there manually.
 ### Formatting
 
 The JavaScript code is formatted with prettier. The HTML is formatted with the built-in VS Code formatter.
+
+### Why are there more `executeScript` calls than seems necessary?
+
+The extension performs all of its network requests through the host page, using `chrome.scripting.executeScript()`, for a number of reasons:
+
+1. Any `POST` request made in the extension will cause Chrome to add an `Origin: chrome-extension://jhjhnecocacdbhlkjgpdacoibidhmgdf` header. This header is easy to detect and block by websites (see [#185](https://github.com/stefansundin/privatkopiera/issues/185)). By making the network request from the host page instead, the `Origin` header will look normal from the website's point of view. There's [a Chrome bug](https://bugs.chromium.org/p/chromium/issues/detail?id=966223) about this.
+2. The extension can avoid asking for host permissions when the user uses Privatkopiera on a website for the first time. This makes for a better experience since granting new permissions is not foolproof and at least one user reported that they didn't understand how to proceed (see [#184](https://github.com/stefansundin/privatkopiera/issues/184)).
+3. Some websites have permissive CORS permissions initially, but then later make it more restrictive. This makes for an impossible situation since the only workaround would be to ask for host permissions prematurely, even though they may not be required at the time.
+
+### `executeScript` error handling
+
+Firefox has better error handling in its `chrome.scripting.executeScript()` implementation and populates an [`error`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/executeScript#error) key in the `InjectionResult` if an error was raised in the script. An [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1271527) has been filed to hopefully get the same support in Chrome.
+
+Due to this, where appropriate, return values from `executeScript` are an object with `result` or `error` keys depending on what happened. The complicated scripts are also wrapped in a `try-catch` clause. This looks funky but will have to do until the situation in Chrome improves.

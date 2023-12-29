@@ -1,7 +1,7 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Privatkopiera",
-  "version": "0.3.10",
+  "version": "0.4.0",
   "description": "Ladda ned från play-tjänster. Kräver ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
@@ -10,7 +10,7 @@
     "48": "img/icon48.png",
     "128": "img/icon128.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "19": "img/icon19.png",
       "38": "img/icon38.png"
@@ -22,11 +22,11 @@
     "page": "options.html"
   },
   "permissions": [
-    "activeTab"
+    "activeTab",
+    "scripting"
   ],
   "optional_permissions": [
-    "downloads",
-    "https://psapi.nrk.no/",
-    "https://production.dr-massive.com/"
-  ]
+    "downloads"
+  ],
+  "minimum_chrome_version": "102"
 }
