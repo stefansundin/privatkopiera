@@ -3,12 +3,11 @@ import { tab_id } from './popup.js';
 export const isFirefox = navigator.userAgent.includes('Firefox/');
 
 export function localStorageSetWithExpiry(key, value, ttl) {
-  const now = new Date();
   localStorage.setItem(
     key,
     JSON.stringify({
       value,
-      expiry: now.getTime() + ttl,
+      expiry: Date.now() + ttl,
     }),
   );
 }
@@ -19,8 +18,7 @@ export function localStorageGetWithExpiry(key) {
     return null;
   }
   const data = JSON.parse(item);
-  const now = new Date();
-  if (now.getTime() > data.expiry) {
+  if (Date.now() > data.expiry) {
     localStorage.removeItem(key);
     return null;
   }
