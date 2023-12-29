@@ -21,10 +21,6 @@ h3 {
   padding-bottom: 0.125em;
 }
 
-[monospace] {
-  height: 38px;
-  font-family: monospace;
-}
 [pattern]:invalid {
   color: red;
 }
