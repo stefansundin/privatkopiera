@@ -24,6 +24,7 @@ export const options = {
   default_audio_file_extension:
     localStorage.default_audio_file_extension ||
     default_options.default_audio_file_extension,
+  ffmpeg_command: localStorage.ffmpeg_command || default_options.ffmpeg_command,
 };
 
 export const subtitles = [];
@@ -143,20 +144,22 @@ export function update_cmd(e) {
     } else if (ext === 'mp4') {
       fn = fn.replace('.mp4', '.m4a');
     }
-    cmd.value = `ffmpeg -i "${audio_stream || url}" -acodec copy "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${
+      audio_stream || url
+    }" -acodec copy "${fn}"`;
   } else if (ext === 'm4a') {
-    cmd.value = `ffmpeg -i "${
+    cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
     }" -acodec copy -absf aac_adtstoasc "${fn}"`;
   } else if (ext === 'mp3' || ext === 'ogg') {
-    cmd.value = `ffmpeg -i "${audio_stream || url}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" "${fn}"`;
   } else if (stream_ext === 'vtt') {
     if (ext === 'mkv' || ext === 'mp4') {
       fn = fn.replace(/\.(mkv|mp4)$/, '.srt');
     } else if (ext !== 'srt') {
       fn += '.srt';
     }
-    cmd.value = `ffmpeg -i "${url}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${url}" "${fn}"`;
   } else if (
     subtitles.length > 0 &&
     (ext === 'srt' || ext === 'vtt' || url === subtitles[0])
@@ -164,7 +167,7 @@ export function update_cmd(e) {
     if (ext === 'mkv') {
       fn = fn.replace('.mkv', '.srt');
     }
-    cmd.value = `ffmpeg -i "${subtitles[0]}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${fn}"`;
   } else {
     const inputs = [url];
     if (audio_stream) {
@@ -172,11 +175,11 @@ export function update_cmd(e) {
     }
     inputs.push(...subtitles);
     if (ext === 'mp4') {
-      cmd.value = `ffmpeg ${inputs
+      cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
         .join(' ')} -vcodec copy -acodec copy -absf aac_adtstoasc "${fn}"`;
     } else {
-      cmd.value = `ffmpeg ${inputs
+      cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
         .join(' ')} -vcodec copy -acodec copy "${fn}"`;
     }
