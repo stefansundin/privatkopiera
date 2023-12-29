@@ -25,6 +25,7 @@ export const options = {
     localStorage.default_audio_file_extension ||
     default_options.default_audio_file_extension,
   ffmpeg_command: localStorage.ffmpeg_command || default_options.ffmpeg_command,
+  output_path: localStorage.output_path || default_options.output_path,
 };
 
 export const subtitles = [];
@@ -122,13 +123,13 @@ export function update_cmd(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
-  let fn = filename.value;
-  const ext = extract_extension(fn);
+  let output_path = options.output_path + filename.value;
+  const ext = extract_extension(filename.value);
   const stream_fn = extract_filename(url);
   const stream_ext = extract_extension(url);
   streams.title = stream_fn;
   if (stream_ext === 'f4m') {
-    cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${fn}"`;
+    cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${output_path}"`;
   } else if (stream_ext === 'm4a' || stream_ext === 'mp3') {
     cmd.value = url;
     $('#copy').classList.add('d-none');
@@ -140,34 +141,36 @@ export function update_cmd(e) {
     label.appendChild(document.createTextNode('URL'));
   } else if (stream_fn.endsWith('_a.m3u8') || ext === 'mka' || ext === 'aac') {
     if (ext === 'mkv') {
-      fn = fn.replace('.mkv', '.mka');
+      output_path = output_path.replace(/\.mkv$/, '.mka');
     } else if (ext === 'mp4') {
-      fn = fn.replace('.mp4', '.m4a');
+      output_path = output_path.replace(/\.mp4$/, '.m4a');
     }
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -acodec copy "${fn}"`;
+    }" -acodec copy "${output_path}"`;
   } else if (ext === 'm4a') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -acodec copy -absf aac_adtstoasc "${fn}"`;
+    }" -acodec copy -absf aac_adtstoasc "${output_path}"`;
   } else if (ext === 'mp3' || ext === 'ogg') {
-    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${
+      audio_stream || url
+    }" "${output_path}"`;
   } else if (stream_ext === 'vtt') {
     if (ext === 'mkv' || ext === 'mp4') {
-      fn = fn.replace(/\.(mkv|mp4)$/, '.srt');
+      output_path = output_path.replace(/\.(mkv|mp4)$/, '.srt');
     } else if (ext !== 'srt') {
-      fn += '.srt';
+      output_path += '.srt';
     }
-    cmd.value = `${options.ffmpeg_command} -i "${url}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${url}" "${output_path}"`;
   } else if (
     subtitles.length > 0 &&
     (ext === 'srt' || ext === 'vtt' || url === subtitles[0])
   ) {
     if (ext === 'mkv') {
-      fn = fn.replace('.mkv', '.srt');
+      output_path = output_path.replace(/\.mkv$/, '.srt');
     }
-    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${fn}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${output_path}"`;
   } else {
     const inputs = [url];
     if (audio_stream) {
@@ -177,11 +180,13 @@ export function update_cmd(e) {
     if (ext === 'mp4') {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
-        .join(' ')} -vcodec copy -acodec copy -absf aac_adtstoasc "${fn}"`;
+        .join(
+          ' ',
+        )} -vcodec copy -acodec copy -absf aac_adtstoasc "${output_path}"`;
     } else {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
-        .join(' ')} -vcodec copy -acodec copy "${fn}"`;
+        .join(' ')} -vcodec copy -acodec copy "${output_path}"`;
     }
   }
   cmd.setAttribute('data-url', url);
