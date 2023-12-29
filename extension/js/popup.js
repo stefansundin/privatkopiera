@@ -13,6 +13,7 @@ import {
   fmt_filesize,
   isFirefox,
   toObject,
+  waitForPageLoad,
 } from './utils.js';
 
 const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
@@ -437,6 +438,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       }
       return;
     } else {
+      info('Väntar på att sidan ska ladda färdigt...');
+      await waitForPageLoad();
       call_func();
     }
   } else {
