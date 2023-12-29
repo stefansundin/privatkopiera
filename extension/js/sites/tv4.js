@@ -24,7 +24,12 @@ import {
   update_filename,
   update_json_url,
 } from '../popup.js';
-import { $, get_json } from '../utils.js';
+import {
+  $,
+  get_json,
+  localStorageGetWithExpiry,
+  localStorageSetWithExpiry,
+} from '../utils.js';
 
 function tv4play_asset_callback(data) {
   const media_url = `https://playback2.a2d.tv${data.mediaUri}`;
