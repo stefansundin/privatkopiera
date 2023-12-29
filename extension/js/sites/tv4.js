@@ -1,9 +1,8 @@
 // TV4
 // Example URL:
-// https://www.tv4.se/klipp/va/3349622/namen-har-sover-peter-dalle-under-tommy-korbergs-framtradande
+// https://www.tv4.se/artikel/5eD4WDQAzyISFui6g5RMmW/alva-och-shakila-oevertygade-politikerna-far-20-000-till-koerkort
 // Data URL:
-// https://playback2.a2d.tv/asset/3349622?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets
-// https://playback2.a2d.tv/play/3349622?service=tv4&device=browser&browser=GoogleChrome&protocol=hls%2Cdash&drm=widevine&capabilities=live-drm-adstitch-2%2Cexpired_assets
+// https://playback2.a2d.tv/play/20758022?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3
 //
 // TV4 Play
 // Example URL: (login not required)

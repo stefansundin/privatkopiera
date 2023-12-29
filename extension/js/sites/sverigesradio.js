@@ -2,6 +2,9 @@
 // https://sverigesradio.se/artikel/6411195
 // Example URL with multiple streams:
 // https://sverigesradio.se/artikel/6412615
+// Live:
+// https://sverigesradio.se/tabla.aspx?programid=132
+//
 // Metadata URL:
 // https://sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
