@@ -1,0 +1,39 @@
+name: 📼 Hjälp
+description: Du behöver hjälp att ladda ned en specifik video
+labels:
+  - help wanted
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Innan du skickar in hjälpförfrågan
+      description: 'Se till att du:'
+      options:
+        - label: Jag förstår att Privatkopiera och FFmpeg inte kan ladda hem vissa filmer som har extra kopieringsskydd och kryptering.
+          required: true
+        - label: Har kollat om det [redan finns en buggrapport](https://github.com/stefansundin/privatkopiera/issues) om det här.
+          required: true
+        - label: Har kollat om det [redan finns en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions) om det här.
+          required: true
+        - label: Tänkt efter om det här kanske passar bättre som [en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions).
+          required: true
+
+  - type: input
+    attributes:
+      label: Länk till video du behöver hjälp med
+      description: Om du har fler än en länk så lägg till de andra i fältet nedanför.
+      placeholder: https://...
+    validations:
+      required: true
+
+  - type: checkboxes
+    attributes:
+      label: Kryssa i den här rutan om alla klipp på sidan har slutat fungera
+      options:
+        - label: Alla klipp på sidan har slutat fungera
+
+  - type: textarea
+    attributes:
+      label: Beskriv vad som inte fungerar
+    validations:
+      required: true

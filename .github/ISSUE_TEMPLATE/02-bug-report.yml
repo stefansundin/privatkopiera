@@ -1,0 +1,30 @@
+name: 🐞 Buggrapport
+description: Rapportera en bugg
+labels:
+  - bug
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Innan du skickar in buggrapporten
+      description: 'Se till att du:'
+      options:
+        - label: Har kollat om det [redan finns en buggrapport](https://github.com/stefansundin/privatkopiera/issues) om det här.
+          required: true
+        - label: Har kollat om det [redan finns en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions) om det här.
+          required: true
+        - label: Tänkt efter om det här kanske passar bättre som [en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions).
+          required: true
+
+  - type: input
+    attributes:
+      label: Länk till video med problem
+      description: Om den här rapporten inte har något att göra med en specific tjänst så kan du skippa det här fältet.
+      placeholder: https://...
+
+  - type: textarea
+    attributes:
+      label: Beskriv buggen
+      placeholder: Jag har problem med ...
+    validations:
+      required: true

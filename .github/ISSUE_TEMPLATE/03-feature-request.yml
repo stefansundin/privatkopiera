@@ -1,0 +1,24 @@
+name: 💫 Funktionsbegäran
+description: Feature request
+labels:
+  - enhancement
+
+body:
+  - type: checkboxes
+    attributes:
+      label: Innan du skickar in funktionsbegäran
+      description: 'Se till att du har:'
+      options:
+        - label: Har kollat om det [redan finns en buggrapport](https://github.com/stefansundin/privatkopiera/issues) om det här.
+          required: true
+        - label: Har kollat om det [redan finns en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions) om det här.
+          required: true
+        - label: Tänkt efter om det här kanske passar bättre som [en diskussionstråd](https://github.com/stefansundin/privatkopiera/discussions).
+          required: true
+
+  - type: textarea
+    attributes:
+      label: Beskriv vad du vill att Privatkopiera ska kunna göra
+      placeholder: Jag vill att Privatkopiera skulle kunna ...
+    validations:
+      required: true
