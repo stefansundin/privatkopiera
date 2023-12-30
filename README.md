@@ -1,6 +1,6 @@
 Website: https://stefansundin.github.io/privatkopiera/
 
-Chrome Web Store: https://chrome.google.com/webstore/detail/privatkopiera/jhjhnecocacdbhlkjgpdacoibidhmgdf
+Chrome Web Store: https://chromewebstore.google.com/detail/privatkopiera/jhjhnecocacdbhlkjgpdacoibidhmgdf
 
 Firefox Addons: https://addons.mozilla.org/addon/privatkopiera/
 
