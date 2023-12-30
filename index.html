@@ -124,7 +124,7 @@
 
     <h2 id="ffmpeg">Installera FFmpeg</h2>
 
-    <p>FFmpeg är ett program för som används för konvertering av videofiler, men det kan även ladda ned videoströmmar. Notera att för vissa strömmar krävs AdobeHDS.php istället (se nedan).</p>
+    <p>FFmpeg är ett program för som används för konvertering av videofiler, men det kan även ladda ned videoströmmar.</p>
 
     <p>Du kan ladda ned FFmpeg till Linux och Mac med pakethanterare (se nedan). Till Windows kan du ladda ned från <a href="https://ffmpeg.org/download.html">ffmpeg.org</a>.</p>
 
@@ -157,6 +157,7 @@ brew install ffmpeg
 {% endhighlight %}
 
 
+<!--
     <h2 id="adobehds">Installera AdobeHDS</h2>
 
     <p>Det finns stöd för att hitta AdobeHDS-strömmar (<code>manifest.f4m</code>). Det enklaste sättet jag har hittat att ladda ned dessa är att använda ett php-script kallat <a href="https://github.com/K-S-V/Scripts/blob/master/AdobeHDS.php">AdobeHDS.php</a> för att ladda ned dem (<a href="https://github.com/K-S-V/Scripts/wiki">mer information</a>).</p>
@@ -182,6 +183,7 @@ php AdobeHDS.php ...
     <p>Om du vill ladda ned en ström med lägre kvalité, använd <code>--quality low</code>.</p>
 
     <p>AdobeHDS kan återuppta avbrutna nedladdningar. Du kan också använda <code>--parallel 1</code>.</p>
+-->
 
     <h2 id="tips">Tips</h2>
     <p>Om du ändrar filändelsen till <code>.mka</code> så laddas bara ljudet ned. Likaväl kan du använda <code>.srt</code> för att bara ladda ned undertexter. Undertexter stöds ej på alla sidor!</p>
