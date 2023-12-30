@@ -50,10 +50,7 @@ export function update_json_url(url) {
 
 export function info(text) {
   const el = $('#info');
-  while (el.hasChildNodes()) {
-    el.removeChild(el.firstChild);
-  }
-  el.appendChild(document.createTextNode(text));
+  el.textContent = text;
 }
 
 export function api_error(e) {
@@ -87,12 +84,7 @@ function download_info(program) {
     el.style.visibility = 'hidden';
     return;
   }
-  while (el.hasChildNodes()) {
-    el.removeChild(el.firstChild);
-  }
-  el.appendChild(
-    document.createTextNode('För att ladda ned den här strömmen krävs '),
-  );
+  el.textContent = 'För att ladda ned den här strömmen krävs ';
   const a = document.createElement('a');
   a.target = '_blank';
   a.href = `https://stefansundin.github.io/privatkopiera/#${program.toLowerCase()}`;
@@ -141,10 +133,7 @@ export function update_cmd(e) {
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
     const label = $("label[for='cmd']")[0];
-    while (label.hasChildNodes()) {
-      label.removeChild(label.firstChild);
-    }
-    label.appendChild(document.createTextNode('URL'));
+    label.textContent = 'URL';
   } else if (stream_fn.endsWith('_a.m3u8') || ext === 'mka' || ext === 'aac') {
     if (ext === 'mkv') {
       output_path = output_path.replace(/\.mkv$/, '.mka');
