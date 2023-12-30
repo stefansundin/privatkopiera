@@ -1,6 +1,7 @@
 ---
 ---
-@charset "utf-8";
+@charset 'utf-8';
+@import 'jekyll';
 
 body {
   margin-bottom: 100px;
@@ -107,7 +108,3 @@ kbd {
   user-select: none;
   z-index: 1100;
 }
-
-@import
-  "jekyll"
-;
