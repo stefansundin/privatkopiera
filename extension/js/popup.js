@@ -38,7 +38,8 @@ export function update_filename(fn) {
     .replace(/[/\\:]/g, '-')
     .replace(/["”´‘’]/g, "'")
     .replace(/[*?<>|!]/g, '')
-    .replace(/\t+/, ' ');
+    .replace(/[\u00a0 ]+/g, ' ') // non-breaking space
+    .replace(/\t+/g, ' ');
 }
 
 export function update_json_url(url) {
@@ -373,6 +374,16 @@ document.addEventListener('DOMContentLoaded', async () => {
         url: $('#cmd').value,
         filename: $('#filename').value,
       });
+    } catch (err) {
+      if (
+        err instanceof Error &&
+        err.message.includes('filename must not contain illegal characters')
+      ) {
+        // try again without specifying a filename
+        await chrome.downloads.download({
+          url: $('#cmd').value,
+        });
+      }
     } finally {
       $('#download').disabled = false;
     }
