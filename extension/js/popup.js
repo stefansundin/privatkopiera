@@ -31,6 +31,7 @@ export const options = {
 export const subtitles = [];
 export let tab_id;
 let tab_url, url, site;
+let initialFilenameSet = false;
 
 export function update_filename(fn) {
   // replace illegal characters
@@ -115,7 +116,11 @@ export function update_cmd(e) {
   }
   const audio_stream = stream.getAttribute('data-audio-stream');
 
-  if ((e && e.target === streams) || filename.value === '') {
+  if (
+    (e && e.target === streams) ||
+    (filename.value === '' && !initialFilenameSet)
+  ) {
+    initialFilenameSet = true;
     const fn = stream.getAttribute('data-filename');
     if (fn) {
       update_filename(fn);
