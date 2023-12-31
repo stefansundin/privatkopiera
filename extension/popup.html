@@ -3,6 +3,7 @@
 
 <head>
   <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Privatkopiera</title>
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/bootstrap-overrides.css">
@@ -11,7 +12,7 @@
   <script src="js/dark-mode.js"></script>
 </head>
 
-<body>
+<body class="p-3">
   <h3>
     <a id="expand">«</a>
     <span>Privatkopiera</span>
@@ -69,6 +70,11 @@
   </div>
 
   <p class="mt-2" id="info">Något gick fel i initieringen!</p>
+
+  <p class="mt-2 d-none" id="info_android">
+    På Android måste du kopiera URL:en och klista in den i appen Seal.
+    Ladda ned Seal från <a href="https://github.com/JunkFood02/Seal/releases/latest" target="_blank">GitHub</a> eller <a href="https://f-droid.org/packages/com.junkfood.seal/" target="_blank">F-Droid</a>.
+  </p>
 
   <div class="form-check bottom-right-fixed" title="Nollställ med shift-klick">
     <input class="form-check-input" type="checkbox" id="dark-mode" autocomplete="off">

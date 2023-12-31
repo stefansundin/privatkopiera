@@ -5,10 +5,12 @@ html, body {
 body {
   width: 550px;
   min-height: 370px;
-  padding: 10px;
 }
 body.expand {
   width: 800px;
+}
+body.mobile {
+  width: 100%;
 }
 #expand:hover {
   text-decoration: none;
@@ -33,12 +35,18 @@ h3 {
   margin: 0;
   font-weight: bold;
 }
+body.mobile .input-group label {
+  min-width: 70px;
+}
 
 #cmd {
   height: 38px;
   min-height: 38px;
   max-height: 250px;
   word-break: break-all;
+}
+body.mobile #cmd {
+  resize: none;
 }
 
 #copy {

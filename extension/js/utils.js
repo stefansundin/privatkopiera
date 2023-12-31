@@ -1,6 +1,8 @@
+// TODO: Get rid of this import!
 import { tab_id } from './popup.js';
 
 export const isFirefox = navigator.userAgent.includes('Firefox/');
+export const isAndroid = navigator.userAgent.includes('Android');
 
 export function localStorageSetWithExpiry(key, value, ttl) {
   localStorage.setItem(

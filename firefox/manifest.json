@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
   "name": "Privatkopiera",
-  "version": "0.4.0",
+  "version": "0.4.1",
   "description": "Ladda ned från play-tjänster. Kräver ffmpeg.",
   "homepage_url": "https://stefansundin.github.io/privatkopiera/",
   "author": "Stefan Sundin",
@@ -32,6 +32,9 @@
     "gecko": {
       "id": "privatkopiera@firefox.stefansundin.com",
       "strict_min_version": "109.0"
+    },
+    "gecko_android": {
+      "strict_min_version": "113.0"
     }
   }
 }

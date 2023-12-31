@@ -13,6 +13,7 @@ import {
   fmt_filesize,
   isFirefox,
   toObject,
+  isAndroid,
 } from './utils.js';
 
 const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
@@ -44,6 +45,9 @@ export function update_filename(fn) {
 }
 
 export function update_json_url(url) {
+  if (isAndroid) {
+    return;
+  }
   $('#open_json').href = url;
   $('#open_json').classList.remove('d-none');
 }
@@ -121,6 +125,15 @@ export function update_cmd(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
+
+  if (isAndroid) {
+    cmd.value = url;
+    info('');
+    $('#info_android').classList.remove('d-none');
+    cmd.dispatchEvent(new Event('input'));
+    return;
+  }
+
   let output_path = options.output_path + filename.value;
   const ext = extract_extension(filename.value);
   const stream_fn = extract_filename(url);
@@ -197,6 +210,10 @@ export function update_cmd(e) {
 }
 
 export async function processPlaylist(url, mediaDuration) {
+  if (isAndroid) {
+    return;
+  }
+
   const baseUrl = url.replace(/\/[^/]+$/, '/');
   const text = await fetchText(url);
   console.debug(text);
@@ -308,21 +325,34 @@ document.addEventListener('DOMContentLoaded', async () => {
     chrome.runtime.getManifest().version
   }`;
 
-  $('#expand').addEventListener('click', () => {
-    document.body.classList.toggle('expand');
-    const expanded = document.body.classList.contains('expand');
-    $('#expand').textContent = expanded ? '»' : '«';
-    localStorage.setItem('expanded', expanded.toString());
-  });
+  if (isAndroid) {
+    document.body.classList.add('mobile');
+    $('#expand').classList.add('d-none');
+    $('#url').parentElement.classList.add('d-none');
+    $('#filename').parentElement.classList.add('d-none');
+    $('#open_options').classList.add('d-none');
+    $('#copy').textContent = 'Kopiera URL';
+    const label = $("label[for='cmd']")[0];
+    label.textContent = 'URL';
+  } else {
+    $('#expand').addEventListener('click', () => {
+      document.body.classList.toggle('expand');
+      const expanded = document.body.classList.contains('expand');
+      $('#expand').textContent = expanded ? '»' : '«';
+      localStorage.setItem('expanded', expanded.toString());
+    });
 
-  const expanded = localStorage.getItem('expanded') === 'true';
-  if (expanded) {
-    $('#expand').click();
+    const expanded = localStorage.getItem('expanded') === 'true';
+    if (expanded) {
+      $('#expand').click();
+    }
   }
 
   $('#cmd').addEventListener('input', (e) => {
     $('#copy').disabled = e.target.value.length === 0;
-    $('#copy').textContent = 'Kopiera kommando';
+    if (!isAndroid) {
+      $('#copy').textContent = 'Kopiera kommando';
+    }
   });
 
   $('#copy').addEventListener('click', (e) => {
@@ -384,20 +414,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   });
 
   const cmd = $('#cmd');
-  const cmd_height = localStorage.getItem('cmd-height');
-  if (cmd_height !== undefined) {
-    cmd.style.height = cmd_height;
-  }
-  new ResizeObserver((entries) => {
-    for (const entry of entries) {
-      localStorage.setItem('cmd-height', entry.target.style.height);
+  if (isAndroid) {
+    cmd.style.height = '100px';
+  } else {
+    const cmd_height = localStorage.getItem('cmd-height');
+    if (cmd_height !== undefined) {
+      cmd.style.height = cmd_height;
     }
-  }).observe(cmd);
+    new ResizeObserver((entries) => {
+      for (const entry of entries) {
+        localStorage.setItem('cmd-height', entry.target.style.height);
+      }
+    }).observe(cmd);
+  }
 
   $('#streams').addEventListener('input', update_cmd);
   $('#filename').addEventListener('input', update_cmd);
 
-  if (isFirefox) {
+  if (isFirefox && !isAndroid) {
     document
       .querySelectorAll(
         '#open_json,#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]',

@@ -1,4 +1,5 @@
 import default_options from './default_options.js';
+import { isAndroid } from './utils.js';
 
 const options = {
   default_video_file_extension:
@@ -20,6 +21,19 @@ document.addEventListener('DOMContentLoaded', async () => {
       : platformInfo.os === 'mac'
       ? '/Users/Svensson/Downloads/'
       : '/home/svensson/Downloads/';
+
+  const theme =
+    localStorage.getItem('theme') ??
+    (window.matchMedia('(prefers-color-scheme: dark)').matches
+      ? 'dark'
+      : 'light');
+  document.documentElement.setAttribute('data-bs-theme', theme);
+
+  if (isAndroid) {
+    document.body.classList.add('mobile');
+    document.body.textContent = 'Det finns inga inställningar som gäller för Android än.';
+    return;
+  }
 
   document.getElementById('example_output_path').textContent =
     exampleOutputPath;
@@ -78,11 +92,4 @@ document.addEventListener('DOMContentLoaded', async () => {
     ffmpeg_command_input.value = default_options.ffmpeg_command;
     output_path_input.value = default_options.output_path;
   });
-
-  const theme =
-    localStorage.getItem('theme') ??
-    (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light');
-  document.documentElement.setAttribute('data-bs-theme', theme);
 });
