@@ -44,14 +44,6 @@ export function update_filename(fn) {
     .replace(/\t+/g, ' ');
 }
 
-export function update_json_url(url) {
-  if (isAndroid) {
-    return;
-  }
-  $('#open_json').href = url;
-  $('#open_json').classList.remove('d-none');
-}
-
 export function info(text) {
   const el = $('#info');
   el.textContent = text;
@@ -432,7 +424,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isFirefox && !isAndroid) {
     document
       .querySelectorAll(
-        '#open_json,#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]',
+        '#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]',
       )
       .forEach((a) => {
         a.addEventListener('click', () => {

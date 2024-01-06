@@ -10,7 +10,7 @@
 // Get audio URL:
 // https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { info, tab_id, update_cmd, update_json_url } from '../popup.js';
+import { info, tab_id, update_cmd } from '../popup.js';
 import { $, extract_extension, fetchJson } from '../utils.js';
 
 function sr_callback(stream, data) {
@@ -89,7 +89,6 @@ export default [
 
       for (const stream of streams) {
         const data_url = `https://sverigesradio.se/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
-        update_json_url(data_url);
 
         const data = await fetchJson(data_url, {
           headers: {

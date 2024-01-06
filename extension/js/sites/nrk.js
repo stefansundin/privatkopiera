@@ -24,7 +24,6 @@ import {
   tab_id,
   update_cmd,
   update_filename,
-  update_json_url,
 } from '../popup.js';
 import {
   $,
@@ -95,7 +94,6 @@ export default [
       const id = ret[1];
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${id}`;
       update_filename(`${id}.${options.default_audio_file_extension}`);
-      update_json_url(data_url);
       console.log(data_url);
       const data = await fetchJson(data_url, {
         headers: {
@@ -113,7 +111,6 @@ export default [
       // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
       const data_url = `https://psapi.nrk.no/playback/manifest/podcast/${ret[1]}`;
       console.log(data_url);
-      update_json_url(data_url);
 
       const data = await fetchJson(data_url, {
         headers: {
@@ -131,7 +128,6 @@ export default [
       // https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${ret[1]}`;
       console.log(data_url);
-      update_json_url(data_url);
 
       const data = await fetchJson(data_url, {
         headers: {
@@ -170,7 +166,6 @@ export default [
 
       const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
       update_filename(`${video_id}.${options.default_video_file_extension}`);
-      update_json_url(data_url);
 
       const data = await fetchJson(data_url, {
         headers: {

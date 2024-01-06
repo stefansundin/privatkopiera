@@ -54,7 +54,6 @@ import {
   subtitles,
   update_cmd,
   update_filename,
-  update_json_url,
 } from '../popup.js';
 import { $, extract_filename, fetchJson, fetchNextData } from '../utils.js';
 
@@ -121,7 +120,6 @@ export default [
         ch = 'barnkanalen';
       }
       const data_url = `https://api.svt.se/video/ch-${ch}`;
-      update_json_url(data_url);
       fetchJson(data_url, {
         headers: {
           accept: 'application/json',
@@ -138,7 +136,6 @@ export default [
       const videoId = ret[1];
       const data_url = `https://api.svt.se/video/${videoId}`;
       update_filename(`${videoId}.${options.default_video_file_extension}`);
-      update_json_url(data_url);
       console.log(data_url);
 
       fetchJson(data_url, {
@@ -157,7 +154,6 @@ export default [
       const video_id = ret[1];
       const data_url = `https://api.svt.se/video/${video_id}`;
       update_filename(`${video_id}.mp4`);
-      update_json_url(data_url);
       console.log(data_url);
 
       fetchJson(data_url, {
@@ -180,7 +176,6 @@ export default [
       for (const videoId of videoIds) {
         const data_url = `https://api.svt.se/video/${videoId}`;
         update_filename(`${videoId}.${options.default_video_file_extension}`);
-        update_json_url(data_url);
         console.log(data_url);
 
         fetchJson(data_url, {
@@ -208,7 +203,6 @@ export default [
       ) {
         const data_url = `https://api.svt.se/video/${ret[2]}`;
         update_filename(`${ret[1]}.${options.default_video_file_extension}`);
-        update_json_url(data_url);
         console.log(data_url);
         fetchJson(data_url, {
           headers: {
@@ -248,7 +242,6 @@ export default [
       for (const svtId of videoIds) {
         const data_url = `https://api.svt.se/video/${svtId}`;
         update_filename(`${svtId}.${options.default_video_file_extension}`);
-        update_json_url(data_url);
         console.log(data_url);
         fetchJson(data_url).then(svt_callback).catch(api_error);
       }

@@ -24,7 +24,6 @@ import {
   tab_id,
   update_cmd,
   update_filename,
-  update_json_url,
 } from '../popup.js';
 import {
   $,
@@ -141,7 +140,6 @@ export default [
       }
 
       const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
-      update_json_url(metadata_url);
       fetchJson(metadata_url, {
         headers: access_token
           ? {
@@ -164,7 +162,6 @@ export default [
       for (const videoId of videoIds) {
         const metadata_url = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
         console.log(metadata_url);
-        update_json_url(metadata_url);
         fetchJson(metadata_url, {
           headers: {
             accept: 'application/json',
