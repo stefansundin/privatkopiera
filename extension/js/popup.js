@@ -159,7 +159,7 @@ export function update_cmd(e) {
   } else if (ext === 'm4a') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -acodec copy -absf aac_adtstoasc "${output_path}"`;
+    }" -acodec copy -bsf:a aac_adtstoasc "${output_path}"`;
   } else if (ext === 'mp3' || ext === 'ogg') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
@@ -190,7 +190,7 @@ export function update_cmd(e) {
         .map((url) => `-i "${url}"`)
         .join(
           ' ',
-        )} -vcodec copy -acodec copy -absf aac_adtstoasc "${output_path}"`;
+        )} -vcodec copy -acodec copy -bsf:a aac_adtstoasc "${output_path}"`;
     } else {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
