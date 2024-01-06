@@ -155,11 +155,11 @@ export function update_cmd(e) {
     }
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -acodec copy "${output_path}"`;
+    }" -c:a copy "${output_path}"`;
   } else if (ext === 'm4a') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -acodec copy -bsf:a aac_adtstoasc "${output_path}"`;
+    }" -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
   } else if (ext === 'mp3' || ext === 'ogg') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
@@ -188,13 +188,11 @@ export function update_cmd(e) {
     if (ext === 'mp4') {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
-        .join(
-          ' ',
-        )} -vcodec copy -acodec copy -bsf:a aac_adtstoasc "${output_path}"`;
+        .join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
     } else {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
-        .join(' ')} -vcodec copy -acodec copy "${output_path}"`;
+        .join(' ')} -c:v copy -c:a copy "${output_path}"`;
     }
   }
   cmd.setAttribute('data-url', url);
