@@ -31,7 +31,8 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (isAndroid) {
     document.body.classList.add('mobile');
-    document.body.textContent = 'Det finns inga inställningar som gäller för Android än.';
+    document.body.textContent =
+      'Det finns inga inställningar som gäller för Android än.';
     return;
   }
 

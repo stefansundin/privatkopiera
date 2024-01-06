@@ -11,9 +11,9 @@ import {
   extract_filename,
   fetchText,
   fmt_filesize,
+  isAndroid,
   isFirefox,
   toObject,
-  isAndroid,
 } from './utils.js';
 
 const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
