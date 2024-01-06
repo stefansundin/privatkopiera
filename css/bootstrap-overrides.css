@@ -6,9 +6,6 @@
 .form-check-input:focus {
   box-shadow: none;
 }
-.form-check-input:indeterminate {
-  appearance: auto;
-}
 
 [data-bs-theme=light] .btn-light {
   --bs-btn-bg: #e9eaeb;
