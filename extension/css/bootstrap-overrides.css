@@ -5,6 +5,8 @@
   --bs-btn-border-color: #e7e8e9;
 }
 [data-bs-theme=dark] .btn-light {
-  --bs-btn-bg: #a8aaac;
-  --bs-btn-border-color: #a2a2a2;
+  --bs-btn-bg: #d3d4d5;
+  --bs-btn-border-color: #c6c7c8;
+  --bs-btn-hover-bg: #a8aaac;
+  --bs-btn-hover-border-color: #a2a2a2;
 }
