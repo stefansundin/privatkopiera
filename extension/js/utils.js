@@ -202,6 +202,35 @@ export async function fetchJson(...args) {
   return injectionResult[0].result.result;
 }
 
+export function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
+export async function getDocumentReadyState() {
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab_id },
+    func: () => document.readyState,
+  });
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  }
+  return injectionResult[0].result;
+}
+
+export async function waitForPageLoad() {
+  while (true) {
+    const readyState = await getDocumentReadyState();
+    console.debug('readyState', readyState);
+    if (readyState === 'complete') {
+      return readyState;
+    }
+    await sleep(200);
+  }
+}
+
 export function extract_filename(url) {
   url = url.replace(/\?.+/, '');
   return url.substring(url.lastIndexOf('/') + 1).replace(/[?#].*/, '');
