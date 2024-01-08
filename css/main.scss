@@ -100,6 +100,7 @@ kbd {
   font-size: .85em;
   line-height: 1;
   padding: 2px 4px;
+  margin: 0 2px;
   white-space: nowrap;
 }
 
@@ -107,7 +108,7 @@ kbd {
   position: fixed;
   bottom: 1em;
   right: 1em;
-  padding: 5px 10px 5px 30px;
+  padding: 5px 12px 5px 34px;
   border-radius: 5px;
   user-select: none;
   z-index: 1100;
