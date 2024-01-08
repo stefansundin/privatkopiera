@@ -17,3 +17,10 @@
   --bs-btn-hover-bg: #a8aaac;
   --bs-btn-hover-border-color: #a2a2a2;
 }
+
+/* make the dark mode checkbox look less enabled when automatic mode is in light mode */
+[data-bs-theme=light] .form-check-input[type="checkbox"]:indeterminate {
+  background-color: #fff;
+  border-color: #86b7fe;
+  --bs-form-check-bg-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3e%3cpath fill='none' stroke='%2386b7fe' stroke-linecap='round' stroke-linejoin='round' stroke-width='3' d='M6 10h8'/%3e%3c/svg%3e");
+}
