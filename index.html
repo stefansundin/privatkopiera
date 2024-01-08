@@ -126,31 +126,17 @@
 
     <p>FFmpeg är ett program för som används för konvertering av videofiler, men det kan även ladda ned videoströmmar.</p>
 
-    <p>Du kan ladda ned FFmpeg till Linux och Mac med pakethanterare (se nedan). Till Windows kan du ladda ned från <a href="https://ffmpeg.org/download.html">ffmpeg.org</a>.</p>
+    <p>För tillfället rekommenderas att ladda ned FFmpeg från <a href="https://github.com/yt-dlp/FFmpeg-Builds/blob/master/README.md">yt-dlp/FFmpeg-Builds på GitHub</a> för att de har löst en bugg med undertexter från SVT. Det finns tyvärr bara tillgängligt till Windows och Linux.</p>
 
-    <p>Om du har svårt att hitta nedladdningarna:</p>
-    <ul>
-      <li>Windows: <a href="https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip">https://www.gyan.dev/ffmpeg/builds/ffmpeg-release-essentials.zip</a></li>
-      <li>Mac: <a href="https://evermeet.cx/ffmpeg/">https://evermeet.cx/ffmpeg/</a></li>
-    </ul>
+    <p>Till macOS kan du ladda ned från <a href="https://evermeet.cx/ffmpeg/">https://evermeet.cx/ffmpeg/</a>. Här kvarstår dock buggen med undertexter från SVT.</p>
 
-    <p>Du kan antingen lägga <code>ffmpeg.exe</code> filen i samma mapp som du exekverar kommandot ifrån, eller lägga filen i din <code>PATH</code>. I Linux och Mac måste du då använda <code>./ffmpeg</code> när du startar en nedladdning. I Windows kan du flytta <code>ffmpeg.exe</code> till <code>C:\Windows\</code> som redan finns i <code>PATH</code>.</p>
+    <p>Hitta andra möjliga nedladdningar på <a href="https://ffmpeg.org/download.html">ffmpeg.org</a>.</p>
 
-    <p>För mer avancerad användning så kan du modifiera kommandot som Privatkopiera ger dig. <a href="https://ffmpeg.org/ffmpeg.html">Se FFmpeg's dokumentation för hjälp.</a></p>
+    <p>Om kommandotolken har problem att hitta ffmpeg så kan du behöva konfigurera sökvägen i tilläggets inställningar.</p>
+
+    <p>Om det behövs så kan du modifiera kommandot som Privatkopiera ger dig. <a href="https://ffmpeg.org/ffmpeg.html">Se FFmpeg-dokumentationen.</a></p>
 
     <p><strong>Obs:</strong> FFmpeg spottar gärna (och ofta) ur sig varningar. Om programmet fortsätter att köra så bör du ta det lungt, det finns en bra chans att det fungerar ändå. Ha tålamod och ge det en stund.</p>
-
-    <p>I Debian och Ubuntu:</p>
-
-{% highlight shell %}
-sudo apt-get install ffmpeg
-{% endhighlight %}
-
-    <p>I Mac kan du installera med <a href="https://brew.sh/">Homebrew</a>. Observera att Homebrew kommer att installera många andra program, så du kanske föredrar att istället <a href="https://evermeet.cx/ffmpeg/">ladda ned en static build</a>.</p>
-
-{% highlight shell %}
-brew install ffmpeg
-{% endhighlight %}
 
 
 <!--
