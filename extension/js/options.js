@@ -56,7 +56,24 @@ document.addEventListener('DOMContentLoaded', async () => {
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
 
-  save_button.addEventListener('click', async () => {
+  function validate(notify = false) {
+    if (
+      output_path_input.value.toLowerCase() === 'c:\\' ||
+      output_path_input.value.toLowerCase().startsWith('c:\\windows\\')
+    ) {
+      if (notify) {
+        alert(
+          'Sökvägen som du har valt rekommenderas ej då vanliga användare normalt inte kan skapa filer där. Välj en sökväg som din användare kan skriva till.',
+        );
+      }
+      output_path_input.classList.add('text-danger');
+    } else {
+      output_path_input.classList.remove('text-danger');
+    }
+  }
+  validate();
+
+  save_button.addEventListener('click', () => {
     localStorage.default_video_file_extension =
       default_video_file_extension_input.value;
     localStorage.default_audio_file_extension =
@@ -70,6 +87,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       output_path_input.value += pathSeparator;
     }
     localStorage.output_path = output_path_input.value;
+
+    validate(true);
   });
 
   for (const input of document.querySelectorAll("input[type='text']")) {
@@ -81,11 +100,12 @@ document.addEventListener('DOMContentLoaded', async () => {
     });
   }
 
-  document.getElementById('reset').addEventListener('click', async () => {
+  document.getElementById('reset').addEventListener('click', () => {
     delete localStorage.default_video_file_extension;
     delete localStorage.default_audio_file_extension;
     delete localStorage.ffmpeg_command;
     delete localStorage.output_path;
+
     default_video_file_extension_input.value =
       default_options.default_video_file_extension;
     default_audio_file_extension_input.value =
