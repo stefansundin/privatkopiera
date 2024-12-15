@@ -170,9 +170,14 @@ export function updateCommand(e) {
     }
     inputs.push(...subtitles);
     if (extension === 'mp4') {
-      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} ${mapOutputToNumber(inputs)} ${inputs.length > 2 ? '-c:s mov_text' : ''} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
     } else {
-      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy "${output_path}"`;
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} ${mapOutputToNumber(inputs)} -c:v copy -c:a copy "${output_path}"`;
+    }
+    function mapOutputToNumber(array) {
+      return array.length > 2
+        ? array.map((_value, index) => `-map ${index}`).join(' ')
+        : '';
     }
   }
   cmd.setAttribute('data-url', url);
