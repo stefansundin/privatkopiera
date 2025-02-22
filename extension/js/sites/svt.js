@@ -57,8 +57,21 @@ import {
 } from '../popup.js';
 import { $, extract_filename, fetchDOM, fetchJson, fetchPageData } from '../utils.js';
 
-function svt_callback(data) {
+function svt_callback(data, fetchPlaylist=true) {
   console.log(data);
+
+  let title;
+  if (
+    data.programTitle &&
+    data.episodeTitle &&
+    data.programTitle !== data.episodeTitle
+  ) {
+    title = `${data.programTitle.trim()} - ${data.episodeTitle.trim()}`;
+  } else if (data.programTitle) {
+    title = `${data.programTitle.trim()}`;
+  } else if (data.episodeTitle) {
+    title = `${data.episodeTitle.trim()}`;
+  }
 
   const formats = 'hls,hds'.split(',');
   const streams = $('#streams');
@@ -69,12 +82,18 @@ function svt_callback(data) {
       stream.url = add_param(stream.url, 'hdcore=3.5.0'); // ¯\_(ツ)_/¯
     }
 
+    const fn = title ? `${title}.${options.default_video_file_extension}` : extract_filename(stream.url);
     const option = document.createElement('option');
     option.value = stream.url;
-    option.appendChild(document.createTextNode(extract_filename(stream.url)));
+    option.appendChild(document.createTextNode(title || extract_filename(stream.url)));
+    option.setAttribute('data-filename', fn);
     streams.appendChild(option);
 
-    if (stream.format === 'hls') {
+    if ($('#filename').value === '') {
+      update_filename(fn);
+    }
+
+    if (stream.format === 'hls' && fetchPlaylist) {
       processPlaylist(stream.url, data.contentDuration).catch(api_error);
     }
   }
@@ -89,25 +108,6 @@ function svt_callback(data) {
     }
   }
 
-  if (
-    data.programTitle &&
-    data.episodeTitle &&
-    data.programTitle !== data.episodeTitle
-  ) {
-    update_filename(
-      `${data.programTitle.trim()} - ${data.episodeTitle.trim()}.${
-        options.default_video_file_extension
-      }`,
-    );
-  } else if (data.programTitle) {
-    update_filename(
-      `${data.programTitle.trim()}.${options.default_video_file_extension}`,
-    );
-  } else if (data.episodeTitle) {
-    update_filename(
-      `${data.episodeTitle.trim()}.${options.default_video_file_extension}`,
-    );
-  }
   update_cmd();
 }
 
@@ -214,52 +214,31 @@ export default [
         return;
       }
 
-      // This can break at any time :(
-      let urqlState;
-      const searchRegEx = /^window\.svt\.urqlState\s*=\s*{/m;
+      // This is a brute force way of finding all the video ids on the page, but compared to trying to parse the site data it should be less prone to breaking when they update the website
+      const videoIds = [];
+      const searchRegEx = /\\?"svtId\\?"\s*:\s*\\?"([^\\"]+)\\?"/g;
       const doc = await fetchDOM(url);
       const scripts = doc.getElementsByTagName('script');
       for (const script of scripts) {
-        console.log(script.textContent);
-        let index = script.textContent.search(searchRegEx);
-        if (index === -1) {
-          continue;
+        let result;
+        while ((result = searchRegEx.exec(script.textContent)) !== null) {
+          videoIds.push(result[1]);
         }
-        index = script.textContent.indexOf('{', index);
-        if (index === -1) {
-          throw new Error(`Lyckades inte parsa sidoinformationen.`);
-        }
-        let text = script.textContent.substring(index);
-        if (text.endsWith(';')) {
-          text = text.substring(0, text.length-1);
-        }
-        urqlState = JSON.parse(text);
-        break;
       }
-      if (!urqlState) {
-        throw new Error(`Hittade ingen sidoinformation.`);
-      }
-      // console.debug(JSON.stringify(urqlState));
-
-      const key = Object.keys(urqlState).at(0);
-      if (!key) {
-        throw new Error(`Problem att läsa sidoinformationen.`);
-      }
-      const data = JSON.parse(urqlState[key]["data"]);
-      // console.debug(JSON.stringify(data));
-
-      const videoIds = [data?.page?.topMedia?.svtId].filter(Boolean);
       console.log('videoIds', videoIds);
-
-      for (const svtId of videoIds) {
-        const data_url = `https://api.svt.se/video/${svtId}`;
-        update_filename(`${svtId}.${options.default_video_file_extension}`);
-        console.log(data_url);
-        fetchJson(data_url).then(svt_callback).catch(api_error);
-      }
 
       if (videoIds.length === 0) {
         info('Hittade ingen video.');
+        return;
+      }
+
+      // TODO: Could use Promise.all() to do this faster, but I have received "Access Denied" errors and I think maybe it happens when I make too many requests too fast???
+      const fetchPlaylist = (videoIds.length === 1);
+      for (const svtId of videoIds) {
+        const dataUrl = `https://api.svt.se/video/${svtId}`;
+        console.log(dataUrl);
+        const data = await fetchJson(dataUrl);
+        svt_callback(data, fetchPlaylist);
       }
     },
   },
