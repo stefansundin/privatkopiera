@@ -55,7 +55,7 @@ import {
   update_cmd,
   update_filename,
 } from '../popup.js';
-import { $, extract_filename, fetchJson, fetchPageData } from '../utils.js';
+import { $, extract_filename, fetchDOM, fetchJson, fetchPageData } from '../utils.js';
 
 function svt_callback(data) {
   console.log(data);
@@ -214,29 +214,41 @@ export default [
         return;
       }
 
-      // WARNING: This can probably break at any time..
-      // TODO: Figure out actual query instead of the persistedQuery and remove hard coded stuff
-      const variables = {
-        allocationsCacheKey: '{}',
-        direktcenterLinkedPostId: null,
-        path: url.pathname,
-        searchTerm: null,
-        version: '0dd165ab',
-      };
-      const data = await fetchJson(
-        `https://api.svt.se/newsqlear/graphql?operationName=RootQuery&variables=${encodeURI(
-          JSON.stringify(variables),
-        )}&extensions=%7B%22persistedQuery%22%3A%7B%22sha256Hash%22%3A%222841cd56db9c6ef22166c80c4269ebbb1fc8de24044c100e5581d3b8956e324e%22%2C%22version%22%3A1%7D%7D`,
-        {
-          headers: {
-            accept:
-              'application/graphql-response+json, application/graphql+json, application/json, text/event-stream, multipart/mixed',
-          },
-        },
-      );
-      console.log(data);
+      // This can break at any time :(
+      let urqlState;
+      const searchRegEx = /^window\.svt\.urqlState\s*=\s*{/m;
+      const doc = await fetchDOM(url);
+      const scripts = doc.getElementsByTagName('script');
+      for (const script of scripts) {
+        console.log(script.textContent);
+        let index = script.textContent.search(searchRegEx);
+        if (index === -1) {
+          continue;
+        }
+        index = script.textContent.indexOf('{', index);
+        if (index === -1) {
+          throw new Error(`Lyckades inte parsa sidoinformationen.`);
+        }
+        let text = script.textContent.substring(index);
+        if (text.endsWith(';')) {
+          text = text.substring(0, text.length-1);
+        }
+        urqlState = JSON.parse(text);
+        break;
+      }
+      if (!urqlState) {
+        throw new Error(`Hittade ingen sidoinformation.`);
+      }
+      // console.debug(JSON.stringify(urqlState));
 
-      const videoIds = [data?.data?.page?.topMedia?.svtId].filter(Boolean);
+      const key = Object.keys(urqlState).at(0);
+      if (!key) {
+        throw new Error(`Problem att läsa sidoinformationen.`);
+      }
+      const data = JSON.parse(urqlState[key]["data"]);
+      // console.debug(JSON.stringify(data));
+
+      const videoIds = [data?.page?.topMedia?.svtId].filter(Boolean);
       console.log('videoIds', videoIds);
 
       for (const svtId of videoIds) {
