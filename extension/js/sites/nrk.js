@@ -1,7 +1,7 @@
 // Example URL:
 // https://tv.nrk.no/serie/ardna-tv/2016/SAPP67004716
 // https://tv.nrk.no/serie/lindmo/2017/MUHU12005817
-// https://radio.nrk.no/serie/tett-paa-norske-artister/sesong/2018/MYNF51000518
+// https://tv.nrk.no/serie/rapport-fra-nr-24/sesong/1/episode/FALD20007192
 // https://tv.nrk.no/serie/ski-nm
 // https://tv.nrk.no/serie/side-om-side/sesong/10/episode/1/avspiller
 // https://radio.nrk.no/podkast/bjoernen_lyver/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
@@ -10,7 +10,7 @@
 // https://psapi.nrk.no/playback/manifest/program/SAPP67004716
 // https://psapi.nrk.no/playback/manifest/program/MUHU12005817
 // https://undertekst.nrk.no/prod/SAPP67/00/SAPP67004716AA/NOR/SAPP67004716AA.vtt
-// https://psapi.nrk.no/programs/manifest/program/MYNF51000518
+// https://psapi.nrk.no/playback/manifest/program/FALD20007192
 // https://psapi.nrk.no/playback/metadata/l_709fe866-13a5-498d-9fe8-6613a5d98d1f
 // https://psapi.nrk.no/playback/metadata/podcast/bjoernen_lyver/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
 // https://psapi.nrk.no/playback/manifest/podcast/l_68cb20c7-5a8c-4031-8b20-c75a8c003183
@@ -29,6 +29,7 @@ import {
   $,
   extract_filename,
   fetchJson,
+  fetchNextData,
   getDocumentTitle,
   parse_pt,
 } from '../utils.js';
@@ -141,33 +142,21 @@ export default [
   },
   {
     re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\//,
-    func: async () => {
-      // Grab the video id from the DOM
-      const injectionResult = await chrome.scripting.executeScript({
-        target: { tabId: tab_id },
-        func: () => {
-          // <div id="series-program-id-container" data-program-id="MSPO30080518">
-          const div = document.querySelector('[data-program-id]');
-          if (!div) {
-            return { error: 'data-program-id not found on page' };
-          }
-          return { result: div.getAttribute('data-program-id') };
-        },
-      });
-      console.debug('injectionResult', injectionResult);
-      if (injectionResult[0].error) {
-        throw injectionResult[0].error;
-      } else if (injectionResult[0].result === null) {
-        throw new Error('Script error.');
-      } else if (injectionResult[0].result.error) {
-        throw new Error(injectionResult[0].result.error);
+    func: async (_, url) => {
+      const pageData = await fetchNextData(url, 'pageData');
+      if (!pageData) {
+        throw new Error(`Hittade ingen sidoinformation.`);
       }
-      const video_id = injectionResult[0].result.result;
+      const prfId = pageData?.initialState?.selectedEpisodePrfId;
+      if (!prfId) {
+        throw new Error(`Hittade inte prfId.`);
+      }
 
-      const data_url = `https://psapi.nrk.no/playback/manifest/program/${video_id}`;
-      update_filename(`${video_id}.${options.default_video_file_extension}`);
+      const dataUrl = `https://psapi.nrk.no/playback/manifest/program/${prfId}`;
+      console.log('dataUrl', dataUrl);
+      update_filename(`${prfId}.${options.default_video_file_extension}`);
 
-      const data = await fetchJson(data_url, {
+      const data = await fetchJson(dataUrl, {
         headers: {
           accept: 'application/json',
           // This is what the website normally sends:

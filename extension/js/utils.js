@@ -127,15 +127,15 @@ export async function fetchDOM(url, ...args) {
   return doc;
 }
 
-export async function fetchNextData(url) {
+export async function fetchNextData(url, id='__NEXT_DATA__') {
   // We always want to perform a network request rather than executing a script to pull the page's data, since that
   // has a chance of fetching old data if the user has navigated around on the website before opening the extension.
   const doc = await fetchDOM(url);
-  const nextData = doc.querySelector('#__NEXT_DATA__');
-  if (!nextData) {
-    throw new Error('__NEXT_DATA__ not found on page');
+  const element = doc.getElementById(id);
+  if (!element) {
+    throw new Error(`${id} not found on page`);
   }
-  const data = JSON.parse(nextData.textContent);
+  const data = JSON.parse(element.textContent);
   console.debug(data);
   return data;
 }
