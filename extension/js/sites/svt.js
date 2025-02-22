@@ -55,7 +55,7 @@ import {
   update_cmd,
   update_filename,
 } from '../popup.js';
-import { $, extract_filename, fetchJson, fetchNextData } from '../utils.js';
+import { $, extract_filename, fetchJson, fetchPageData } from '../utils.js';
 
 function svt_callback(data) {
   console.log(data);
@@ -168,7 +168,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
     func: async (ret, url) => {
-      const data = await fetchNextData(url);
+      const data = await fetchPageData(url);
       const videoIds = Object.values(data.props.pageProps.__APOLLO_STATE__)
         .map((v) => v.videoId)
         .filter(Boolean);

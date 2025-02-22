@@ -28,7 +28,7 @@ import {
 import {
   $,
   fetchJson,
-  fetchNextData,
+  fetchPageData,
   localStorageGetWithExpiry,
   localStorageSetWithExpiry,
 } from '../utils.js';
@@ -154,7 +154,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?tv4\.se\.?\//,
     func: async (ret, url) => {
-      const data = await fetchNextData(url);
+      const data = await fetchPageData(url);
       const videoIds = Object.values(data.props.apolloState)
         .filter((thing) => thing.type === 'clipvideo')
         .map((v) => v.id);

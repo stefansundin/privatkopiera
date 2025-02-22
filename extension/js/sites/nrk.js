@@ -29,7 +29,7 @@ import {
   $,
   extract_filename,
   fetchJson,
-  fetchNextData,
+  fetchPageData,
   getDocumentTitle,
   parse_pt,
 } from '../utils.js';
@@ -143,7 +143,7 @@ export default [
   {
     re: /^https?:\/\/(?:tv|radio)\.nrk\.no\.?\//,
     func: async (_, url) => {
-      const pageData = await fetchNextData(url, 'pageData');
+      const pageData = await fetchPageData(url, 'pageData');
       if (!pageData) {
         throw new Error(`Hittade ingen sidoinformation.`);
       }

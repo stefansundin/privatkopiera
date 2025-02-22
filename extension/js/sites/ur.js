@@ -5,7 +5,7 @@
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
 import { options, tab_id, update_cmd, update_filename } from '../popup.js';
-import { $, fetchJson, fetchNextData, getDocumentTitle } from '../utils.js';
+import { $, fetchJson, fetchPageData, getDocumentTitle } from '../utils.js';
 
 async function fetchProgram(programId, title) {
   console.log('programId', programId);
@@ -52,7 +52,7 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
     func: async (_, url) => {
-      const nextData = await fetchNextData(url);
+      const nextData = await fetchPageData(url);
       if (!nextData) {
         throw new Error(`Hittade ingen sidoinformation.`);
       }
