@@ -65,7 +65,7 @@ function tv4_error(err) {
 
 export default [
   {
-    re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp)\/([0-9a-f]+)/,
+    re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp|korthet)\/([0-9a-f]+)/,
     func: async (ret) => {
       const video_id = ret[1];
       update_filename(`${video_id}.${options.default_video_file_extension}`);
