@@ -48,23 +48,6 @@ export function toObject(arr) {
   return obj;
 }
 
-export function fmt_filesize(bytes, digits = 2) {
-  const units = ['B', 'kiB', 'MiB', 'GiB', 'TiB', 'PiB', 'EiB', 'ZiB', 'YiB'];
-  let i = 0;
-  let size = bytes;
-  while (size > 1024 && i < units.length) {
-    size = size / 1024;
-    i++;
-  }
-  if (i < 3) {
-    digits = 0;
-  }
-  if (i > 0) {
-    size = size.toFixed(digits);
-  }
-  return `${size} ${units[i]}`;
-}
-
 export function $() {
   const elements = document.querySelectorAll.apply(document, arguments);
   if (arguments[0][0] === '#') {

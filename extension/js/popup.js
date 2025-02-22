@@ -10,7 +10,6 @@ import {
   extract_extension,
   extract_filename,
   fetchText,
-  fmt_filesize,
   isAndroid,
   isFirefox,
   toObject,
@@ -263,25 +262,21 @@ export async function processPlaylist(url, mediaDuration) {
     const kbps = Math.round(stream.bitrate / 1000);
     const option = document.createElement('option');
     option.value = stream.url;
-    option.appendChild(document.createTextNode(`${kbps} kbps`));
+    const label = [];
+    if (stream.params['RESOLUTION']) {
+      label.push(stream.params['RESOLUTION']);
+    }
+    label.push(`${kbps} kbps`);
+    let text = label.shift();
+    if (label.length > 0) {
+      text += ` (${label.join(', ')})`;
+    }
+    option.appendChild(document.createTextNode(text));
     if (ext_x_media['AUDIO']) {
       option.setAttribute(
         'data-audio-stream',
         baseUrl + ext_x_media['AUDIO']['URI'],
       );
-    }
-    const extra = [];
-    if (stream.params['RESOLUTION']) {
-      extra.push(stream.params['RESOLUTION']);
-    }
-    if (mediaDuration) {
-      // the calculation is off by about 5%, probably because of audio and overhead
-      extra.push(
-        `~${fmt_filesize((1.05 * mediaDuration * stream.bitrate) / 8)}`,
-      );
-    }
-    if (extra.length !== 0) {
-      option.appendChild(document.createTextNode(` (${extra.join(', ')})`));
     }
     dropdown.insertBefore(option, default_option);
   }
