@@ -35,10 +35,10 @@
 // Media Data URL:
 // https://api.svt.se/video/KrQbGGd
 //
-// https://www.svt.se/recept/julvort
+// https://recept.svt.se/julvort
 // https://api.svt.se/video/1398771-001A
 //
-// https://www.svt.se/recept/nyponvinager
+// https://recept.svt.se/nyponvinager
 // https://api.svt.se/video/33001262
 //
 // Example URL:
@@ -166,7 +166,7 @@ export default [
     },
   },
   {
-    re: /^https?:\/\/(?:www\.)?svt\.se\.?\/recept\//,
+    re: /^https?:\/\/recept\.svt\.se\.?\//,
     func: async (ret, url) => {
       const data = await fetchPageData(url);
       const videoIds = Object.values(data.props.pageProps.__APOLLO_STATE__)
