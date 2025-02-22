@@ -147,15 +147,15 @@ export function update_cmd(e) {
     }
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -c:a copy "${output_path}"`;
+    }" -vn -c:a copy "${output_path}"`;
   } else if (ext === 'm4a') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
+    }" -vn -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
   } else if (ext === 'mp3' || ext === 'ogg') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
-    }" "${output_path}"`;
+    }" -vn "${output_path}"`;
   } else if (stream_ext === 'vtt') {
     if (ext === 'mkv' || ext === 'mp4') {
       output_path = output_path.replace(/\.(mkv|mp4)$/, '.srt');
