@@ -135,7 +135,6 @@ export default [
       console.log(ret);
       const videoId = ret[1];
       const data_url = `https://api.svt.se/video/${videoId}`;
-      update_filename(`${videoId}.${options.default_video_file_extension}`);
       console.log(data_url);
 
       fetchJson(data_url, {
@@ -153,7 +152,6 @@ export default [
       // https://www.svt.se/videoplayer-embed/jXApWXa
       const video_id = ret[1];
       const data_url = `https://api.svt.se/video/${video_id}`;
-      update_filename(`${video_id}.mp4`);
       console.log(data_url);
 
       fetchJson(data_url, {
@@ -175,7 +173,6 @@ export default [
 
       for (const videoId of videoIds) {
         const data_url = `https://api.svt.se/video/${videoId}`;
-        update_filename(`${videoId}.${options.default_video_file_extension}`);
         console.log(data_url);
 
         fetchJson(data_url, {
@@ -202,7 +199,6 @@ export default [
         ))
       ) {
         const data_url = `https://api.svt.se/video/${ret[2]}`;
-        update_filename(`${ret[1]}.${options.default_video_file_extension}`);
         console.log(data_url);
         fetchJson(data_url, {
           headers: {
