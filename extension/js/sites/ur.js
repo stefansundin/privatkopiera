@@ -4,84 +4,67 @@
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
-import { api_error, options, update_cmd, update_filename } from '../popup.js';
-import { $, fetchJson, fetchNextData } from '../utils.js';
+import { options, tab_id, update_cmd, update_filename } from '../popup.js';
+import { $, fetchJson, fetchNextData, getDocumentTitle } from '../utils.js';
 
-function ur_callback(domain, data) {
-  const program = data.program;
-  console.log('program', program);
+async function fetchProgram(programId, title) {
+  console.log('programId', programId);
+  const sourcesDataUrl = `https://media-api.urplay.se/config-streaming/v1/urplay/sources/${programId}`;
+  console.log(sourcesDataUrl);
 
-  const streams = [];
-  if (
-    program.streamingInfo.sweComplete &&
-    program.streamingInfo.sweComplete.hd
-  ) {
-    streams.push({
-      info: 'HD med undertexter',
-      url: `https://${domain}/${program.streamingInfo.sweComplete.hd.location}playlist.m3u8`,
-    });
-  }
-  if (program.streamingInfo.raw && program.streamingInfo.raw.hd) {
-    streams.push({
-      info: 'HD',
-      url: `https://${domain}/${program.streamingInfo.raw.hd.location}playlist.m3u8`,
-    });
-  }
-  if (
-    program.streamingInfo.sweComplete &&
-    program.streamingInfo.sweComplete.sd
-  ) {
-    streams.push({
-      info: 'SD med undertexter',
-      url: `https://${domain}/${program.streamingInfo.sweComplete.sd.location}playlist.m3u8`,
-    });
-  }
-  if (program.streamingInfo.raw) {
-    for (const [key, value] of Object.entries(program.streamingInfo.raw)) {
-      if (!value.location) {
-        continue;
-      }
-      const url = `https://${domain}/${value.location}playlist.m3u8`;
-      if (streams.some((s) => s.url === url)) {
-        continue;
-      }
-      streams.push({
-        info: key.toUpperCase(),
-        url: url,
-      });
-    }
-  }
-  console.log('stream', streams);
+  const sourcesData = await fetchJson(sourcesDataUrl, {
+    headers: {
+      accept: 'application/json',
+    },
+  });
+  console.log('sourcesData', sourcesData);
 
   const dropdown = $('#streams');
-  for (const stream of streams) {
-    const option = document.createElement('option');
-    option.value = stream.url;
-    option.appendChild(document.createTextNode(stream.info));
-    dropdown.appendChild(option);
-  }
+  const option = document.createElement('option');
+  option.value = sourcesData.sources.hls;
+  option.appendChild(document.createTextNode(sourcesData.technicalFormat));
+  dropdown.appendChild(option);
 
+  if (!title) {
+    title = await getDocumentTitle(tab_id);
+    if (title.endsWith(' | UR Play')) {
+      title = title.substring(0, title.length-' | UR Play'.length);
+    }
+  }
+  title += ` [UR Play ${programId}]`;
   const ext =
-    program.format === 'video'
+    sourcesData.technicalFormat === 'video'
       ? options.default_video_file_extension
       : options.default_audio_file_extension;
-  let fn = `${program.title?.trim()}.${ext}`;
-  if (program.seriesTitle) {
-    fn = `${program.seriesTitle.trim()} - ${fn}`;
-  }
-  update_filename(fn);
+
+  update_filename(`${title}.${ext}`);
   update_cmd();
 }
 
 export default [
   {
-    re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
+    re: /^https?:\/\/(?:www\.)?urplay\.se\.?\/program\/(\d+)/,
     func: async (ret, url) => {
-      const data = await fetchNextData(url);
-      const lb_url = 'https://streaming-loadbalancer.ur.se/loadbalancer.json';
-      fetchJson(lb_url)
-        .then((lb_data) => ur_callback(lb_data.redirect, data.props.pageProps))
-        .catch(api_error);
+      const programId = ret[1];
+      await fetchProgram(programId);
+    },
+  },
+  {
+    re: /^https?:\/\/(?:www\.)?urplay\.se\.?\//,
+    func: async (_, url) => {
+      const nextData = await fetchNextData(url);
+      if (!nextData) {
+        throw new Error(`Hittade ingen sidoinformation.`);
+      }
+      const program = nextData?.props?.pageProps?.program;
+      if (!program) {
+        throw new Error(`Hittade ingen programinformation.`);
+      }
+      let title = program.title;
+      if (program.seriesTitle) {
+        title = `${program.seriesTitle} - ${title}`;
+      }
+      await fetchProgram(program.id, title);
     },
   },
 ];
