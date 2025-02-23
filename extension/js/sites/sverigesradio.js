@@ -10,8 +10,17 @@
 // Get audio URL:
 // https://www.sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { info, options, updateCommand } from '../popup.js';
-import { $, extractExtension, fetchJson, tab } from '../utils.js';
+import {
+  info,
+  options,
+  updateCommand
+} from '../popup.js';
+import {
+  $,
+  extractExtension,
+  fetchJson,
+  tab
+} from '../utils.js';
 
 function callback(stream, data) {
   const dropdown = $('#streams');

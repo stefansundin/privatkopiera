@@ -55,9 +55,15 @@ import {
   updateCommand,
   updateFilename,
 } from '../popup.js';
-import { $, extractFilename, fetchDOM, fetchJson, fetchPageData } from '../utils.js';
+import {
+  $,
+  extractFilename,
+  fetchDOM,
+  fetchJson,
+  fetchPageData
+} from '../utils.js';
 
-function callback(data, fetchPlaylist=true) {
+function callback(data, fetchPlaylist = true) {
   console.log(data);
 
   let title;
@@ -143,9 +149,7 @@ export default [
         headers: {
           accept: 'application/json',
         },
-      })
-        .then(callback)
-        .catch(apiError);
+      }).then(callback).catch(apiError);
     },
   },
   {
@@ -160,9 +164,7 @@ export default [
         headers: {
           accept: 'application/json',
         },
-      })
-        .then(callback)
-        .catch(apiError);
+      }).then(callback).catch(apiError);
     },
   },
   {
@@ -177,9 +179,7 @@ export default [
         headers: {
           accept: 'application/json',
         },
-      })
-        .then(callback)
-        .catch(apiError);
+      }).then(callback).catch(apiError);
     },
   },
   {
@@ -198,9 +198,7 @@ export default [
           headers: {
             accept: 'application/json',
           },
-        })
-          .then(callback)
-          .catch(apiError);
+        }).then(callback).catch(apiError);
       }
 
       if (videoIds.length === 0) {
@@ -223,9 +221,7 @@ export default [
           headers: {
             accept: 'application/json',
           },
-        })
-          .then(callback)
-          .catch(apiError);
+        }).then(callback).catch(apiError);
         return;
       }
 

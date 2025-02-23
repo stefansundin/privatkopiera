@@ -12,7 +12,9 @@ const options = {
     localStorage.svt_video_format ||
     defaultOptions.svt_video_format,
   add_source_id_to_filename:
-    localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
+    localStorage.add_source_id_to_filename
+      ? localStorage.add_source_id_to_filename === 'true'
+      : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -24,8 +26,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     platformInfo.os === 'win'
       ? 'C:\\Användare\\Svensson\\Skrivbord\\'
       : platformInfo.os === 'mac'
-      ? '/Users/Svensson/Downloads/'
-      : '/home/svensson/Downloads/';
+        ? '/Users/Svensson/Downloads/'
+        : '/home/svensson/Downloads/';
 
   const theme =
     localStorage.getItem('theme') ??

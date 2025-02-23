@@ -81,9 +81,7 @@ export async function fetchDOM(url, ...args) {
         const response = await fetch(...args);
         if (!response.ok) {
           return {
-            error: `Invalid response: ${
-              response.status
-            } ${await response.text()}`,
+            error: `Invalid response: ${response.status} ${await response.text()}`,
           };
         }
         return { result: await response.text() };
@@ -107,7 +105,7 @@ export async function fetchDOM(url, ...args) {
   return doc;
 }
 
-export async function fetchPageData(url, id='__NEXT_DATA__') {
+export async function fetchPageData(url, id = '__NEXT_DATA__') {
   // We always want to perform a network request rather than executing a script to pull the page's data, since that
   // has a chance of fetching old data if the user has navigated around on the website before opening the extension.
   const doc = await fetchDOM(url);
@@ -129,9 +127,7 @@ export async function fetchText(...args) {
         const response = await fetch(...args);
         if (!response.ok) {
           return {
-            error: `Invalid response: ${
-              response.status
-            } ${await response.text()}`,
+            error: `Invalid response: ${response.status} ${await response.text()}`,
           };
         }
         return { result: await response.text() };
@@ -161,9 +157,7 @@ export async function fetchJson(...args) {
         const response = await fetch(...args);
         if (!response.ok) {
           return {
-            error: `Invalid response: ${
-              response.status
-            } ${await response.text()}`,
+            error: `Invalid response: ${response.status} ${await response.text()}`,
           };
         }
         return { result: await response.json() };

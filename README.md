@@ -32,7 +32,7 @@ Or just download the file and put it there manually.
 
 ### Formatting
 
-The JavaScript code is formatted with prettier. The HTML is formatted with the built-in VS Code formatter.
+All code is formatted using the built-in VS Code formatters.
 
 ### Why are there more `executeScript` calls than seems necessary?
 

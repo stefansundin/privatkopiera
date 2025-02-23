@@ -1,17 +1,22 @@
-html, body {
+html,
+body {
   overflow: hidden;
   scrollbar-width: none;
 }
+
 body {
   width: 550px;
   min-height: 370px;
 }
+
 body.expand {
   width: 800px;
 }
+
 body.mobile {
   width: 100%;
 }
+
 #expand:hover {
   text-decoration: none;
   cursor: pointer;
@@ -30,11 +35,13 @@ h3 {
 .input-group {
   margin-bottom: 15px;
 }
+
 .input-group label {
   min-width: 100px;
   margin: 0;
   font-weight: bold;
 }
+
 body.mobile .input-group label {
   min-width: 70px;
 }
@@ -45,6 +52,7 @@ body.mobile .input-group label {
   max-height: 250px;
   word-break: break-all;
 }
+
 body.mobile #cmd {
   resize: none;
 }

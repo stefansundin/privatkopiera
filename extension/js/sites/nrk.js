@@ -64,7 +64,7 @@ async function callback(data) {
   if (!title) {
     title = await getDocumentTitle();
     if (title.endsWith(' - NRK TV')) {
-      title = title.substring(0, title.length-' - NRK TV'.length);
+      title = title.substring(0, title.length - ' - NRK TV'.length);
     }
   }
   if (options.add_source_id_to_filename && data.id) {

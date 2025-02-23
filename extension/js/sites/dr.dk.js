@@ -7,7 +7,12 @@ import {
   updateCommand,
   updateFilename,
 } from '../popup.js';
-import { $, extractFilename, fetchJson, tab } from '../utils.js';
+import {
+  $,
+  extractFilename,
+  fetchJson,
+  tab,
+} from '../utils.js';
 
 function callback(streams) {
   const dropdown = $('#streams');

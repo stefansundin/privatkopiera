@@ -1,6 +1,7 @@
 body {
   width: 500px;
 }
+
 body.mobile {
   width: 100%;
 }

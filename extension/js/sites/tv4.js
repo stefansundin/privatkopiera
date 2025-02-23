@@ -110,9 +110,7 @@ export default [
                 );
                 if (!response.ok) {
                   return {
-                    error: `Invalid response: ${
-                      response.status
-                    } ${await response.text()}`,
+                    error: `Invalid response: ${response.status} ${await response.text()}`,
                   };
                 }
                 const accessTokenData = await response.json();
@@ -146,12 +144,10 @@ export default [
       fetchJson(metadataUrl, {
         headers: accessToken
           ? {
-              'X-Jwt': `Bearer ${accessToken}`,
-            }
+            'X-Jwt': `Bearer ${accessToken}`,
+          }
           : {},
-      })
-        .then((data) => callback(data, true))
-        .catch(error);
+      }).then((data) => callback(data, true)).catch(error);
     },
   },
   {
@@ -169,9 +165,7 @@ export default [
           headers: {
             accept: 'application/json',
           },
-        })
-          .then(callback)
-          .catch(error);
+        }).then(callback).catch(error);
       }
 
       if (videoIds.length === 0) {

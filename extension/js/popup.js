@@ -30,7 +30,9 @@ export const options = {
     localStorage.svt_video_format ||
     defaultOptions.svt_video_format,
   add_source_id_to_filename:
-    localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
+    localStorage.add_source_id_to_filename
+      ? localStorage.add_source_id_to_filename === 'true'
+      : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -150,17 +152,11 @@ export function updateCommand(e) {
     } else if (extension === 'mp4') {
       output_path = output_path.replace(/\.mp4$/, '.m4a');
     }
-    cmd.value = `${options.ffmpeg_command} -i "${
-      audio_stream || url
-    }" -vn -c:a copy "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn -c:a copy "${output_path}"`;
   } else if (extension === 'm4a') {
-    cmd.value = `${options.ffmpeg_command} -i "${
-      audio_stream || url
-    }" -vn -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
   } else if (extension === 'mp3' || extension === 'ogg') {
-    cmd.value = `${options.ffmpeg_command} -i "${
-      audio_stream || url
-    }" -vn "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn "${output_path}"`;
   } else if (streamExtension === 'vtt') {
     if (extension === 'mkv' || extension === 'mp4') {
       output_path = output_path.replace(/\.(mkv|mp4)$/, '.srt');
@@ -315,9 +311,7 @@ async function call_func() {
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
-  $('#extension_version').textContent = `v${
-    chrome.runtime.getManifest().version
-  }`;
+  $('#extension_version').textContent = `v${chrome.runtime.getManifest().version}`;
 
   if (isAndroid) {
     document.body.classList.add('mobile');
