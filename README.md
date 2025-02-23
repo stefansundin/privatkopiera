@@ -25,7 +25,7 @@ npm run build
 If you don't have Node.js or you don't want it, then you can get the default Bootstrap theme by running:
 
 ```shell
-curl -f -o extension/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css
+curl -f -o extension/css/bootstrap.min.css https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css
 ```
 
 Or just download the file and put it there manually.
@@ -44,6 +44,6 @@ The extension performs all of its network requests through the host page, using 
 
 ### `executeScript` error handling
 
-Firefox has better error handling in its `chrome.scripting.executeScript()` implementation and populates an [`error`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/executeScript#error) key in the `InjectionResult` if an error was raised in the script. An [issue](https://bugs.chromium.org/p/chromium/issues/detail?id=1271527) has been filed to hopefully get the same support in Chrome.
+Firefox has better error handling in its `chrome.scripting.executeScript()` implementation and populates an [`error`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/executeScript#error) key in the `InjectionResult` if an error was raised in the script. An [issue](https://issues.chromium.org/issues/40205757) has been filed to hopefully get the same support in Chrome.
 
 Due to this, where appropriate, return values from `executeScript` are an object with `result` or `error` keys depending on what happened. The complicated scripts are also wrapped in a `try-catch` clause. This looks funky but will have to do until the situation in Chrome improves.
