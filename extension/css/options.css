@@ -1,11 +1,3 @@
-body {
-  width: 500px;
-}
-
-body.mobile {
-  width: 100%;
-}
-
 .input-group {
   margin-bottom: 5px;
 }

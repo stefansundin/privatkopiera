@@ -4,82 +4,101 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>Options</title>
+  <title>Privatkopiera: Inställningar</title>
+  <link rel="icon" href="../img/icon16.png" />
   <link rel="stylesheet" href="css/bootstrap.min.css">
   <link rel="stylesheet" href="css/bootstrap-overrides.css">
   <link rel="stylesheet" href="css/options.css">
   <script src="js/options.js" type="module"></script>
 </head>
 
-<body class="p-3">
-  <div class="input-group">
-    <span class="input-group-text">
-      <label for="default_video_file_extension">
-        Standard videofiländelse
+<body>
+
+  <nav class="navbar navbar-expand-lg bg-body-tertiary px-3">
+    Privatkopiera: Inställningar
+  </nav>
+
+  <div class="p-3">
+
+    <div class="input-group">
+      <span class="input-group-text">
+        <label for="default_video_file_extension">
+          Standard videofiländelse
+        </label>
+      </span>
+      <input class="form-control" type="text" id="default_video_file_extension" spellcheck="false">
+    </div>
+    <p>Förslag: mkv, mp4</p>
+
+    <div class="input-group">
+      <span class="input-group-text">
+        <label for="default_audio_file_extension">
+          Standard audiofiländelse
+        </label>
+      </span>
+      <input class="form-control" type="text" id="default_audio_file_extension" spellcheck="false">
+    </div>
+    <p>Förslag: mka, m4a, mp3, aac</p>
+
+    <div class="input-group">
+      <span class="input-group-text">
+        <label for="svt_video_format">
+          SVT videoformat
+        </label>
+      </span>
+      <input class="form-control" type="text" id="svt_video_format" spellcheck="false">
+    </div>
+    <p>
+      Förslag:
+      <span class="text-nowrap">hls-cmaf-full</span>,
+      <span class="text-nowrap">dash-hbbtv-hevc</span>,
+      <span class="text-nowrap">hls-cmaf-lb-full</span>
+    </p>
+
+    <div class="form-check">
+      <input class="form-check-input" type="checkbox" id="add_source_id_to_filename">
+      <label class="form-check-label" for="add_source_id_to_filename">
+        &nbsp;Lägg till ID i slutet av filnamnet
       </label>
-    </span>
-    <input class="form-control" type="text" id="default_video_file_extension" spellcheck="false">
-  </div>
-  <p>Förslag: mkv, mp4</p>
+    </div>
+    <p>
+      Ett ID med information om var filen kommer ifrån läggs till i slutet av filnamnet, t.ex.
+      <code class="text-nowrap">[SVT 8M6ZxZ4]</code> för videon från https://www.svtplay.se/video/8M6ZxZ4
+    </p>
 
-  <div class="input-group">
-    <span class="input-group-text">
-      <label for="default_audio_file_extension">
-        Standard audiofiländelse
-      </label>
-    </span>
-    <input class="form-control" type="text" id="default_audio_file_extension" spellcheck="false">
-  </div>
-  <p>Förslag: mka, m4a, mp3, aac</p>
+    <div class="input-group">
+      <span class="input-group-text">
+        <label for="ffmpeg_command">
+          FFmpeg-sökväg
+        </label>
+      </span>
+      <input class="form-control font-monospace" type="text" id="ffmpeg_command" spellcheck="false">
+    </div>
+    <p>
+      Du kan lägga till extra argument här också.<br>
+      <a target="_blank" href="https://ffmpeg.org/ffmpeg.html">Läs FFmpeg manualen.</a>
+    </p>
 
-  <div class="input-group">
-    <span class="input-group-text">
-      <label for="svt_video_format">
-        SVT videoformat
-      </label>
-    </span>
-    <input class="form-control" type="text" id="svt_video_format" spellcheck="false">
-  </div>
-  <p>Förslag: hls-cmaf-full, dash-hbbtv-hevc, hls-cmaf-lb-full</p>
+    <div class="input-group">
+      <span class="input-group-text">
+        <label for="output_path">
+          Sökväg där filer sparas
+        </label>
+      </span>
+      <input class="form-control font-monospace" type="text" id="output_path" spellcheck="false">
+    </div>
+    <p>
+      Sökväg där du vill spara dina filer. Använd en absolut sökväg för bästa resultat.
+      Exempel: <code class="text-nowrap" id="example_output_path"></code><br>
+      <strong>Privatkopiera kan inte verifiera att det du skriver in här är korrekt,
+        så använd det här bara om du vet vad du gör!</strong>
+    </p>
 
-  <div class="form-check">
-    <input class="form-check-input" type="checkbox" id="add_source_id_to_filename">
-    <label class="form-check-label" for="add_source_id_to_filename">
-      &nbsp;Lägg till ID i slutet av filnamn
-    </label>
-  </div>
-  <p><small>Ett ID med information om var filen kommer ifrån, t.ex. <code>[SVT&nbsp;8M6ZxZ4]</code> för videon från
-      https://www.svtplay.se/video/8M6ZxZ4</small></p>
+    <div>
+      <button class="btn btn-primary" id="save">Spara inställningar</button>
+      <a role="button" class="ms-4 mt-4 d-inline-block text-nowrap" id="reset">Återställ inställningar</a>
+    </div>
 
-  <div class="input-group">
-    <span class="input-group-text">
-      <label for="ffmpeg_command">
-        FFmpeg-sökväg
-      </label>
-    </span>
-    <input class="form-control font-monospace" type="text" id="ffmpeg_command" spellcheck="false">
-  </div>
-  <p>
-    Du kan lägga till extra argument här också.<br>
-    <a target="_blank" href="https://ffmpeg.org/ffmpeg.html">Läs FFmpeg manualen.</a>
-  </p>
-
-  <div class="input-group">
-    <span class="input-group-text">
-      <label for="output_path">
-        Sökväg där filer sparas
-      </label>
-    </span>
-    <input class="form-control font-monospace" type="text" id="output_path" spellcheck="false">
-  </div>
-  <p>Sökväg där du vill spara dina filer. Använd en absolut sökväg för bästa resultat. Exempel:<br>
-    <code id="example_output_path"></code><br><strong>Privatkopiera kan inte verifiera
-      att det du skriver in här är korrekt, så använd det här bara om du vet vad du gör!</strong>
-  </p>
-
-  <div>
-    <button class="btn btn-primary" id="save">Spara inställningar</button>
-    <a class="ms-4" href="#" id="reset">Återställ inställningar</a>
   </div>
 </body>
 
