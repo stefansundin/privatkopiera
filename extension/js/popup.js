@@ -1,4 +1,4 @@
-import default_options from './default_options.js';
+import defaultOptions from './defaultOptions.js';
 import dr from './sites/dr.dk.js';
 import nrk from './sites/nrk.js';
 import sverigesradio from './sites/sverigesradio.js';
@@ -20,15 +20,15 @@ const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
 export const options = {
   default_video_file_extension:
     localStorage.default_video_file_extension ||
-    default_options.default_video_file_extension,
+    defaultOptions.default_video_file_extension,
   default_audio_file_extension:
     localStorage.default_audio_file_extension ||
-    default_options.default_audio_file_extension,
+    defaultOptions.default_audio_file_extension,
   svtplay_video_format:
     localStorage.svtplay_video_format ||
-    default_options.svtplay_video_format,
-  ffmpeg_command: localStorage.ffmpeg_command || default_options.ffmpeg_command,
-  output_path: localStorage.output_path || default_options.output_path,
+    defaultOptions.svtplay_video_format,
+  ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
+  output_path: localStorage.output_path || defaultOptions.output_path,
 };
 
 export const subtitles = [];
