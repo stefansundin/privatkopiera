@@ -68,20 +68,35 @@ function svt_callback(data, fetchPlaylist=true) {
   ) {
     title = `${data.programTitle.trim()} - ${data.episodeTitle.trim()}`;
   } else if (data.programTitle) {
-    title = `${data.programTitle.trim()}`;
+    title = data.programTitle.trim();
   } else if (data.episodeTitle) {
-    title = `${data.episodeTitle.trim()}`;
+    title = data.episodeTitle.trim();
   }
 
-  const formats = 'hls,hds'.split(',');
-  const streams = $('#streams');
-  for (const stream of data.videoReferences
+  // Try to pull out the desired videoReferences
+  let formats = options.svtplay_video_format.split(',');
+  let videoReferences = data.videoReferences
     .filter((stream) => formats.includes(stream.format))
-    .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format))) {
-    if (stream.format === 'hds') {
-      stream.url = add_param(stream.url, 'hdcore=3.5.0'); // ¯\_(ツ)_/¯
-    }
+    .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
 
+  if (videoReferences.length === 0) {
+    // If the user messed up their settings then just try hls-cmaf-full
+    formats = 'hls-cmaf-full'.split(',');
+    videoReferences = data.videoReferences
+      .filter((stream) => formats.includes(stream.format))
+      .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
+
+    if (videoReferences.length === 0) {
+      // If there are still no videoReferences then just try to pick the first one...
+      formats = [data.videoReferences[0].format];
+      videoReferences = data.videoReferences
+        .filter((stream) => formats.includes(stream.format))
+        .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
+    }
+  }
+
+  const streams = $('#streams');
+  for (const stream of videoReferences) {
     const fn = title ? `${title}.${options.default_video_file_extension}` : extract_filename(stream.url);
     const option = document.createElement('option');
     option.value = stream.url;
@@ -93,7 +108,7 @@ function svt_callback(data, fetchPlaylist=true) {
       update_filename(fn);
     }
 
-    if (stream.format === 'hls' && fetchPlaylist) {
+    if (stream.url.endsWith('.m3u8') && fetchPlaylist) {
       processPlaylist(stream.url, data.contentDuration).catch(api_error);
     }
   }

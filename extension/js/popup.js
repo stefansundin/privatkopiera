@@ -24,6 +24,9 @@ export const options = {
   default_audio_file_extension:
     localStorage.default_audio_file_extension ||
     default_options.default_audio_file_extension,
+  svtplay_video_format:
+    localStorage.svtplay_video_format ||
+    default_options.svtplay_video_format,
   ffmpeg_command: localStorage.ffmpeg_command || default_options.ffmpeg_command,
   output_path: localStorage.output_path || default_options.output_path,
 };
@@ -267,6 +270,9 @@ export async function processPlaylist(url, mediaDuration) {
       label.push(stream.params['RESOLUTION']);
     }
     label.push(`${kbps} kbps`);
+    if (stream.params['AUDIO']) {
+      label.push(stream.params['AUDIO']);
+    }
     let text = label.shift();
     if (label.length > 0) {
       text += ` (${label.join(', ')})`;

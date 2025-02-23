@@ -8,6 +8,9 @@ const options = {
   default_audio_file_extension:
     localStorage.default_audio_file_extension ||
     default_options.default_audio_file_extension,
+  svtplay_video_format:
+    localStorage.svtplay_video_format ||
+    default_options.svtplay_video_format,
   ffmpeg_command: localStorage.ffmpeg_command || default_options.ffmpeg_command,
   output_path: localStorage.output_path || default_options.output_path,
 };
@@ -45,6 +48,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   const default_audio_file_extension_input = document.getElementById(
     'default_audio_file_extension',
   );
+  const svtplay_video_format_input = document.getElementById(
+    'svtplay_video_format',
+  );
   const ffmpeg_command_input = document.getElementById('ffmpeg_command');
   const output_path_input = document.getElementById('output_path');
   const save_button = document.getElementById('save');
@@ -53,6 +59,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     options.default_video_file_extension;
   default_audio_file_extension_input.value =
     options.default_audio_file_extension;
+  svtplay_video_format_input.value =
+    options.svtplay_video_format;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
 
@@ -78,6 +86,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       default_video_file_extension_input.value;
     localStorage.default_audio_file_extension =
       default_audio_file_extension_input.value;
+    localStorage.svtplay_video_format =
+      svtplay_video_format_input.value;
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
 
     if (
@@ -103,6 +113,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   document.getElementById('reset').addEventListener('click', () => {
     delete localStorage.default_video_file_extension;
     delete localStorage.default_audio_file_extension;
+    delete localStorage.svtplay_video_format;
     delete localStorage.ffmpeg_command;
     delete localStorage.output_path;
 
@@ -110,6 +121,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       default_options.default_video_file_extension;
     default_audio_file_extension_input.value =
       default_options.default_audio_file_extension;
+    svtplay_video_format_input.value =
+      default_options.svtplay_video_format;
     ffmpeg_command_input.value = default_options.ffmpeg_command;
     output_path_input.value = default_options.output_path;
   });
