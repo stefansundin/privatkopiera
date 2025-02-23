@@ -25,19 +25,6 @@ export function localStorageGetWithExpiry(key) {
   return data.value;
 }
 
-export function flatten(arr) {
-  if (!Array.isArray(arr)) return [];
-  return arr.reduce((a, b) => {
-    if (!b) {
-      return a;
-    } else if (b.constructor === Array) {
-      return a.concat(b);
-    } else {
-      return a.concat([b]);
-    }
-  }, []);
-}
-
 export function toObject(arr) {
   const obj = {};
   arr.forEach((e) => {
