@@ -56,10 +56,10 @@ document.addEventListener('DOMContentLoaded', async () => {
   validate();
 
   save_button.addEventListener('click', () => {
-    localStorage.default_video_file_extension = default_video_file_extension_input.value;
-    localStorage.default_audio_file_extension = default_audio_file_extension_input.value;
+    localStorage.default_video_file_extension = default_video_file_extension_input.value.trim();
+    localStorage.default_audio_file_extension = default_audio_file_extension_input.value.trim();
     localStorage.add_source_id_to_filename = add_source_id_to_filename_input.checked;
-    localStorage.svt_video_format = svt_video_format_input.value;
+    localStorage.svt_video_format = svt_video_format_input.value.trim();
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
 
     if (output_path_input.value !== '' && !output_path_input.value.endsWith(pathSeparator)) {
