@@ -387,7 +387,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   const cmd = $('#cmd');
   if (isAndroid) {
-    cmd.style.height = '100px';
+    cmd.style.height = '120px';
   } else {
     const cmdHeight = localStorage.getItem('cmd-height');
     if (cmdHeight !== undefined) {

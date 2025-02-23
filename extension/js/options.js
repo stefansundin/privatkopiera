@@ -23,12 +23,6 @@ document.addEventListener('DOMContentLoaded', async () => {
   const theme = localStorage.getItem('theme') ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-bs-theme', theme);
 
-  if (isAndroid) {
-    document.body.classList.add('mobile');
-    document.body.textContent = 'Det finns inga inställningar som gäller för Android än.';
-    return;
-  }
-
   document.getElementById('example_output_path').textContent = exampleOutputPath;
 
   const default_video_file_extension_input = document.getElementById('default_video_file_extension');
@@ -105,4 +99,18 @@ document.addEventListener('DOMContentLoaded', async () => {
     ffmpeg_command_input.value = defaultOptions.ffmpeg_command;
     output_path_input.value = defaultOptions.output_path;
   });
+
+  if (isAndroid) {
+    // Hide stuff that doesn't apply to the Android version
+    default_video_file_extension_input.parentElement.classList.add('d-none');
+    default_video_file_extension_input.parentElement.nextElementSibling.classList.add('d-none');
+    default_audio_file_extension_input.parentElement.classList.add('d-none');
+    default_audio_file_extension_input.parentElement.nextElementSibling.classList.add('d-none');
+    add_source_id_to_filename_input.parentElement.classList.add('d-none');
+    add_source_id_to_filename_input.parentElement.nextElementSibling.classList.add('d-none');
+    ffmpeg_command_input.parentElement.classList.add('d-none');
+    ffmpeg_command_input.parentElement.nextElementSibling.classList.add('d-none');
+    output_path_input.parentElement.classList.add('d-none');
+    output_path_input.parentElement.nextElementSibling.classList.add('d-none');
+  }
 });

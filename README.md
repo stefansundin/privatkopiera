@@ -47,3 +47,20 @@ The extension performs all of its network requests through the host page, using 
 Firefox has better error handling in its `chrome.scripting.executeScript()` implementation and populates an [`error`](https://developer.mozilla.org/en-US/docs/Mozilla/Add-ons/WebExtensions/API/scripting/executeScript#error) key in the `InjectionResult` if an error was raised in the script. An [issue](https://issues.chromium.org/issues/40205757) has been filed to hopefully get the same support in Chrome.
 
 Due to this, where appropriate, return values from `executeScript` are an object with `result` or `error` keys depending on what happened. The complicated scripts are also wrapped in a `try-catch` clause. This looks funky but will have to do until the situation in Chrome improves.
+
+### Firefox for Android
+
+To test the extension on Firefox for Android:
+
+```shell
+npm install -g web-ext
+
+# Find your device ID and the apk ID:
+adb devices
+adb shell cmd package list packages | grep org.mozilla
+
+./make-xpi.sh
+cd firefox
+web-ext lint
+web-ext run -t firefox-android --adb-device XXX --firefox-apk org.mozilla.firefox
+```

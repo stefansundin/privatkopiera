@@ -1,3 +1,9 @@
+/* Disable pull-down-to-refresh on mobile */
+html,
+body {
+  overscroll-behavior-y: contain;
+}
+
 .input-group {
   margin-bottom: 5px;
 }
