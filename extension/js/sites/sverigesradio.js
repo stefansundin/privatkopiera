@@ -1,14 +1,14 @@
 // Example URL:
-// https://sverigesradio.se/artikel/6411195
+// https://www.sverigesradio.se/artikel/6411195
 // Example URL with multiple streams:
-// https://sverigesradio.se/artikel/6412615
+// https://www.sverigesradio.se/artikel/6412615
 // Live:
-// https://sverigesradio.se/tabla.aspx?programid=132
+// https://www.sverigesradio.se/tabla.aspx?programid=132
 //
 // Metadata URL:
-// https://sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
+// https://www.sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
-// https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
+// https://www.sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
 import { info, update_cmd } from '../popup.js';
 import { $, extract_extension, fetchJson, tab } from '../utils.js';
@@ -88,7 +88,7 @@ export default [
       const streams = injectionResult[0].result.result;
 
       for (const stream of streams) {
-        const data_url = `https://sverigesradio.se/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
+        const data_url = `/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
 
         const data = await fetchJson(data_url, {
           headers: {
