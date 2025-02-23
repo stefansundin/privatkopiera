@@ -3,13 +3,11 @@ export const isFirefox = navigator.userAgent.includes('Firefox/');
 export const isAndroid = navigator.userAgent.includes('Android');
 
 export function localStorageSetWithExpiry(key, value, ttl) {
-  localStorage.setItem(
-    key,
-    JSON.stringify({
-      value,
-      expiry: Date.now() + ttl,
-    }),
-  );
+  const item = JSON.stringify({
+    value,
+    expiry: Date.now() + ttl,
+  });
+  localStorage.setItem(key, item);
 }
 
 export function localStorageGetWithExpiry(key) {
@@ -47,7 +45,10 @@ export async function getTab() {
     return tab;
   }
 
-  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  const tabs = await chrome.tabs.query({
+    active: true,
+    currentWindow: true,
+  });
   tab = tabs[0];
   return tab;
 }
@@ -80,9 +81,7 @@ export async function fetchDOM(url, ...args) {
       try {
         const response = await fetch(...args);
         if (!response.ok) {
-          return {
-            error: `Invalid response: ${response.status} ${await response.text()}`,
-          };
+          return { error: `Invalid response: ${response.status} ${await response.text()}` };
         }
         return { result: await response.text() };
       } catch (err) {
@@ -126,9 +125,7 @@ export async function fetchText(...args) {
       try {
         const response = await fetch(...args);
         if (!response.ok) {
-          return {
-            error: `Invalid response: ${response.status} ${await response.text()}`,
-          };
+          return { error: `Invalid response: ${response.status} ${await response.text()}` };
         }
         return { result: await response.text() };
       } catch (err) {
@@ -156,9 +153,7 @@ export async function fetchJson(...args) {
       try {
         const response = await fetch(...args);
         if (!response.ok) {
-          return {
-            error: `Invalid response: ${response.status} ${await response.text()}`,
-          };
+          return { error: `Invalid response: ${response.status} ${await response.text()}` };
         }
         return { result: await response.json() };
       } catch (err) {

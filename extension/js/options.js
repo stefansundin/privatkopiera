@@ -2,19 +2,10 @@ import defaultOptions from './defaultOptions.js';
 import { isAndroid } from './utils.js';
 
 const options = {
-  default_video_file_extension:
-    localStorage.default_video_file_extension ||
-    defaultOptions.default_video_file_extension,
-  default_audio_file_extension:
-    localStorage.default_audio_file_extension ||
-    defaultOptions.default_audio_file_extension,
-  svt_video_format:
-    localStorage.svt_video_format ||
-    defaultOptions.svt_video_format,
-  add_source_id_to_filename:
-    localStorage.add_source_id_to_filename
-      ? localStorage.add_source_id_to_filename === 'true'
-      : defaultOptions.add_source_id_to_filename,
+  default_video_file_extension: localStorage.default_video_file_extension || defaultOptions.default_video_file_extension,
+  default_audio_file_extension: localStorage.default_audio_file_extension || defaultOptions.default_audio_file_extension,
+  svt_video_format: localStorage.svt_video_format || defaultOptions.svt_video_format,
+  add_source_id_to_filename: localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -29,43 +20,28 @@ document.addEventListener('DOMContentLoaded', async () => {
         ? '/Users/Svensson/Downloads/'
         : '/home/svensson/Downloads/';
 
-  const theme =
-    localStorage.getItem('theme') ??
-    (window.matchMedia('(prefers-color-scheme: dark)').matches
-      ? 'dark'
-      : 'light');
+  const theme = localStorage.getItem('theme') ?? (window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
   document.documentElement.setAttribute('data-bs-theme', theme);
 
   if (isAndroid) {
     document.body.classList.add('mobile');
-    document.body.textContent =
-      'Det finns inga inställningar som gäller för Android än.';
+    document.body.textContent = 'Det finns inga inställningar som gäller för Android än.';
     return;
   }
 
-  document.getElementById('example_output_path').textContent =
-    exampleOutputPath;
+  document.getElementById('example_output_path').textContent = exampleOutputPath;
 
-  const default_video_file_extension_input = document.getElementById(
-    'default_video_file_extension',
-  );
-  const default_audio_file_extension_input = document.getElementById(
-    'default_audio_file_extension',
-  );
-  const svt_video_format_input = document.getElementById(
-    'svt_video_format',
-  );
+  const default_video_file_extension_input = document.getElementById('default_video_file_extension');
+  const default_audio_file_extension_input = document.getElementById('default_audio_file_extension');
+  const svt_video_format_input = document.getElementById('svt_video_format');
   const ffmpeg_command_input = document.getElementById('ffmpeg_command');
   const add_source_id_to_filename_input = document.getElementById('add_source_id_to_filename');
   const output_path_input = document.getElementById('output_path');
   const save_button = document.getElementById('save');
 
-  default_video_file_extension_input.value =
-    options.default_video_file_extension;
-  default_audio_file_extension_input.value =
-    options.default_audio_file_extension;
-  svt_video_format_input.value =
-    options.svt_video_format;
+  default_video_file_extension_input.value = options.default_video_file_extension;
+  default_audio_file_extension_input.value = options.default_audio_file_extension;
+  svt_video_format_input.value = options.svt_video_format;
   add_source_id_to_filename_input.checked = options.add_source_id_to_filename;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
@@ -76,9 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       output_path_input.value.toLowerCase().startsWith('c:\\windows\\')
     ) {
       if (notify) {
-        alert(
-          'Sökvägen som du har valt rekommenderas ej då vanliga användare normalt inte kan skapa filer där. Välj en sökväg som din användare kan skriva till.',
-        );
+        alert('Sökvägen som du har valt rekommenderas ej då vanliga användare normalt inte kan skapa filer där. Välj en sökväg som din användare kan skriva till.');
       }
       output_path_input.classList.add('text-danger');
     } else {
@@ -88,20 +62,13 @@ document.addEventListener('DOMContentLoaded', async () => {
   validate();
 
   save_button.addEventListener('click', () => {
-    localStorage.default_video_file_extension =
-      default_video_file_extension_input.value;
-    localStorage.default_audio_file_extension =
-      default_audio_file_extension_input.value;
-    localStorage.add_source_id_to_filename =
-      add_source_id_to_filename_input.checked;
-    localStorage.svt_video_format =
-      svt_video_format_input.value;
+    localStorage.default_video_file_extension = default_video_file_extension_input.value;
+    localStorage.default_audio_file_extension = default_audio_file_extension_input.value;
+    localStorage.add_source_id_to_filename = add_source_id_to_filename_input.checked;
+    localStorage.svt_video_format = svt_video_format_input.value;
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
 
-    if (
-      output_path_input.value !== '' &&
-      !output_path_input.value.endsWith(pathSeparator)
-    ) {
+    if (output_path_input.value !== '' && !output_path_input.value.endsWith(pathSeparator)) {
       output_path_input.value += pathSeparator;
     }
     localStorage.output_path = output_path_input.value;
@@ -131,12 +98,9 @@ document.addEventListener('DOMContentLoaded', async () => {
     delete localStorage.ffmpeg_command;
     delete localStorage.output_path;
 
-    default_video_file_extension_input.value =
-      defaultOptions.default_video_file_extension;
-    default_audio_file_extension_input.value =
-      defaultOptions.default_audio_file_extension;
-    svt_video_format_input.value =
-      defaultOptions.svt_video_format;
+    default_video_file_extension_input.value = defaultOptions.default_video_file_extension;
+    default_audio_file_extension_input.value = defaultOptions.default_audio_file_extension;
+    svt_video_format_input.value = defaultOptions.svt_video_format;
     add_source_id_to_filename_input.checked = defaultOptions.add_source_id_to_filename;
     ffmpeg_command_input.value = defaultOptions.ffmpeg_command;
     output_path_input.value = defaultOptions.output_path;

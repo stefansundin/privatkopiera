@@ -7,9 +7,7 @@ document.addEventListener('DOMContentLoaded', () => {
         // user initiated
         if (e.shiftKey) {
           localStorage.removeItem('theme');
-          checkbox.checked = window.matchMedia(
-            '(prefers-color-scheme: dark)',
-          ).matches;
+          checkbox.checked = window.matchMedia('(prefers-color-scheme: dark)').matches;
           checkbox.indeterminate = true;
         } else {
           localStorage.setItem('theme', checkbox.checked ? 'dark' : 'light');
@@ -22,18 +20,11 @@ document.addEventListener('DOMContentLoaded', () => {
   }
 
   const theme = localStorage.getItem('theme');
-  if (
-    theme === 'dark' ||
-    (theme === null &&
-      window.matchMedia('(prefers-color-scheme: dark)').matches)
-  ) {
+  if (theme === 'dark' || (theme === null && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
     checkbox.click();
   }
   checkbox.indeterminate = theme === null;
-  document.documentElement.setAttribute(
-    'data-bs-theme',
-    checkbox.checked ? 'dark' : 'light',
-  );
+  document.documentElement.setAttribute('data-bs-theme', checkbox.checked ? 'dark' : 'light');
 
   window
     .matchMedia('(prefers-color-scheme: dark)')

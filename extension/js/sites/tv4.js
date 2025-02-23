@@ -53,9 +53,7 @@ function callback(data, expand = false) {
   updateCommand();
 
   if (expand && data.playbackItem.type === 'hls') {
-    processPlaylist(data.playbackItem.manifestUrl).catch(
-      apiError,
-    );
+    processPlaylist(data.playbackItem.manifestUrl).catch(apiError);
   }
 }
 
@@ -109,9 +107,7 @@ export default [
                   },
                 );
                 if (!response.ok) {
-                  return {
-                    error: `Invalid response: ${response.status} ${await response.text()}`,
-                  };
+                  return { error: `Invalid response: ${response.status} ${await response.text()}` };
                 }
                 const accessTokenData = await response.json();
                 return { result: accessTokenData.accessToken };
@@ -129,11 +125,7 @@ export default [
             throw new Error(injectionResult[0].result.error);
           }
           accessToken = injectionResult[0].result.result;
-          localStorageSetWithExpiry(
-            'tv4-access-token',
-            accessToken,
-            4 * 3600 * 1000,
-          );
+          localStorageSetWithExpiry('tv4-access-token', accessToken, 4 * 3600 * 1000);
         } catch (err) {
           // Not all videos require a login, so even if there's an error above we still continue, just log the error in the console
           console.error(err);
@@ -141,13 +133,11 @@ export default [
       }
 
       const metadataUrl = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
-      fetchJson(metadataUrl, {
-        headers: accessToken
-          ? {
-            'X-Jwt': `Bearer ${accessToken}`,
-          }
-          : {},
-      }).then((data) => callback(data, true)).catch(error);
+      fetchJson(metadataUrl, accessToken ? {
+        headers: {
+          'X-Jwt': `Bearer ${accessToken}`,
+        }
+      } : {}).then((data) => callback(data, true)).catch(error);
     },
   },
   {

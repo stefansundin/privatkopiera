@@ -20,19 +20,10 @@ import {
 const matchers = [...svt, ...ur, ...sverigesradio, ...nrk, ...dr, ...tv4];
 
 export const options = {
-  default_video_file_extension:
-    localStorage.default_video_file_extension ||
-    defaultOptions.default_video_file_extension,
-  default_audio_file_extension:
-    localStorage.default_audio_file_extension ||
-    defaultOptions.default_audio_file_extension,
-  svt_video_format:
-    localStorage.svt_video_format ||
-    defaultOptions.svt_video_format,
-  add_source_id_to_filename:
-    localStorage.add_source_id_to_filename
-      ? localStorage.add_source_id_to_filename === 'true'
-      : defaultOptions.add_source_id_to_filename,
+  default_video_file_extension: localStorage.default_video_file_extension || defaultOptions.default_video_file_extension,
+  default_audio_file_extension: localStorage.default_audio_file_extension || defaultOptions.default_audio_file_extension,
+  svt_video_format: localStorage.svt_video_format || defaultOptions.svt_video_format,
+  add_source_id_to_filename: localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -179,13 +170,9 @@ export function updateCommand(e) {
     }
     inputs.push(...subtitles);
     if (extension === 'mp4') {
-      cmd.value = `${options.ffmpeg_command} ${inputs
-        .map((url) => `-i "${url}"`)
-        .join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
     } else {
-      cmd.value = `${options.ffmpeg_command} ${inputs
-        .map((url) => `-i "${url}"`)
-        .join(' ')} -c:v copy -c:a copy "${output_path}"`;
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy "${output_path}"`;
     }
   }
   cmd.setAttribute('data-url', url);
@@ -225,17 +212,17 @@ export async function processPlaylist(url) {
       const args = line
         .substring(line.indexOf(':') + 1)
         .match(/[A-Z\-]+=(?:"[^"]*"|[^,]*)/g);
-      if (!args) continue;
-      const obj = toObject(
-        args.map((arg) => {
-          const k = arg.substring(0, arg.indexOf('='));
-          let v = arg.substring(arg.indexOf('=') + 1);
-          if (v.startsWith('"') && v.endsWith('"')) {
-            v = v.substring(1, v.length - 1);
-          }
-          return [k, v];
-        }),
-      );
+      if (!args) {
+        continue;
+      }
+      const obj = toObject(args.map((arg) => {
+        const k = arg.substring(0, arg.indexOf('='));
+        let v = arg.substring(arg.indexOf('=') + 1);
+        if (v.startsWith('"') && v.endsWith('"')) {
+          v = v.substring(1, v.length - 1);
+        }
+        return [k, v];
+      }));
       console.debug(obj);
       if (type === 'EXT-X-MEDIA') {
         // && obj["TYPE"] === "AUDIO") {
@@ -278,10 +265,7 @@ export async function processPlaylist(url) {
     }
     option.appendChild(document.createTextNode(text));
     if (ext_x_media['AUDIO']) {
-      option.setAttribute(
-        'data-audio-stream',
-        baseUrl + ext_x_media['AUDIO']['URI'],
-      );
+      option.setAttribute('data-audio-stream', baseUrl + ext_x_media['AUDIO']['URI']);
     }
     dropdown.insertBefore(option, default_option);
   }
@@ -405,9 +389,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   if (isAndroid) {
     cmd.style.height = '100px';
   } else {
-    const cmd_height = localStorage.getItem('cmd-height');
-    if (cmd_height !== undefined) {
-      cmd.style.height = cmd_height;
+    const cmdHeight = localStorage.getItem('cmd-height');
+    if (cmdHeight !== undefined) {
+      cmd.style.height = cmdHeight;
     }
     new ResizeObserver((entries) => {
       for (const entry of entries) {
@@ -421,9 +405,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   if (isFirefox && !isAndroid) {
     document
-      .querySelectorAll(
-        '#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]',
-      )
+      .querySelectorAll('#open_options,a[href="https://stefansundin.github.io/privatkopiera/"]')
       .forEach((a) => {
         a.addEventListener('click', () => {
           setTimeout(window.close, 10);
@@ -434,11 +416,9 @@ document.addEventListener('DOMContentLoaded', async () => {
   await getTab();
   if (!tab.url) {
     // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
-    // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
-    info(
-      'Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.',
-    );
+    // https://issues.chromium.org/issues/41160154
+    // https://issues.chromium.org/issues/40648397
+    info('Unable to get the tab URL. Try closing all devtools and open the popup without inspecting it.');
     return;
   }
   url = new URL(tab.url);

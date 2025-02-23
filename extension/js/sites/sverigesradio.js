@@ -49,10 +49,7 @@ export default [
           try {
             const ids = [];
             const streams = [];
-            const related =
-              document
-                .getElementsByTagName('article')[0]
-                ?.querySelectorAll('[data-audio-id]') ?? [];
+            const related = document.getElementsByTagName('article')[0]?.querySelectorAll('[data-audio-id]') ?? [];
             for (let i = 0; i < related.length; i++) {
               const link = related[i];
               const id = link.getAttribute('data-audio-id');
@@ -68,9 +65,7 @@ export default [
               const titleElement =
                 header.getElementsByClassName('main-audio-new__title')[0] ||
                 header.getElementsByClassName('related-audio__title')[0] ||
-                header.getElementsByClassName(
-                  'article-audio-details__header-title',
-                )[0];
+                header.getElementsByClassName('article-audio-details__header-title')[0];
               if (titleElement) {
                 title = titleElement.textContent.trim();
               } else {
@@ -103,7 +98,6 @@ export default [
 
       for (const stream of streams) {
         const dataUrl = `/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
-
         const data = await fetchJson(dataUrl, {
           headers: {
             accept: 'application/json',
