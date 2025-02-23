@@ -184,39 +184,15 @@ export async function fetchJson(...args) {
   return injectionResult[0].result.result;
 }
 
-export function extract_filename(url) {
+export function extractFilename(url) {
   url = url.replace(/\?.+/, '');
   return url.substring(url.lastIndexOf('/') + 1).replace(/[?#].*/, '');
 }
 
-export function extract_extension(url) {
-  const fn = extract_filename(url);
-  const dot = fn.lastIndexOf('.');
+export function extractExtension(url) {
+  const filename = extractFilename(url);
+  const dot = filename.lastIndexOf('.');
   if (dot !== -1) {
-    return fn.substring(dot + 1).toLowerCase();
+    return filename.substring(dot + 1).toLowerCase();
   }
-}
-
-export function add_param(url, param) {
-  if (url.includes('?')) {
-    return `${url}&${param}`;
-  } else {
-    return `${url}?${param}`;
-  }
-}
-
-export function parse_pt(pt) {
-  const ret = /^PT(\d+H)?(\d+M)?(\d+(?:\.\d+)?S)?$/.exec(pt);
-  if (ret === null) return 0;
-  let duration = 0;
-  if (ret[1]) {
-    duration += 60 * 60 * parseInt(ret[1], 10);
-  }
-  if (ret[2]) {
-    duration += 60 * parseInt(ret[2], 10);
-  }
-  if (ret[3]) {
-    duration += parseFloat(ret[3]);
-  }
-  return duration;
 }

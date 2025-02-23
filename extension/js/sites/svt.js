@@ -47,17 +47,17 @@
 // https://api.svt.se/video/j1a3m2y
 
 import {
-  api_error,
+  apiError,
   info,
   options,
   processPlaylist,
   subtitles,
-  update_cmd,
-  update_filename,
+  updateCommand,
+  updateFilename,
 } from '../popup.js';
-import { $, extract_filename, fetchDOM, fetchJson, fetchPageData } from '../utils.js';
+import { $, extractFilename, fetchDOM, fetchJson, fetchPageData } from '../utils.js';
 
-function svt_callback(data, fetchPlaylist=true) {
+function callback(data, fetchPlaylist=true) {
   console.log(data);
 
   let title;
@@ -97,23 +97,23 @@ function svt_callback(data, fetchPlaylist=true) {
 
   const streams = $('#streams');
   for (const stream of videoReferences) {
-    let fnTitle = title;
-    if (options.add_source_id_to_filename && fnTitle && data.svtId) {
-      fnTitle += ` [SVT ${data.svtId}]`;
+    let filenameTitle = title;
+    if (options.add_source_id_to_filename && filenameTitle && data.svtId) {
+      filenameTitle += ` [SVT ${data.svtId}]`;
     }
-    let fn = fnTitle ? `${fnTitle}.${options.default_video_file_extension}` : extract_filename(stream.url);
+    let filename = filenameTitle ? `${filenameTitle}.${options.default_video_file_extension}` : extractFilename(stream.url);
     const option = document.createElement('option');
     option.value = stream.url;
-    option.appendChild(document.createTextNode(title || extract_filename(stream.url)));
-    option.setAttribute('data-filename', fn);
+    option.appendChild(document.createTextNode(title || extractFilename(stream.url)));
+    option.setAttribute('data-filename', filename);
     streams.appendChild(option);
 
     if ($('#filename').value === '') {
-      update_filename(fn);
+      updateFilename(filename);
     }
 
     if (stream.url.endsWith('.m3u8') && fetchPlaylist) {
-      processPlaylist(stream.url, data.contentDuration).catch(api_error);
+      processPlaylist(stream.url).catch(apiError);
     }
   }
 
@@ -122,12 +122,12 @@ function svt_callback(data, fetchPlaylist=true) {
     for (const sub of data.subtitleReferences) {
       const option = document.createElement('option');
       option.value = sub.url;
-      option.appendChild(document.createTextNode(extract_filename(sub.url)));
+      option.appendChild(document.createTextNode(extractFilename(sub.url)));
       streams.appendChild(option);
     }
   }
 
-  update_cmd();
+  updateCommand();
 }
 
 export default [
@@ -138,14 +138,14 @@ export default [
       if (ch === 'svtbarn') {
         ch = 'barnkanalen';
       }
-      const data_url = `https://api.svt.se/video/ch-${ch}`;
-      fetchJson(data_url, {
+      const dataUrl = `https://api.svt.se/video/ch-${ch}`;
+      fetchJson(dataUrl, {
         headers: {
           accept: 'application/json',
         },
       })
-        .then(svt_callback)
-        .catch(api_error);
+        .then(callback)
+        .catch(apiError);
     },
   },
   {
@@ -153,54 +153,54 @@ export default [
     func: (ret) => {
       console.log(ret);
       const videoId = ret[1];
-      const data_url = `https://api.svt.se/video/${videoId}`;
-      console.log(data_url);
+      const dataUrl = `https://api.svt.se/video/${videoId}`;
+      console.log(dataUrl);
 
-      fetchJson(data_url, {
+      fetchJson(dataUrl, {
         headers: {
           accept: 'application/json',
         },
       })
-        .then(svt_callback)
-        .catch(api_error);
+        .then(callback)
+        .catch(apiError);
     },
   },
   {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/([^/?]+)/,
     func: (ret) => {
       // https://www.svt.se/videoplayer-embed/jXApWXa
-      const video_id = ret[1];
-      const data_url = `https://api.svt.se/video/${video_id}`;
-      console.log(data_url);
+      const videoId = ret[1];
+      const dataUrl = `https://api.svt.se/video/${videoId}`;
+      console.log(dataUrl);
 
-      fetchJson(data_url, {
+      fetchJson(dataUrl, {
         headers: {
           accept: 'application/json',
         },
       })
-        .then(svt_callback)
-        .catch(api_error);
+        .then(callback)
+        .catch(apiError);
     },
   },
   {
     re: /^https?:\/\/recept\.svt\.se\.?\//,
-    func: async (ret, url) => {
+    func: async (_, url) => {
       const data = await fetchPageData(url);
       const videoIds = Object.values(data.props.pageProps.__APOLLO_STATE__)
         .map((v) => v.videoId)
         .filter(Boolean);
 
       for (const videoId of videoIds) {
-        const data_url = `https://api.svt.se/video/${videoId}`;
-        console.log(data_url);
+        const dataUrl = `https://api.svt.se/video/${videoId}`;
+        console.log(dataUrl);
 
-        fetchJson(data_url, {
+        fetchJson(dataUrl, {
           headers: {
             accept: 'application/json',
           },
         })
-          .then(svt_callback)
-          .catch(api_error);
+          .then(callback)
+          .catch(apiError);
       }
 
       if (videoIds.length === 0) {
@@ -217,15 +217,15 @@ export default [
           url.pathname,
         ))
       ) {
-        const data_url = `https://api.svt.se/video/${ret[2]}`;
-        console.log(data_url);
-        fetchJson(data_url, {
+        const dataUrl = `https://api.svt.se/video/${ret[2]}`;
+        console.log(dataUrl);
+        fetchJson(dataUrl, {
           headers: {
             accept: 'application/json',
           },
         })
-          .then(svt_callback)
-          .catch(api_error);
+          .then(callback)
+          .catch(apiError);
         return;
       }
 
@@ -253,7 +253,7 @@ export default [
         const dataUrl = `https://api.svt.se/video/${svtId}`;
         console.log(dataUrl);
         const data = await fetchJson(dataUrl);
-        svt_callback(data, fetchPlaylist);
+        callback(data, fetchPlaylist);
       }
     },
   },

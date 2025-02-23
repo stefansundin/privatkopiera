@@ -10,23 +10,23 @@
 // Get audio URL:
 // https://www.sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { info, options, update_cmd } from '../popup.js';
-import { $, extract_extension, fetchJson, tab } from '../utils.js';
+import { info, options, updateCommand } from '../popup.js';
+import { $, extractExtension, fetchJson, tab } from '../utils.js';
 
-function sr_callback(stream, data) {
+function callback(stream, data) {
   const dropdown = $('#streams');
-  const ext = extract_extension(data.audioUrl) || 'mp3';
+  const extension = extractExtension(data.audioUrl) || 'mp3';
   const option = document.createElement('option');
   option.appendChild(document.createTextNode(stream.title));
   dropdown.appendChild(option);
   option.value = data.audioUrl;
-  let fn = stream.title;
+  let filename = stream.title;
   if (options.add_source_id_to_filename) {
-    fn += ` [SR ${stream.id}]`;
+    filename += ` [SR ${stream.id}]`;
   }
-  fn += `.${ext}`;
-  option.setAttribute('data-filename', fn);
-  update_cmd();
+  filename += `.${extension}`;
+  option.setAttribute('data-filename', filename);
+  updateCommand();
 }
 
 export default [
@@ -56,14 +56,14 @@ export default [
                 header = header.parentNode;
               }
               let title = document.title;
-              const title_element =
+              const titleElement =
                 header.getElementsByClassName('main-audio-new__title')[0] ||
                 header.getElementsByClassName('related-audio__title')[0] ||
                 header.getElementsByClassName(
                   'article-audio-details__header-title',
                 )[0];
-              if (title_element) {
-                title = title_element.textContent.trim();
+              if (titleElement) {
+                title = titleElement.textContent.trim();
               } else {
                 const dash = title.lastIndexOf('-');
                 if (dash !== -1) {
@@ -93,14 +93,14 @@ export default [
       const streams = injectionResult[0].result.result;
 
       for (const stream of streams) {
-        const data_url = `/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
+        const dataUrl = `/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
 
-        const data = await fetchJson(data_url, {
+        const data = await fetchJson(dataUrl, {
           headers: {
             accept: 'application/json',
           },
         });
-        sr_callback(stream, data);
+        callback(stream, data);
       }
 
       if (streams.length === 0) {

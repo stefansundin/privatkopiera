@@ -4,12 +4,12 @@
 import {
   options,
   subtitles,
-  update_cmd,
-  update_filename,
+  updateCommand,
+  updateFilename,
 } from '../popup.js';
-import { $, extract_filename, fetchJson, tab } from '../utils.js';
+import { $, extractFilename, fetchJson, tab } from '../utils.js';
 
-function dr_dk_callback(streams) {
+function callback(streams) {
   const dropdown = $('#streams');
 
   for (const stream of streams) {
@@ -27,21 +27,21 @@ function dr_dk_callback(streams) {
       for (const sub of stream.subtitles) {
         const option = document.createElement('option');
         option.value = sub.link;
-        option.appendChild(document.createTextNode(extract_filename(sub.link)));
+        option.appendChild(document.createTextNode(extractFilename(sub.link)));
         dropdown.appendChild(option);
       }
     }
   }
 
-  update_cmd();
+  updateCommand();
 }
 
 export default [
   {
     re: /^https?:\/\/(?:www\.)?dr\.dk\.?\/.*_(\d+)/,
     func: async (ret) => {
-      const video_id = ret[1];
-      console.log('video_id', video_id);
+      const videoId = ret[1];
+      console.log('videoId', videoId);
 
       // Grab the page title and the required token from the page's localStorage
       const injectionResult = await chrome.scripting.executeScript({
@@ -60,20 +60,20 @@ export default [
       console.log('tokens', tokens);
       const token = tokens.find((t) => t.type === 'UserAccount').value;
 
-      const data_url = `https://production.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
-      console.log(data_url);
+      const dataUrl = `https://production.dr-massive.com/api/account/items/${videoId}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
+      console.log(dataUrl);
       if (options.add_source_id_to_filename) {
-        title += ` [DR ${video_id}]`;
+        title += ` [DR ${videoId}]`;
       }
-      update_filename(`${title}.${options.default_video_file_extension}`);
+      updateFilename(`${title}.${options.default_video_file_extension}`);
 
-      const streams = await fetchJson(data_url, {
+      const streams = await fetchJson(dataUrl, {
         headers: {
           accept: 'application/json',
           'x-authorization': `Bearer ${token}`,
         },
       });
-      await dr_dk_callback(streams);
+      callback(streams);
     },
   },
 ];

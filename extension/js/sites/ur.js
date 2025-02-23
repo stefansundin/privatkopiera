@@ -4,7 +4,7 @@
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
 
-import { options, update_cmd, update_filename } from '../popup.js';
+import { options, updateCommand, updateFilename } from '../popup.js';
 import { $, fetchJson, fetchPageData, getDocumentTitle } from '../utils.js';
 
 async function fetchProgram(programId, title) {
@@ -34,13 +34,13 @@ async function fetchProgram(programId, title) {
   if (options.add_source_id_to_filename) {
     title += ` [UR ${programId}]`;
   }
-  const ext =
+  const extension =
     sourcesData.technicalFormat === 'video'
       ? options.default_video_file_extension
       : options.default_audio_file_extension;
 
-  update_filename(`${title}.${ext}`);
-  update_cmd();
+  updateFilename(`${title}.${extension}`);
+  updateCommand();
 }
 
 export default [

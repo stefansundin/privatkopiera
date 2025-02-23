@@ -7,8 +7,8 @@ import tv4 from './sites/tv4.js';
 import ur from './sites/ur.js';
 import {
   $,
-  extract_extension,
-  extract_filename,
+  extractExtension,
+  extractFilename,
   fetchText,
   getTab,
   isAndroid,
@@ -39,9 +39,9 @@ export const subtitles = [];
 let url, site;
 let initialFilenameSet = false;
 
-export function update_filename(fn) {
+export function updateFilename(filename) {
   // replace illegal characters
-  $('#filename').value = fn
+  $('#filename').value = filename
     .replace(/[/\\:]/g, '-')
     .replace(/["”´‘’]/g, "'")
     .replace(/[*?<>|!]/g, '')
@@ -54,7 +54,7 @@ export function info(text) {
   el.textContent = text;
 }
 
-export function api_error(e) {
+export function apiError(e) {
   console.error(e);
   const el = $('#info');
   while (el.hasChildNodes()) {
@@ -99,7 +99,7 @@ function download_info(program) {
   el.appendChild(document.createTextNode(`.`));
 }
 
-export function update_cmd(e) {
+export function updateCommand(e) {
   const filename = $('#filename');
   const streams = $('#streams');
   const stream = streams.selectedOptions[0];
@@ -114,9 +114,9 @@ export function update_cmd(e) {
     (filename.value === '' && !initialFilenameSet)
   ) {
     initialFilenameSet = true;
-    const fn = stream.getAttribute('data-filename');
-    if (fn) {
-      update_filename(fn);
+    const filename = stream.getAttribute('data-filename');
+    if (filename) {
+      updateFilename(filename);
     }
   }
 
@@ -132,47 +132,47 @@ export function update_cmd(e) {
   }
 
   let output_path = options.output_path + filename.value;
-  const ext = extract_extension(filename.value);
-  const stream_fn = extract_filename(url);
-  const stream_ext = extract_extension(url);
-  streams.title = stream_fn;
-  if (stream_ext === 'f4m') {
+  const extension = extractExtension(filename.value);
+  const streamFilename = extractFilename(url);
+  const streamExtension = extractExtension(url);
+  streams.title = streamFilename;
+  if (streamExtension === 'f4m') {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${output_path}"`;
-  } else if (stream_ext === 'm4a' || stream_ext === 'mp3') {
+  } else if (streamExtension === 'm4a' || streamExtension === 'mp3') {
     cmd.value = url;
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
     const label = $("label[for='cmd']")[0];
     label.textContent = 'URL';
-  } else if (stream_fn.endsWith('_a.m3u8') || ext === 'mka' || ext === 'aac') {
-    if (ext === 'mkv') {
+  } else if (streamFilename.endsWith('_a.m3u8') || extension === 'mka' || extension === 'aac') {
+    if (extension === 'mkv') {
       output_path = output_path.replace(/\.mkv$/, '.mka');
-    } else if (ext === 'mp4') {
+    } else if (extension === 'mp4') {
       output_path = output_path.replace(/\.mp4$/, '.m4a');
     }
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
     }" -vn -c:a copy "${output_path}"`;
-  } else if (ext === 'm4a') {
+  } else if (extension === 'm4a') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
     }" -vn -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
-  } else if (ext === 'mp3' || ext === 'ogg') {
+  } else if (extension === 'mp3' || extension === 'ogg') {
     cmd.value = `${options.ffmpeg_command} -i "${
       audio_stream || url
     }" -vn "${output_path}"`;
-  } else if (stream_ext === 'vtt') {
-    if (ext === 'mkv' || ext === 'mp4') {
+  } else if (streamExtension === 'vtt') {
+    if (extension === 'mkv' || extension === 'mp4') {
       output_path = output_path.replace(/\.(mkv|mp4)$/, '.srt');
-    } else if (ext !== 'srt') {
+    } else if (extension !== 'srt') {
       output_path += '.srt';
     }
     cmd.value = `${options.ffmpeg_command} -i "${url}" "${output_path}"`;
   } else if (
     subtitles.length > 0 &&
-    (ext === 'srt' || ext === 'vtt' || url === subtitles[0])
+    (extension === 'srt' || extension === 'vtt' || url === subtitles[0])
   ) {
-    if (ext === 'mkv') {
+    if (extension === 'mkv') {
       output_path = output_path.replace(/\.mkv$/, '.srt');
     }
     cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${output_path}"`;
@@ -182,7 +182,7 @@ export function update_cmd(e) {
       inputs.push(audio_stream);
     }
     inputs.push(...subtitles);
-    if (ext === 'mp4') {
+    if (extension === 'mp4') {
       cmd.value = `${options.ffmpeg_command} ${inputs
         .map((url) => `-i "${url}"`)
         .join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
@@ -204,7 +204,7 @@ export function update_cmd(e) {
   }
 }
 
-export async function processPlaylist(url, mediaDuration) {
+export async function processPlaylist(url) {
   if (isAndroid) {
     return;
   }
@@ -293,12 +293,12 @@ export async function processPlaylist(url, mediaDuration) {
     const option = document.createElement('option');
     option.value = baseUrl + ext_x_media['AUDIO']['URI'];
     option.appendChild(
-      document.createTextNode(extract_filename(ext_x_media['AUDIO']['URI'])),
+      document.createTextNode(extractFilename(ext_x_media['AUDIO']['URI'])),
     );
     dropdown.insertBefore(option, default_option);
   }
   dropdown.getElementsByTagName('option')[0].selected = true;
-  update_cmd();
+  updateCommand();
 }
 
 async function call_func() {
@@ -422,8 +422,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     }).observe(cmd);
   }
 
-  $('#streams').addEventListener('input', update_cmd);
-  $('#filename').addEventListener('input', update_cmd);
+  $('#streams').addEventListener('input', updateCommand);
+  $('#filename').addEventListener('input', updateCommand);
 
   if (isFirefox && !isAndroid) {
     document

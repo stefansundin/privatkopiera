@@ -17,12 +17,12 @@
 // https://playback2.a2d.tv/play/8ff56dd8e591e1854af1?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3
 
 import {
-  api_error,
+  apiError,
   info,
   options,
   processPlaylist,
-  update_cmd,
-  update_filename,
+  updateCommand,
+  updateFilename,
 } from '../popup.js';
 import {
   $,
@@ -33,34 +33,34 @@ import {
   tab,
 } from '../utils.js';
 
-function tv4play_media_callback(data, expand = false) {
+function callback(data, expand = false) {
   // console.debug('data', data);
   const dropdown = $('#streams');
-  let fn = data.metadata.title.trim();
+  let filename = data.metadata.title.trim();
   if (options.add_source_id_to_filename && data.id) {
-    fn += ` [TV4 ${data.id}]`;
+    filename += ` [TV4 ${data.id}]`;
   }
-  fn += `.${options.default_video_file_extension}`;
+  filename += `.${options.default_video_file_extension}`;
   if (dropdown.childNodes.length === 0) {
-    update_filename(fn);
+    updateFilename(filename);
   }
 
   const option = document.createElement('option');
   option.value = data.playbackItem.manifestUrl;
   option.appendChild(document.createTextNode(data.metadata.title.trim()));
-  option.setAttribute('data-filename', fn);
+  option.setAttribute('data-filename', filename);
   dropdown.appendChild(option);
-  update_cmd();
+  updateCommand();
 
   if (expand && data.playbackItem.type === 'hls') {
-    processPlaylist(data.playbackItem.manifestUrl, data.contentDuration).catch(
-      api_error,
+    processPlaylist(data.playbackItem.manifestUrl).catch(
+      apiError,
     );
   }
 }
 
-function tv4_error(err) {
-  console.log(err);
+function error(err) {
+  console.error(err);
   // delete the cached access token in case it needs refreshing.. the user can try again and maybe it will work.
   localStorage.removeItem('tv4-access-token');
   info('Något gick fel. Videon kanske kräver att du är inloggad?');
@@ -70,26 +70,26 @@ export default [
   {
     re: /^https?:\/\/(?:www\.)?tv4play\.se\.?\/(?:video|program|klipp|korthet)\/([0-9a-f]+)/,
     func: async (ret) => {
-      const video_id = ret[1];
-      update_filename(`${video_id}.${options.default_video_file_extension}`);
+      const videoId = ret[1];
+      updateFilename(`${videoId}.${options.default_video_file_extension}`);
 
-      let access_token = localStorageGetWithExpiry('tv4-access-token');
-      if (access_token && !access_token.startsWith('ey')) {
-        access_token = undefined;
+      let accessToken = localStorageGetWithExpiry('tv4-access-token');
+      if (accessToken && !accessToken.startsWith('ey')) {
+        accessToken = undefined;
       }
 
-      if (!access_token) {
+      if (!accessToken) {
         try {
           const injectionResult = await chrome.scripting.executeScript({
             target: { tabId: tab.id },
             func: async () => {
               try {
-                const refresh_token = document.cookie
+                const refreshToken = document.cookie
                   .split(';')
                   .map((c) => c.trim())
                   .find((c) => c.startsWith('tv4-refresh-token='))
                   ?.split('=')[1];
-                if (!refresh_token) {
+                if (!refreshToken) {
                   return { error: 'no refresh token' };
                 }
                 const response = await fetch(
@@ -103,7 +103,7 @@ export default [
                       'content-type': 'application/json',
                     },
                     body: JSON.stringify({
-                      refresh_token,
+                      refreshToken,
                       client_id: 'tv4-web',
                     }),
                   },
@@ -115,8 +115,8 @@ export default [
                     } ${await response.text()}`,
                   };
                 }
-                const access_token_data = await response.json();
-                return { result: access_token_data.access_token };
+                const accessTokenData = await response.json();
+                return { result: accessTokenData.accessToken };
               } catch (err) {
                 return { error: err.message };
               }
@@ -130,10 +130,10 @@ export default [
           } else if (injectionResult[0].result.error) {
             throw new Error(injectionResult[0].result.error);
           }
-          access_token = injectionResult[0].result.result;
+          accessToken = injectionResult[0].result.result;
           localStorageSetWithExpiry(
             'tv4-access-token',
-            access_token,
+            accessToken,
             4 * 3600 * 1000,
           );
         } catch (err) {
@@ -142,36 +142,36 @@ export default [
         }
       }
 
-      const metadata_url = `https://playback2.a2d.tv/play/${video_id}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
-      fetchJson(metadata_url, {
-        headers: access_token
+      const metadataUrl = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
+      fetchJson(metadataUrl, {
+        headers: accessToken
           ? {
-              'X-Jwt': `Bearer ${access_token}`,
+              'X-Jwt': `Bearer ${accessToken}`,
             }
           : {},
       })
-        .then((data) => tv4play_media_callback(data, true))
-        .catch(tv4_error);
+        .then((data) => callback(data, true))
+        .catch(error);
     },
   },
   {
     re: /^https?:\/\/(?:www\.)?tv4\.se\.?\//,
-    func: async (ret, url) => {
+    func: async (_, url) => {
       const data = await fetchPageData(url);
       const videoIds = Object.values(data.props.apolloState)
         .filter((thing) => thing.type === 'clipvideo')
         .map((v) => v.id);
 
       for (const videoId of videoIds) {
-        const metadata_url = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
-        console.log(metadata_url);
-        fetchJson(metadata_url, {
+        const metadataUrl = `https://playback2.a2d.tv/play/${videoId}?service=tv4play&device=browser&protocol=hls%2Cdash&drm=widevine&browser=GoogleChrome&capabilities=live-drm-adstitch-2%2Cyospace3`;
+        console.log(metadataUrl);
+        fetchJson(metadataUrl, {
           headers: {
             accept: 'application/json',
           },
         })
-          .then(tv4play_media_callback)
-          .catch(tv4_error);
+          .then(callback)
+          .catch(error);
       }
 
       if (videoIds.length === 0) {
