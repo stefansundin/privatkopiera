@@ -98,6 +98,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     }
     localStorage.output_path = output_path_input.value;
 
+    save_button.textContent = 'Sparat!';
+    setTimeout(() => {
+      save_button.textContent = 'Spara inställningar';
+    }, 3000);
+
     validate(true);
   });
 

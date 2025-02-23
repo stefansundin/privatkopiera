@@ -8,3 +8,7 @@ body.mobile {
 .input-group {
   margin-bottom: 5px;
 }
+
+#save {
+  min-width: 175px;
+}
