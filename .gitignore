@@ -5,6 +5,7 @@ Thumbs.db
 *.min.js
 *.min.css
 *.woff2
+dist
 node_modules
 web-ext-artifacts
 .sass-cache

@@ -5,8 +5,11 @@ if [[ ! -f extension/css/bootstrap.min.css ]]; then
   exit 1
 fi
 
+mkdir -p dist
+
 set -x
+
 V=$(cat extension/manifest.json | jq -Mr .version)
-rm -f "privatkopiera-$V.zip"
+rm -f "dist/privatkopiera-$V.zip"
 cd extension
-zip -r "../privatkopiera-$V.zip" . -x '*.git*' -x '*.DS_Store' -x '*Thumbs.db'
+zip -r "../dist/privatkopiera-$V.zip" . -x '*.git*' -x '*.DS_Store' -x '*Thumbs.db'
