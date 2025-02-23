@@ -21,7 +21,6 @@ import {
   info,
   options,
   processPlaylist,
-  tab_id,
   update_cmd,
   update_filename,
 } from '../popup.js';
@@ -31,6 +30,7 @@ import {
   fetchPageData,
   localStorageGetWithExpiry,
   localStorageSetWithExpiry,
+  tab,
 } from '../utils.js';
 
 function tv4play_media_callback(data, expand = false) {
@@ -78,7 +78,7 @@ export default [
       if (!access_token) {
         try {
           const injectionResult = await chrome.scripting.executeScript({
-            target: { tabId: tab_id },
+            target: { tabId: tab.id },
             func: async () => {
               try {
                 const refresh_token = document.cookie

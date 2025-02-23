@@ -21,7 +21,6 @@ import {
   options,
   processPlaylist,
   subtitles,
-  tab_id,
   update_cmd,
   update_filename,
 } from '../popup.js';
@@ -63,7 +62,7 @@ async function nrk_callback(data) {
   if (data.sourceMedium === 'audio') {
     ext = options.default_audio_file_extension;
   }
-  const title = await getDocumentTitle(tab_id);
+  const title = await getDocumentTitle();
   if (title) {
     const fn = `${title}.${ext}`;
     update_filename(fn);

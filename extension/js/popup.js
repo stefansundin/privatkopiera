@@ -10,8 +10,10 @@ import {
   extract_extension,
   extract_filename,
   fetchText,
+  getTab,
   isAndroid,
   isFirefox,
+  tab,
   toObject,
 } from './utils.js';
 
@@ -32,8 +34,7 @@ export const options = {
 };
 
 export const subtitles = [];
-export let tab_id;
-let tab_url, url, site;
+let url, site;
 let initialFilenameSet = false;
 
 export function update_filename(fn) {
@@ -300,7 +301,7 @@ export async function processPlaylist(url, mediaDuration) {
 
 async function call_func() {
   info('Laddar, var god vänta...');
-  const ret = site.re.exec(tab_url);
+  const ret = site.re.exec(tab.url);
   if (ret) {
     try {
       await site.func(ret, url);
@@ -434,11 +435,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       });
   }
 
-  const [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-  tab_id = tab.id;
-  tab_url = tab.url;
-
-  if (!tab_url) {
+  await getTab();
+  if (!tab.url) {
     // https://stackoverflow.com/questions/28786723/why-doesnt-chrome-tabs-query-return-the-tabs-url-when-called-using-requirejs
     // https://bugs.chromium.org/p/chromium/issues/detail?id=462939
     // https://bugs.chromium.org/p/chromium/issues/detail?id=1005701
@@ -447,19 +445,11 @@ document.addEventListener('DOMContentLoaded', async () => {
     );
     return;
   }
-  if (
-    tab_url.startsWith(
-      'chrome-extension://klbibkeccnjlkjkiokjodocebajanakg/suspended.html',
-    )
-  ) {
-    // Tab suspended with The Great Suspender. Your mileage may vary.
-    tab_url = tab_url.split('&uri=')[1];
-  }
-  url = new URL(tab_url);
-  $('#url').value = tab_url;
-  console.log(tab_url);
+  url = new URL(tab.url);
+  $('#url').value = tab.url;
+  console.log(tab.url);
 
-  site = matchers.find((m) => m.re.test(tab_url));
+  site = matchers.find((m) => m.re.test(tab.url));
   if (site) {
     if (site.permissions) {
       const granted = await chrome.permissions.contains(site.permissions);

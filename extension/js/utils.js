@@ -1,6 +1,4 @@
-// TODO: Get rid of this import!
-import { tab_id } from './popup.js';
-
+export let tab;
 export const isFirefox = navigator.userAgent.includes('Firefox/');
 export const isAndroid = navigator.userAgent.includes('Android');
 
@@ -57,9 +55,20 @@ export function $() {
   }
 }
 
-export async function getDocumentTitle(tab_id) {
+export async function getTab() {
+  if (tab) {
+    return tab;
+  }
+
+  const tabs = await chrome.tabs.query({ active: true, currentWindow: true });
+  tab = tabs[0];
+  return tab;
+}
+
+export async function getDocumentTitle() {
+  const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
-    target: { tabId: tab_id },
+    target: { tabId: tab.id },
     func: () => document.title,
   });
   if (injectionResult[0].error) {
@@ -77,8 +86,9 @@ export async function fetchDOM(url, ...args) {
     url = url.toString();
   }
 
+  const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
-    target: { tabId: tab_id },
+    target: { tabId: tab.id },
     func: async (...args) => {
       try {
         const response = await fetch(...args);
@@ -124,8 +134,9 @@ export async function fetchPageData(url, id='__NEXT_DATA__') {
 }
 
 export async function fetchText(...args) {
+  const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
-    target: { tabId: tab_id },
+    target: { tabId: tab.id },
     func: async (...args) => {
       try {
         const response = await fetch(...args);
@@ -155,8 +166,9 @@ export async function fetchText(...args) {
 }
 
 export async function fetchJson(...args) {
+  const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
-    target: { tabId: tab_id },
+    target: { tabId: tab.id },
     func: async (...args) => {
       try {
         const response = await fetch(...args);

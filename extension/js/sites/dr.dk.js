@@ -4,11 +4,10 @@
 import {
   options,
   subtitles,
-  tab_id,
   update_cmd,
   update_filename,
 } from '../popup.js';
-import { $, extract_filename, fetchJson } from '../utils.js';
+import { $, extract_filename, fetchJson, tab } from '../utils.js';
 
 function dr_dk_callback(streams) {
   const dropdown = $('#streams');
@@ -46,7 +45,7 @@ export default [
 
       // Grab the page title and the required token from the page's localStorage
       const injectionResult = await chrome.scripting.executeScript({
-        target: { tabId: tab_id },
+        target: { tabId: tab.id },
         func: () => [document.title, localStorage['session.tokens']],
       });
       console.debug('injectionResult', injectionResult);

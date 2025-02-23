@@ -10,8 +10,8 @@
 // Get audio URL:
 // https://sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { info, tab_id, update_cmd } from '../popup.js';
-import { $, extract_extension, fetchJson } from '../utils.js';
+import { info, update_cmd } from '../popup.js';
+import { $, extract_extension, fetchJson, tab } from '../utils.js';
 
 function sr_callback(stream, data) {
   const dropdown = $('#streams');
@@ -30,7 +30,7 @@ export default [
     func: async () => {
       // Find audio streams by looking for data-audio-id attributes
       const injectionResult = await chrome.scripting.executeScript({
-        target: { tabId: tab_id },
+        target: { tabId: tab.id },
         func: () => {
           try {
             const ids = [];
