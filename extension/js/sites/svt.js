@@ -74,7 +74,7 @@ function svt_callback(data, fetchPlaylist=true) {
   }
 
   // Try to pull out the desired videoReferences
-  let formats = options.svtplay_video_format.split(',');
+  let formats = options.svt_video_format.split(',');
   let videoReferences = data.videoReferences
     .filter((stream) => formats.includes(stream.format))
     .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));

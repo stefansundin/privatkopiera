@@ -26,9 +26,9 @@ export const options = {
   default_audio_file_extension:
     localStorage.default_audio_file_extension ||
     defaultOptions.default_audio_file_extension,
-  svtplay_video_format:
-    localStorage.svtplay_video_format ||
-    defaultOptions.svtplay_video_format,
+  svt_video_format:
+    localStorage.svt_video_format ||
+    defaultOptions.svt_video_format,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
