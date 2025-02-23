@@ -62,11 +62,19 @@ async function nrk_callback(data) {
   if (data.sourceMedium === 'audio') {
     ext = options.default_audio_file_extension;
   }
-  const title = await getDocumentTitle();
-  if (title) {
-    const fn = `${title}.${ext}`;
-    update_filename(fn);
+  let title = data?.statistics?.qualityOfExperience?.title;
+  if (!title) {
+    title = await getDocumentTitle();
+    if (title.endsWith(' - NRK TV')) {
+      title = title.substring(0, title.length-' - NRK TV'.length);
+    }
   }
+  if (options.add_source_id_to_filename && data.id) {
+    title += ` [NRK ${data.id}]`;
+  }
+  console.log('title', title);
+  const fn = `${title}.${ext}`;
+  update_filename(fn);
   update_cmd();
 }
 

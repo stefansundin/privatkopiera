@@ -10,7 +10,7 @@
 // Get audio URL:
 // https://www.sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
 
-import { info, update_cmd } from '../popup.js';
+import { info, options, update_cmd } from '../popup.js';
 import { $, extract_extension, fetchJson, tab } from '../utils.js';
 
 function sr_callback(stream, data) {
@@ -20,7 +20,12 @@ function sr_callback(stream, data) {
   option.appendChild(document.createTextNode(stream.title));
   dropdown.appendChild(option);
   option.value = data.audioUrl;
-  option.setAttribute('data-filename', `${stream.title}.${ext}`);
+  let fn = stream.title;
+  if (options.add_source_id_to_filename) {
+    fn += ` [SR ${stream.id}]`;
+  }
+  fn += `.${ext}`;
+  option.setAttribute('data-filename', fn);
   update_cmd();
 }
 

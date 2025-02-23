@@ -34,10 +34,13 @@ import {
 } from '../utils.js';
 
 function tv4play_media_callback(data, expand = false) {
+  // console.debug('data', data);
   const dropdown = $('#streams');
-  const fn = `${data.metadata.title.trim()}.${
-    options.default_video_file_extension
-  }`;
+  let fn = data.metadata.title.trim();
+  if (options.add_source_id_to_filename && data.id) {
+    fn += ` [TV4 ${data.id}]`;
+  }
+  fn += `.${options.default_video_file_extension}`;
   if (dropdown.childNodes.length === 0) {
     update_filename(fn);
   }

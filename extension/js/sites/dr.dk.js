@@ -55,13 +55,16 @@ export default [
         throw new Error('Script error.');
       }
       const tabResult = injectionResult[0].result;
-      const title = tabResult[0].split('|')[0].trim();
+      let title = tabResult[0].split('|')[0].trim();
       const tokens = JSON.parse(tabResult[1]);
       console.log('tokens', tokens);
       const token = tokens.find((t) => t.type === 'UserAccount').value;
 
       const data_url = `https://production.dr-massive.com/api/account/items/${video_id}/videos?delivery=stream&device=web_browser&ff=idp%2Cldp%2Crpt&lang=da&resolution=HD-1080&sub=Anonymous`;
       console.log(data_url);
+      if (options.add_source_id_to_filename) {
+        title += ` [DR ${video_id}]`;
+      }
       update_filename(`${title}.${options.default_video_file_extension}`);
 
       const streams = await fetchJson(data_url, {

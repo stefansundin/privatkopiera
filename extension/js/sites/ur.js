@@ -31,7 +31,9 @@ async function fetchProgram(programId, title) {
       title = title.substring(0, title.length-' | UR Play'.length);
     }
   }
-  title += ` [UR Play ${programId}]`;
+  if (options.add_source_id_to_filename) {
+    title += ` [UR ${programId}]`;
+  }
   const ext =
     sourcesData.technicalFormat === 'video'
       ? options.default_video_file_extension

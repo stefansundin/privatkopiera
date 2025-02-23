@@ -11,6 +11,8 @@ const options = {
   svt_video_format:
     localStorage.svt_video_format ||
     defaultOptions.svt_video_format,
+  add_source_id_to_filename:
+    localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -52,6 +54,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     'svt_video_format',
   );
   const ffmpeg_command_input = document.getElementById('ffmpeg_command');
+  const add_source_id_to_filename_input = document.getElementById('add_source_id_to_filename');
   const output_path_input = document.getElementById('output_path');
   const save_button = document.getElementById('save');
 
@@ -61,6 +64,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     options.default_audio_file_extension;
   svt_video_format_input.value =
     options.svt_video_format;
+  add_source_id_to_filename_input.checked = options.add_source_id_to_filename;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
 
@@ -86,6 +90,8 @@ document.addEventListener('DOMContentLoaded', async () => {
       default_video_file_extension_input.value;
     localStorage.default_audio_file_extension =
       default_audio_file_extension_input.value;
+    localStorage.add_source_id_to_filename =
+      add_source_id_to_filename_input.checked;
     localStorage.svt_video_format =
       svt_video_format_input.value;
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
@@ -119,6 +125,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     delete localStorage.default_video_file_extension;
     delete localStorage.default_audio_file_extension;
     delete localStorage.svt_video_format;
+    delete localStorage.add_source_id_to_filename;
     delete localStorage.ffmpeg_command;
     delete localStorage.output_path;
 
@@ -128,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
       defaultOptions.default_audio_file_extension;
     svt_video_format_input.value =
       defaultOptions.svt_video_format;
+    add_source_id_to_filename_input.checked = defaultOptions.add_source_id_to_filename;
     ffmpeg_command_input.value = defaultOptions.ffmpeg_command;
     output_path_input.value = defaultOptions.output_path;
   });

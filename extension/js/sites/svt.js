@@ -97,7 +97,11 @@ function svt_callback(data, fetchPlaylist=true) {
 
   const streams = $('#streams');
   for (const stream of videoReferences) {
-    const fn = title ? `${title}.${options.default_video_file_extension}` : extract_filename(stream.url);
+    let fnTitle = title;
+    if (options.add_source_id_to_filename && fnTitle && data.svtId) {
+      fnTitle += ` [SVT ${data.svtId}]`;
+    }
+    let fn = fnTitle ? `${fnTitle}.${options.default_video_file_extension}` : extract_filename(stream.url);
     const option = document.createElement('option');
     option.value = stream.url;
     option.appendChild(document.createTextNode(title || extract_filename(stream.url)));
@@ -145,7 +149,7 @@ export default [
     },
   },
   {
-    re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/(?:video|klipp)\/([a-zA-Z0-9]+)\//,
+    re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\/(?:video|klipp)\/([a-zA-Z0-9]+)\/?/,
     func: (ret) => {
       console.log(ret);
       const videoId = ret[1];
