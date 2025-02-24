@@ -35,6 +35,10 @@ import {
 async function callback(data) {
   console.log(data);
 
+  if (!data.playable && data.nonPlayable) {
+    throw new Error(data.nonPlayable.endUserMessage);
+  }
+
   const streams = $('#streams');
   for (const asset of data.playable.assets) {
     const option = document.createElement('option');
