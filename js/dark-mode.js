@@ -5,6 +5,17 @@ try {
   }
 } catch {}
 
+function syncTheme() {
+  const checkbox = document.getElementById('dark-mode');
+  const theme = (checkbox.checked ? 'dark' : 'light');
+  document.documentElement.setAttribute('data-bs-theme', theme);
+
+  const launcher = document.getElementById('img-launcher');
+  if (launcher) {
+    launcher.src = `img/launcher-${theme}.png`;
+  }
+}
+
 document.addEventListener('DOMContentLoaded', () => {
   const checkbox = document.getElementById('dark-mode');
   const label = checkbox.parentElement.querySelector('label[for="dark-mode"]');
@@ -22,14 +33,7 @@ document.addEventListener('DOMContentLoaded', () => {
           localStorage.setItem('theme', (checkbox.checked ? 'dark' : 'light'));
         }
       }
-
-      const theme = (checkbox.checked ? 'dark' : 'light');
-      document.documentElement.setAttribute('data-bs-theme', theme);
-
-      const launcher = document.getElementById('img-launcher');
-      if (launcher) {
-        launcher.src = `img/launcher-${theme}.png`;
-      }
+      syncTheme();
     });
   }
 
@@ -42,10 +46,12 @@ document.addEventListener('DOMContentLoaded', () => {
       theme = localTheme;
     }
   }
-  if (theme === 'dark' || (theme === undefined && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+  const dark_mode_enabled = (theme === 'dark') || (theme === undefined && window.matchMedia('(prefers-color-scheme: dark)').matches);
+  if (dark_mode_enabled !== checkbox.checked) {
     checkbox.click();
   }
   checkbox.indeterminate = (theme === undefined);
+  syncTheme();
 
   window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', (e) => {
     if (checkbox.indeterminate && checkbox.checked !== e.matches) {
