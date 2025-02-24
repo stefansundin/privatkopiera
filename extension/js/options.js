@@ -81,7 +81,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
   validate();
 
-  save_button.addEventListener('click', () => {
+  function save() {
     localStorage.default_video_file_extension = default_video_file_extension_input.value.trim();
     localStorage.default_audio_file_extension = default_audio_file_extension_input.value.trim();
     localStorage.add_source_id_to_filename = add_source_id_to_filename_input.checked;
@@ -99,16 +99,24 @@ document.addEventListener('DOMContentLoaded', async () => {
     }, 3000);
 
     validate(true);
-  });
+  }
+
+  save_button.addEventListener('click', save);
 
   for (const input of document.querySelectorAll("input[type='text']")) {
-    input.addEventListener('keypress', (e) => {
+    input.addEventListener('keydown', (e) => {
       if (e.key === 'Enter') {
-        save_button.focus();
-        save_button.click();
+        save();
       }
     });
   }
+
+  document.addEventListener('keydown', (e) => {
+    if ((e.ctrlKey || e.metaKey) && e.key === 's') {
+      e.preventDefault();
+      save();
+    }
+  });
 
   document.getElementById('reset').addEventListener('click', () => {
     delete localStorage.default_video_file_extension;
