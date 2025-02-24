@@ -3,7 +3,7 @@ try {
   if ('localStorage' in window && localStorage) {
     localStorageUsable = true;
   }
-} catch {}
+} catch { }
 
 function syncTheme() {
   const checkbox = document.getElementById('dark-mode');

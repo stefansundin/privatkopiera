@@ -3,6 +3,7 @@
 :root {
   scroll-behavior: auto;
 }
+
 .form-check-input:focus {
   box-shadow: none;
 }
@@ -11,6 +12,7 @@
   --bs-btn-bg: #e9eaeb;
   --bs-btn-border-color: #e7e8e9;
 }
+
 [data-bs-theme=dark] .btn-light {
   --bs-btn-bg: #d3d4d5;
   --bs-btn-border-color: #c6c7c8;
