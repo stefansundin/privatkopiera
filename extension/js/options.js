@@ -4,7 +4,7 @@ import { isAndroid } from './utils.js';
 const options = {
   default_video_file_extension: localStorage.default_video_file_extension || defaultOptions.default_video_file_extension,
   default_audio_file_extension: localStorage.default_audio_file_extension || defaultOptions.default_audio_file_extension,
-  svt_video_format: localStorage.svt_video_format || defaultOptions.svt_video_format,
+  svt_video_format: localStorage.svt_video_format?.split(',') || defaultOptions.svt_video_format,
   add_source_id_to_filename: localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
@@ -13,6 +13,22 @@ const options = {
 function applySuggestion() {
   const input = document.getElementById(this.dataset.suggestionFor);
   input.value = this.textContent.trim();
+}
+
+/**
+ * Sort the input array and returns a new array without duplicates, preserving order and keeping the first item in case of duplicates.
+ *
+ * @param {Array} input
+ * @returns {Array}
+ */
+function dedupe(input) {
+  const result = [];
+  for (const item of input) {
+    if (!result.includes(item)) {
+      result.push(item);
+    }
+  }
+  return result;
 }
 
 document.addEventListener('DOMContentLoaded', async () => {
@@ -40,7 +56,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   default_video_file_extension_input.value = options.default_video_file_extension;
   default_audio_file_extension_input.value = options.default_audio_file_extension;
-  svt_video_format_input.value = options.svt_video_format;
+  svt_video_format_input.value = options.svt_video_format.join(',');
   add_source_id_to_filename_input.checked = options.add_source_id_to_filename;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
@@ -69,7 +85,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.default_video_file_extension = default_video_file_extension_input.value.trim();
     localStorage.default_audio_file_extension = default_audio_file_extension_input.value.trim();
     localStorage.add_source_id_to_filename = add_source_id_to_filename_input.checked;
-    localStorage.svt_video_format = svt_video_format_input.value.trim();
+    localStorage.svt_video_format = dedupe(svt_video_format_input.value.split(',').map(format => format.trim())).join(',');
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
 
     if (output_path_input.value !== '' && !output_path_input.value.endsWith(pathSeparator)) {
@@ -104,7 +120,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
     default_video_file_extension_input.value = defaultOptions.default_video_file_extension;
     default_audio_file_extension_input.value = defaultOptions.default_audio_file_extension;
-    svt_video_format_input.value = defaultOptions.svt_video_format;
+    svt_video_format_input.value = defaultOptions.svt_video_format.join(',');
     add_source_id_to_filename_input.checked = defaultOptions.add_source_id_to_filename;
     ffmpeg_command_input.value = defaultOptions.ffmpeg_command;
     output_path_input.value = defaultOptions.output_path;

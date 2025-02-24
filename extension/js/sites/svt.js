@@ -80,24 +80,26 @@ function callback(data, fetchPlaylist = true) {
   }
 
   // Try to pull out the desired videoReferences
-  let formats = options.svt_video_format.split(',');
-  let videoReferences = data.videoReferences
-    .filter((stream) => formats.includes(stream.format))
-    .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
+  // If multiple formats are requested then it would be ideal if they kept the order after the playlists are fetched and parsed, but that's not possible right now
+  const videoReferences = [];
+  let formats = options.svt_video_format;
+  videoReferences.push(...formats.flatMap((format) =>
+    data.videoReferences.filter((stream) => stream.format === format)
+  ));
 
   if (videoReferences.length === 0) {
     // If the user messed up their settings then just try hls-cmaf-full
-    formats = 'hls-cmaf-full'.split(',');
-    videoReferences = data.videoReferences
-      .filter((stream) => formats.includes(stream.format))
-      .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
+    formats = ['hls-cmaf-full'];
+    videoReferences.push(...formats.flatMap((format) =>
+      data.videoReferences.filter((stream) => stream.format === format)
+    ));
 
     if (videoReferences.length === 0) {
       // If there are still no videoReferences then just try to pick the first one...
       formats = [data.videoReferences[0].format];
-      videoReferences = data.videoReferences
-        .filter((stream) => formats.includes(stream.format))
-        .sort((a, b) => formats.indexOf(a.format) - formats.indexOf(b.format));
+      videoReferences.push(...formats.flatMap((format) =>
+        data.videoReferences.filter((stream) => stream.format === format)
+      ));
     }
   }
 
@@ -110,7 +112,11 @@ function callback(data, fetchPlaylist = true) {
     let filename = filenameTitle ? `${filenameTitle}.${options.default_video_file_extension}` : extractFilename(stream.url);
     const option = document.createElement('option');
     option.value = stream.url;
-    option.appendChild(document.createTextNode(title || extractFilename(stream.url)));
+    let label = title;
+    if (formats.length > 1) {
+      label = `${stream.format}: ${label}`;
+    }
+    option.appendChild(document.createTextNode(label || extractFilename(stream.url)));
     option.setAttribute('data-filename', filename);
     streams.appendChild(option);
 
