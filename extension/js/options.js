@@ -10,6 +10,11 @@ const options = {
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
 
+function applySuggestion() {
+  const input = document.getElementById(this.dataset.suggestionFor);
+  input.value = this.textContent.trim();
+}
+
 document.addEventListener('DOMContentLoaded', async () => {
   const platformInfo = await chrome.runtime.getPlatformInfo();
   const pathSeparator = platformInfo.os === 'win' ? '\\' : '/';
@@ -39,6 +44,11 @@ document.addEventListener('DOMContentLoaded', async () => {
   add_source_id_to_filename_input.checked = options.add_source_id_to_filename;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
+
+  const suggestions = document.querySelectorAll('[data-suggestion-for]');
+  for (const el of suggestions) {
+    el.addEventListener('click', applySuggestion);
+  }
 
   function validate(notify = false) {
     if (
