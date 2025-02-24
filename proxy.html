@@ -82,9 +82,3 @@ brew services start privoxy
 export http_proxy=http://127.0.0.1:8118/
 ffmpeg -i ...
 {% endhighlight %}
-
-    <p>AdobeHDS stöder tyvärr inte <code>http_proxy</code> variabeln, men du kan använda följande argument:</p>
-
-{% highlight shell %}
-php AdobeHDS.php ... --fproxy --proxy http://127.0.0.1:8118/
-{% endhighlight %}
