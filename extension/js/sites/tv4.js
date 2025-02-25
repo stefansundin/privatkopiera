@@ -101,7 +101,7 @@ export default [
                       'content-type': 'application/json',
                     },
                     body: JSON.stringify({
-                      refreshToken,
+                      refresh_token: refreshToken,
                       client_id: 'tv4-web',
                     }),
                   },
@@ -110,7 +110,7 @@ export default [
                   return { error: `Invalid response: ${response.status} ${await response.text()}` };
                 }
                 const accessTokenData = await response.json();
-                return { result: accessTokenData.accessToken };
+                return { result: accessTokenData.access_token };
               } catch (err) {
                 return { error: err.message };
               }
