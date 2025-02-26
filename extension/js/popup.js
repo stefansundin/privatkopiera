@@ -169,16 +169,22 @@ export function updateCommand(e) {
       inputs.push(audio_stream);
     }
     inputs.push(...subtitles);
+
+    const command = [
+      options.ffmpeg_command,
+      ...inputs.map((url) => `-i "${url}"`),
+    ];
+    if (subtitles.length > 1) {
+      // Adding -map arguments to ffmpeg makes it select all the streams from that input. https://trac.ffmpeg.org/wiki/Map
+      command.push(...inputs.map((v, i) => `-map ${i}`));
+    }
+    command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
-      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} ${mapOutputToNumber(inputs)} ${inputs.length > 2 ? '-c:s mov_text' : ''} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
-    } else {
-      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} ${mapOutputToNumber(inputs)} -c:v copy -c:a copy "${output_path}"`;
+      command.push('-c:s mov_text -bsf:a aac_adtstoasc');
     }
-    function mapOutputToNumber(array) {
-      return array.length > 2
-        ? array.map((_value, index) => `-map ${index}`).join(' ')
-        : '';
-    }
+    command.push(`"${output_path}"`);
+
+    cmd.value = command.join(' ');
   }
   cmd.setAttribute('data-url', url);
   cmd.dispatchEvent(new Event('input'));
