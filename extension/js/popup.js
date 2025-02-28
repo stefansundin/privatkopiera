@@ -174,6 +174,10 @@ export function updateCommand(e) {
       options.ffmpeg_command,
       ...inputs.map((url) => `-i "${url}"`),
     ];
+    if (subtitles.length > 1) {
+      // Adding -map arguments to ffmpeg makes it select all the streams from that input. https://trac.ffmpeg.org/wiki/Map
+      command.push(...inputs.map((v, i) => `-map ${i}`));
+    }
     command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
       command.push('-c:s mov_text -bsf:a aac_adtstoasc');
