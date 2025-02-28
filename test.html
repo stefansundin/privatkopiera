@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html>
+
+<body>
+
+  <form id="contactForm" action="#">
+    Select a fruit:
+    <select id="subtitles">
+      <option selected> -- select an option -- </option>
+      <option id="Apple">Apple</option>
+      <option id="Pear">Pear</option>
+      <option id="Banana">Banana</option>
+      <option id="Orange">Orange</option>
+    </select>
+    <br>
+    <ul id="selected-subtitles">
+    </ul>
+  </form>
+  <script>
+    const subtitles = document.querySelector("#subtitles");
+    const selectedItems = document.querySelector("#selected-subtitles");
+    subtitles.addEventListener('change', function () {
+      if (subtitles.selectedIndex === 0) {
+        return
+      }
+      let newSelectSubtitle = document.createElement("li");
+      newSelectSubtitle.innerHTML = `<button onClick="something(this);" id="${subtitles.value}">X</button> <span>something ${subtitles.text}</span>`;
+      selectedItems.appendChild(newSelectSubtitle);
+      subtitles.remove(subtitles.selectedIndex);
+    });
+    function something(e) {
+      console.log(e);
+      console.log("yes");
+    }
+  </script>
+
+</body>
+
+</html>
+
+<!--
+
+Vue code
+
+<script setup lang="ts">
+import { ref } from "vue";
+
+interface Subtitle {
+  id: string;
+  name: string;
+}
+const suggestionsDropdown = ref<Subtitle[]>([
+  { id: "0_element", name: "--- select a subtitle ---" },
+]);
+
+const suggestionsSelected = ref<Subtitle[]>([
+  { id: "id2_something", name: "name2_something" },
+  { id: "id_something", name: "name_something" },
+]);
+
+function handleSelectChange(event: any) {
+  console.log(event.target.value);
+  if (event.target.value === "0_element") {
+    return;
+  }
+  handleClick(
+    event.target.value,
+    suggestionsDropdown.value,
+    suggestionsSelected.value
+  );
+}
+
+/**
+ *
+ * @param id string identifier to search for object
+ * @param deleteFromThisArray array that the searched object shall be deleted from
+ * @param addtoThisArray array that the seached object shall be added to
+ */
+function handleClick(
+  id: string,
+  deleteFromThisArray: Subtitle[],
+  addToThisArray: Subtitle[]
+) {
+  const index = deleteFromThisArray.findIndex((item) => item.id === id);
+  if (index < 0) {
+    return;
+  }
+  addToThisArray.push(deleteFromThisArray[index]);
+  deleteFromThisArray.splice(index, 1);
+}
+</script>
+
+<template>
+  <select @change="handleSelectChange">
+    <option v-for="suggestion in suggestionsDropdown" :value="suggestion.id">
+      {{ suggestion.name }}
+    </option>
+  </select>
+  <ul
+    v-for="suggestion in suggestionsSelected"
+    :key="suggestion.id"
+    style="list-style-type: none"
+  >
+    <li>
+      <button
+        @keydown:enter="
+          handleClick(suggestion.id, suggestionsSelected, suggestionsDropdown)
+        "
+        @click="
+          handleClick(suggestion.id, suggestionsSelected, suggestionsDropdown)
+        "
+      >
+        X
+      </button>
+      {{ suggestion.name }}
+    </li>
+  </ul>
+</template>
+
+
+till javascipt
+
+const el = ["value"]
+  , tl = ["onKeydown:enter", "onClick"]
+  , sl = Ci({
+    __name: "App",
+    setup(e) {
+        const t = Xs([{
+            id: "0_element",
+            name: "--- select a subtitle ---"
+        }])
+          , s = Xs([{
+            id: "id2_something",
+            name: "name2_something"
+        }, {
+            id: "id_something",
+            name: "name_something"
+        }]);
+        function n(i) {
+            console.log(i.target.value),
+            i.target.value !== "0_element" && r(i.target.value, t.value, s.value)
+        }
+        function r(i, o, l) {
+            const u = o.findIndex(h => h.id === i);
+            u < 0 || (l.push(o[u]),
+            o.splice(u, 1))
+        }
+        return (i, o) => (ot(),
+        lt(ce, null, [_t("select", {
+            onChange: n
+        }, [(ot(!0),
+        lt(ce, null, Qs(t.value, l => (ot(),
+        lt("option", {
+            value: l.id
+        }, as(l.name), 9, el))), 256))], 32), (ot(!0),
+        lt(ce, null, Qs(s.value, l => (ot(),
+        lt("ul", {
+            key: l.id,
+            style: {
+                "list-style-type": "none"
+            }
+        }, [_t("li", null, [_t("button", {
+            "onKeydown:enter": u => r(l.id, s.value, t.value),
+            onClick: u => r(l.id, s.value, t.value)
+        }, " X ", 40, tl), wr(" " + as(l.name), 1)])]))), 128))], 64))
+    }
+});
+-->
