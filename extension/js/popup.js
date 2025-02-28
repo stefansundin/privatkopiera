@@ -176,7 +176,10 @@ export function updateCommand(e) {
     ];
     command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
-      command.push('-c:s mov_text -bsf:a aac_adtstoasc');
+      command.push('-c:s mov_text');
+      if (subtitles.length > 0) {
+        command.push('-bsf: a aac_adtstoasc');
+      }
     }
     command.push(`"${output_path}"`);
 
