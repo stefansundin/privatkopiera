@@ -38,6 +38,7 @@ function callback(streams) {
         // dropdown.appendChild(option);
         subtitleDropdown.appendChild(option);
       }
+      subtitleDropdown.firstElementChild.selected = true;
     }
   }
 

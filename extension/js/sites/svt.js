@@ -140,6 +140,7 @@ function callback(data, fetchPlaylist = true) {
       streams.appendChild(option);
       subtitleDropdown.appendChild(option)
     }
+    subtitleDropdown.firstElementChild.selected = true;
   }
 
   updateCommand();

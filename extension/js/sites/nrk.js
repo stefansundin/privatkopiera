@@ -62,6 +62,9 @@ async function callback(data) {
     streams.appendChild(option);
     subtitleDropdown.appendChild(option);
   }
+  if (data.playable.subtitles) {
+    subtitleDropdown.firstElementChild.selected = true;
+  }
 
   let extension = options.default_video_file_extension;
   if (data.sourceMedium === 'audio') {
