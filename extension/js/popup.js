@@ -95,7 +95,7 @@ function download_info(program) {
 export function updateCommand(e) {
   const filename = $('#filename');
   const streams = $('#streams');
-  const selectSubtitles = $("#subtitles")
+  const subtitlesDropdown = $("#subtitles")
   const stream = streams.selectedOptions[0];
   if (!stream) {
     info('Hittade ingen video. Har programmet sänts än?');
@@ -116,7 +116,12 @@ export function updateCommand(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
-  const selectedSubs = selectSubtitles ? subtitles : selectSubtitles.selectedOptions.map(item => item.value);
+  const selectedSubs = [];
+  if (subtitlesDropdown.selectedOptions) {
+    for (let index = 0; index < subtitlesDropdown.selectedOptions.length; index++) {
+      selectedSubs.push(subtitlesDropdown.selectedOptions[index].value);
+    }
+  }
 
   if (isAndroid) {
     cmd.value = url;
