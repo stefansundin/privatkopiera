@@ -16,6 +16,7 @@ import {
 
 function callback(streams) {
   const dropdown = $('#streams');
+  const subtitleDropdown = $('#subtitles');
 
   for (const stream of streams) {
     const option = document.createElement('option');
@@ -30,11 +31,13 @@ function callback(streams) {
     if (stream.subtitles) {
       subtitles.push(...stream.subtitles.map((sub) => sub.link));
       for (const sub of stream.subtitles) {
+
         const option = document.createElement('option');
         option.value = sub.link;
-        option.appendChild(document.createTextNode(extractFilename(sub.link)));
-        dropdown.appendChild(option);
+        option.appendChild(document.createTextNode(extractFilename(sub.label ?? sub.language)));
+        subtitleDropdown.appendChild(option);
       }
+      subtitleDropdown.firstElementChild.selected = true;
     }
   }
 

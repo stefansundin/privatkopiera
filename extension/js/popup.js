@@ -95,6 +95,7 @@ function download_info(program) {
 export function updateCommand(e) {
   const filename = $('#filename');
   const streams = $('#streams');
+  const subtitlesDropdown = $('#subtitles')
   const stream = streams.selectedOptions[0];
   if (!stream) {
     info('Hittade ingen video. Har programmet sänts än?');
@@ -115,6 +116,12 @@ export function updateCommand(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
+  const selectedSubs = [];
+  if (subtitlesDropdown.selectedOptions) {
+    for (let index = 0; index < subtitlesDropdown.selectedOptions.length; index++) {
+      selectedSubs.push(subtitlesDropdown.selectedOptions[index].value);
+    }
+  }
 
   if (isAndroid) {
     cmd.value = url;
@@ -156,24 +163,28 @@ export function updateCommand(e) {
     }
     cmd.value = `${options.ffmpeg_command} -i "${url}" "${output_path}"`;
   } else if (
-    subtitles.length > 0 &&
-    (extension === 'srt' || extension === 'vtt' || url === subtitles[0])
+    selectedSubs.length > 0 &&
+    (extension === 'srt' || extension === 'vtt' || url === selectedSubs[0])
   ) {
     if (extension === 'mkv') {
       output_path = output_path.replace(/\.mkv$/, '.srt');
     }
-    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${selectedSubs[0]}" "${output_path}"`;
   } else {
     const inputs = [url];
     if (audio_stream) {
       inputs.push(audio_stream);
     }
-    inputs.push(...subtitles);
+    inputs.push(...selectedSubs);
 
     const command = [
       options.ffmpeg_command,
       ...inputs.map((url) => `-i "${url}"`),
     ];
+    if (selectedSubs.length > 1) {
+      // Adding -map arguments to ffmpeg makes it select all the streams from that input. https://trac.ffmpeg.org/wiki/Map
+      command.push(...inputs.map((v, i) => `-map ${i}`));
+    }
     command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
       command.push('-c:s mov_text -bsf:a aac_adtstoasc');
@@ -421,6 +432,7 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   $('#streams').addEventListener('input', updateCommand);
   $('#filename').addEventListener('input', updateCommand);
+  $('#subtitles').addEventListener('input', updateCommand);
 
   if (isFirefox && !isAndroid) {
     document

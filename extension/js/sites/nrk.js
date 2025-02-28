@@ -40,6 +40,7 @@ async function callback(data) {
   }
 
   const streams = $('#streams');
+  const subtitleDropdown = $('#subtitles');
   for (const asset of data.playable.assets) {
     const option = document.createElement('option');
     option.value = asset.url;
@@ -49,15 +50,19 @@ async function callback(data) {
     processPlaylist(asset.url).catch(apiError);
   }
 
-  for (const subtitle of data.playable.subtitles) {
-    const url = subtitle.webVtt;
+  for (const sub of data.playable.subtitles) {
+    const url = sub.webVtt;
     subtitles.push(url);
     const option = document.createElement('option');
     option.value = url;
     option.appendChild(
-      document.createTextNode(`Undertext (${subtitle.label})`),
+      document.createTextNode(`Undertext (${sub.label ?? sub.language})`),
     );
     streams.appendChild(option);
+    subtitleDropdown.appendChild(option);
+  }
+  if (data.playable.subtitles) {
+    subtitleDropdown.firstElementChild.selected = true;
   }
 
   let extension = options.default_video_file_extension;

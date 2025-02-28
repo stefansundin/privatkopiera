@@ -67,3 +67,11 @@ body.mobile #cmd {
   right: 0.5em;
   user-select: none;
 }
+
+#choosen-subtitles {
+  list-style-type: none
+}
+
+#choosen-subtitles>li {
+  margin-left: 0.5em;
+}
