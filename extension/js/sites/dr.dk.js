@@ -16,7 +16,7 @@ import {
 
 function callback(streams) {
   const dropdown = $('#streams');
-  const subtitleDropdown = $("#available-Subtitles");
+  const subtitleDropdown = $("#subtitles");
 
   for (const stream of streams) {
     const option = document.createElement('option');

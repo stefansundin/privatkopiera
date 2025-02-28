@@ -104,7 +104,7 @@ function callback(data, fetchPlaylist = true) {
   }
 
   const streams = $('#streams');
-  const subtitleDropdown = $("#available-Subtitles");
+  const subtitleDropdown = $("#subtitles");
   for (const stream of videoReferences) {
     let filenameTitle = title;
     if (options.add_source_id_to_filename && filenameTitle && data.svtId) {

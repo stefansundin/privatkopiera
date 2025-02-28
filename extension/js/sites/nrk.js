@@ -40,7 +40,7 @@ async function callback(data) {
   }
 
   const streams = $('#streams');
-  const subtitleDropdown = $("#available-Subtitles");
+  const subtitleDropdown = $("#subtitles");
   for (const asset of data.playable.assets) {
     const option = document.createElement('option');
     option.value = asset.url;
