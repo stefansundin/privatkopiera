@@ -95,7 +95,7 @@ function download_info(program) {
 export function updateCommand(e) {
   const filename = $('#filename');
   const streams = $('#streams');
-  const subtitlesDropdown = $("#subtitles")
+  const subtitlesDropdown = $('#subtitles')
   const stream = streams.selectedOptions[0];
   if (!stream) {
     info('Hittade ingen video. Har programmet sänts än?');

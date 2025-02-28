@@ -40,7 +40,7 @@ async function callback(data) {
   }
 
   const streams = $('#streams');
-  const subtitleDropdown = $("#subtitles");
+  const subtitleDropdown = $('#subtitles');
   for (const asset of data.playable.assets) {
     const option = document.createElement('option');
     option.value = asset.url;
@@ -51,7 +51,6 @@ async function callback(data) {
   }
 
   for (const sub of data.playable.subtitles) {
-    console.log("sub:", sub); //TODO:REMOVE ME
     const url = sub.webVtt;
     subtitles.push(url);
     const option = document.createElement('option');
