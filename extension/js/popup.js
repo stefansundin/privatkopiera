@@ -117,7 +117,8 @@ export function updateCommand(e) {
   const cmd = $('#cmd');
   const url = streams.value;
   const selectedSubs = [];
-  if (subtitlesDropdown.selectedOptions) {
+  if (subtitlesDropdown.children.length > 0) {
+    subtitlesDropdown[0].selected = true;
     for (let index = 0; index < subtitlesDropdown.selectedOptions.length; index++) {
       selectedSubs.push(subtitlesDropdown.selectedOptions[index].value);
     }

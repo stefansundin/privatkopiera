@@ -58,11 +58,7 @@ async function callback(data) {
     option.appendChild(
       document.createTextNode(`Undertext (${sub.label ?? sub.language})`),
     );
-    streams.appendChild(option);
     subtitleDropdown.appendChild(option);
-  }
-  if (data.playable.subtitles) {
-    subtitleDropdown.firstElementChild.selected = true;
   }
 
   let extension = options.default_video_file_extension;

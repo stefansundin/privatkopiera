@@ -136,10 +136,8 @@ function callback(data, fetchPlaylist = true) {
       const option = document.createElement('option');
       option.value = sub.url;
       option.appendChild(document.createTextNode(extractFilename(sub.label ?? sub.language)));
-      streams.appendChild(option);
       subtitleDropdown.appendChild(option)
     }
-    subtitleDropdown.firstElementChild.selected = true;
   }
 
   updateCommand();
