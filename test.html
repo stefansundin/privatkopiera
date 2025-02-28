@@ -7,30 +7,47 @@
     Select a fruit:
     <select id="subtitles">
       <option selected> -- select an option -- </option>
-      <option id="Apple">Apple</option>
-      <option id="Pear">Pear</option>
-      <option id="Banana">Banana</option>
-      <option id="Orange">Orange</option>
+      <option value="Apple">Apple</option>
+      <option value="Pear">Pear</option>
+      <option value="Banana">Banana</option>
+      <option value="Orange">Orange</option>
     </select>
     <br>
-    <ul id="selected-subtitles">
+    <ul style="list-style-type: none;" id="selected-subtitles">
     </ul>
   </form>
   <script>
-    const subtitles = document.querySelector("#subtitles");
-    const selectedItems = document.querySelector("#selected-subtitles");
-    subtitles.addEventListener('change', function () {
-      if (subtitles.selectedIndex === 0) {
+    const subtitlesDropdown = document.querySelector("#subtitles");
+    const subtitlesList = document.querySelector("#selected-subtitles");
+    const choosenSubtitles = [];
+    subtitlesDropdown.addEventListener('change', function (e) {
+      if (subtitlesDropdown.selectedIndex === 0) {
         return
       }
-      let newSelectSubtitle = document.createElement("li");
-      newSelectSubtitle.innerHTML = `<button onClick="something(this);" id="${subtitles.value}">X</button> <span>something ${subtitles.text}</span>`;
-      selectedItems.appendChild(newSelectSubtitle);
-      subtitles.remove(subtitles.selectedIndex);
+      const option = e.target[e.target.selectedIndex];
+      choosenSubtitles.push({ "textContent": option.textContent, "id": option.value });
+      let selectSubtitle = document.createElement("li");
+      selectSubtitle.innerHTML = `<button onClick="handleSubtitleDelete(this)">X</button><span style="margin-left: 0.5em" id="${option.value}">${option.textContent}</span>`;
+      subtitlesList.appendChild(selectSubtitle);
+      subtitlesDropdown.remove(subtitlesDropdown.selectedIndex);
     });
-    function something(e) {
-      console.log(e);
-      console.log("yes");
+    function handleSubtitleDelete(e) {
+      e.preventDefault;
+      if (e.nextSibling === undefined) {
+        return;
+      }
+      const listSpanElement = e.nextSibling;
+      const index = choosenSubtitles.findIndex(choosen => choosen.id === listSpanElement.id);
+      if (index < 0) {
+        return
+      }
+      const choosenSubtitle = choosenSubtitles[index];
+      const option = document.createElement("option");
+      option.value = choosenSubtitle.value;
+      option.innerText = choosenSubtitle.textContent;
+      subtitlesDropdown.appendChild(option);
+      choosenSubtitles.splice(index, 1);
+      e.parentElement.remove();
     }
   </script>
 

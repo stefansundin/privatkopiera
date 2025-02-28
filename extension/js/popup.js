@@ -169,18 +169,11 @@ export function updateCommand(e) {
       inputs.push(audio_stream);
     }
     inputs.push(...subtitles);
-
-    const command = [
-      options.ffmpeg_command,
-      ...inputs.map((url) => `-i "${url}"`),
-    ];
-    command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
-      command.push('-c:s mov_text -bsf:a aac_adtstoasc');
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
+    } else {
+      cmd.value = `${options.ffmpeg_command} ${inputs.map((url) => `-i "${url}"`).join(' ')} -c:v copy -c:a copy "${output_path}"`;
     }
-    command.push(`"${output_path}"`);
-
-    cmd.value = command.join(' ');
   }
   cmd.setAttribute('data-url', url);
   cmd.dispatchEvent(new Event('input'));
@@ -232,17 +225,8 @@ export async function processPlaylist(url) {
       }));
       console.debug(obj);
       if (type === 'EXT-X-MEDIA') {
-        // This probably needs to be rewritten...
-        if (obj['TYPE'] === 'AUDIO') {
-          if (obj['DEFAULT'] === 'YES' && obj['GROUP-ID']) {
-            if (!ext_x_media[obj['TYPE']]) {
-              ext_x_media[obj['TYPE']] = {};
-            }
-            ext_x_media[obj['TYPE']][obj['GROUP-ID']] = obj;
-          }
-        } else {
-          ext_x_media[obj['TYPE']] = obj;
-        }
+        // && obj["TYPE"] === "AUDIO") {
+        ext_x_media[obj['TYPE']] = obj;
       } else if (type === 'EXT-X-STREAM-INF') {
         params = obj;
       }
@@ -280,21 +264,18 @@ export async function processPlaylist(url) {
       text += ` (${label.join(', ')})`;
     }
     option.appendChild(document.createTextNode(text));
-    if (ext_x_media['AUDIO'] && stream.params['AUDIO']) {
-      const audio = ext_x_media['AUDIO'][stream.params['AUDIO']];
-      option.setAttribute('data-audio-stream', baseUrl + audio['URI']);
+    if (ext_x_media['AUDIO']) {
+      option.setAttribute('data-audio-stream', baseUrl + ext_x_media['AUDIO']['URI']);
     }
     dropdown.insertBefore(option, default_option);
   }
   if (ext_x_media['AUDIO']) {
-    for (const [group, audio] of Object.entries(ext_x_media['AUDIO'])) {
-      const option = document.createElement('option');
-      option.value = baseUrl + audio['URI'];
-      option.appendChild(
-        document.createTextNode(`AUDIO: ${audio['NAME']} (${group})`),
-      );
-      dropdown.insertBefore(option, default_option);
-    }
+    const option = document.createElement('option');
+    option.value = baseUrl + ext_x_media['AUDIO']['URI'];
+    option.appendChild(
+      document.createTextNode(extractFilename(ext_x_media['AUDIO']['URI'])),
+    );
+    dropdown.insertBefore(option, default_option);
   }
   dropdown.getElementsByTagName('option')[0].selected = true;
   updateCommand();
