@@ -30,7 +30,24 @@
     <span class="input-group-text">
       <label for="streams">Ström</label>
     </span>
-    <select class="form-select" id="streams"></select>
+    <select class="form-select" id="streams">
+    </select>
+  </div>
+
+  <div class="input-group">
+    <span class="input-group-text">
+      <label>Undertexter</label>
+    </span>
+
+    <button class="btn btn-light ms-auto d-flex flex-grow-1 mt-0 rounded-end" id="open-subtitle-selector"
+      popovertarget="subtitle-selector">
+      Det finns inga undertexter att välja
+    </button>
+    <div id="subtitle-selector" class="input-group-prepend rounded mx-3" data-init-done="false" popover>
+      <button class="btn btn-light mt-1 ms-auto" popovertarget="subtitle-selector" popovertargetaction="hide">
+        Dölj undertextväljare
+      </button>
+    </div>
   </div>
 
   <div class="input-group">

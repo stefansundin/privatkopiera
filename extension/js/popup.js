@@ -115,6 +115,14 @@ export function updateCommand(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
+  const subtitleSelectsContainer = $('#subtitle-selector');
+  const subtitleCheckboxes = $('[data-sub-checkbox]');
+  if (subtitleSelectsContainer.dataset.initDone === "false" && subtitleCheckboxes.length > 0) {
+    subtitleSelectsContainer.dataset.initDone = "true";
+    subtitleCheckboxes[0].checked = true;
+    subtitles.push(subtitleCheckboxes[0].id);
+    updateNumberOfChoosenSubsText();
+  }
 
   if (isAndroid) {
     cmd.value = url;
@@ -174,6 +182,10 @@ export function updateCommand(e) {
       options.ffmpeg_command,
       ...inputs.map((url) => `-i "${url}"`),
     ];
+    if (subtitles.length > 1) {
+      // Adding -map arguments to ffmpeg makes it select all the streams from that input. https://trac.ffmpeg.org/wiki/Map
+      command.push(...inputs.map((v, i) => `-map ${i}`));
+    }
     command.push('-c:v copy -c:a copy');
     if (extension === 'mp4') {
       command.push('-c:s mov_text -bsf:a aac_adtstoasc');
@@ -466,3 +478,40 @@ document.addEventListener('DOMContentLoaded', async () => {
     info('Fel: Den här hemsidan stöds ej.');
   }
 });
+
+export function popoulateSubtitlePopup(id, innerText, dropdown) {
+  const option = document.createElement('div');
+  option.classList.add('input-group-text');
+  const label = document.createElement('label');
+  label.innerText = innerText;
+  label.classList.add("d-flex");
+  option.append(label);
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.id = id;
+  input.name = innerText;
+  input.classList.add('me-2');
+  input.addEventListener('change', function (e) {
+    if (!e.target.checked) {
+      const index = subtitles.findIndex(item => item === e.target.id)
+      subtitles.splice(index, 1);
+    } else {
+      subtitles.push(e.target.id);
+    }
+    updateNumberOfChoosenSubsText();
+    updateCommand();
+  });
+  input.setAttribute('data-sub-checkbox', 'true');
+  label.insertBefore(input, label.firstChild);
+  dropdown.insertBefore(option, dropdown.firstChild);
+}
+
+function updateNumberOfChoosenSubsText() {
+  const text = [`Valt ${subtitles.length}`,]
+  if (subtitles.length == 0 || subtitles.length > 1) {
+    text.push('undertexter');
+  } else {
+    text.push('undertext');
+  }
+  $('#open-subtitle-selector').innerText = text.join(' ');
+}

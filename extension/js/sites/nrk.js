@@ -19,6 +19,7 @@
 import {
   apiError,
   options,
+  popoulateSubtitlePopup,
   processPlaylist,
   subtitles,
   updateCommand,
@@ -40,6 +41,7 @@ async function callback(data) {
   }
 
   const streams = $('#streams');
+  const subtitleDropdown = $('#subtitle-selector');
   for (const asset of data.playable.assets) {
     const option = document.createElement('option');
     option.value = asset.url;
@@ -49,15 +51,10 @@ async function callback(data) {
     processPlaylist(asset.url).catch(apiError);
   }
 
-  for (const subtitle of data.playable.subtitles) {
-    const url = subtitle.webVtt;
-    subtitles.push(url);
-    const option = document.createElement('option');
-    option.value = url;
-    option.appendChild(
-      document.createTextNode(`Undertext (${subtitle.label})`),
-    );
-    streams.appendChild(option);
+  if (data.playable.subtitles) {
+    for (const sub of data.playable.subtitles) {
+      popoulateSubtitlePopup(sub.webVtt, sub.label ?? sub.language, subtitleDropdown);
+    }
   }
 
   let extension = options.default_video_file_extension;
