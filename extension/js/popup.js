@@ -118,7 +118,10 @@ export function updateCommand(e) {
   const url = streams.value;
   const selectedSubs = [];
   if (subtitlesDropdown.children.length > 0) {
-    subtitlesDropdown[0].selected = true;
+    if (!subtitlesDropdown.dataInitDone) {
+      subtitlesDropdown[0].selected = true;
+      subtitlesDropdown.dataInitDone = "true"
+    }
     for (let index = 0; index < subtitlesDropdown.selectedOptions.length; index++) {
       selectedSubs.push(subtitlesDropdown.selectedOptions[index].value);
     }
