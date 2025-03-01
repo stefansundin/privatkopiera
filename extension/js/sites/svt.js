@@ -132,7 +132,6 @@ function callback(data, fetchPlaylist = true) {
   }
 
   if (data.subtitleReferences) {
-    // subtitles.push(...data.subtitleReferences.map((s) => s.url));
     for (const sub of data.subtitleReferences) {
       popoulateSubtitlePopup(sub.url, sub.label ?? sub.language, subtitleDropdown);
     }

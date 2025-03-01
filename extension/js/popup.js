@@ -116,13 +116,13 @@ export function updateCommand(e) {
   const cmd = $('#cmd');
   const url = streams.value;
   const subtitleSelectsContainer = $('#subtitle-selector');
-  if (subtitleSelectsContainer.dataset.initDone === "false") {
-    $('[data-sub-checkbox]')[0].checked = true;
-    subtitles.push($('[data-sub-checkbox]')[0].id);
+  const subtitleCheckboxes = $('[data-sub-checkbox]');
+  if (subtitleSelectsContainer.dataset.initDone === "false" && subtitleCheckboxes.length > 0) {
     subtitleSelectsContainer.dataset.initDone = "true";
+    subtitleCheckboxes[0].checked = true;
+    subtitles.push(subtitleCheckboxes[0].id);
+    updateNumberOfChoosenSubsText();
   }
-
-  $('#open-subtitle-selector').innerText = `Valt ${subtitles.length}`;
 
   if (isAndroid) {
     cmd.value = url;
@@ -498,9 +498,20 @@ export function popoulateSubtitlePopup(id, innerText, dropdown) {
     } else {
       subtitles.push(e.target.id);
     }
+    updateNumberOfChoosenSubsText();
     updateCommand();
   });
   input.setAttribute('data-sub-checkbox', 'true');
   label.insertBefore(input, label.firstChild);
   dropdown.insertBefore(option, dropdown.firstChild);
+}
+
+function updateNumberOfChoosenSubsText() {
+  const text = [`Valt ${subtitles.length}`,]
+  if (subtitles.length == 0 || subtitles.length > 1) {
+    text.push('undertexter');
+  } else {
+    text.push('undertext');
+  }
+  $('#open-subtitle-selector').innerText = text.join(' ');
 }

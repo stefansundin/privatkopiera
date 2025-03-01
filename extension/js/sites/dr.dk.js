@@ -30,7 +30,6 @@ function callback(streams) {
 
   for (const stream of streams) {
     if (stream.subtitles) {
-      // subtitles.push(...stream.subtitles.map((sub) => sub.link));
       for (const sub of stream.subtitles) {
         popoulateSubtitlePopup(sub.link, sub.label ?? sub.language, subtitleDropdown);
       }

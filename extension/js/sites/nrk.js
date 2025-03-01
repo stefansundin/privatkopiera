@@ -52,9 +52,8 @@ async function callback(data) {
   }
 
   if (data.playable.subtitles) {
-    // subtitles.push(...data.playable.subtitles.map((s) => s.webVtt));
     for (const sub of data.playable.subtitles) {
-      popoulateSubtitlePopup(sub.url, sub.label ?? sub.language, subtitleDropdown);
+      popoulateSubtitlePopup(sub.webVtt, sub.label ?? sub.language, subtitleDropdown);
     }
   }
 
