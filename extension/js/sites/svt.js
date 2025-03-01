@@ -50,6 +50,7 @@ import {
   apiError,
   info,
   options,
+  popoulateSubtitlePopup,
   processPlaylist,
   subtitles,
   updateCommand,
@@ -104,7 +105,7 @@ function callback(data, fetchPlaylist = true) {
   }
 
   const streams = $('#streams');
-  const subtitleDropdown = $('#subtitles');
+  const subtitleDropdown = $('#subtitle-selector');
   for (const stream of videoReferences) {
     let filenameTitle = title;
     if (options.add_source_id_to_filename && filenameTitle && data.svtId) {
@@ -131,12 +132,9 @@ function callback(data, fetchPlaylist = true) {
   }
 
   if (data.subtitleReferences) {
-    subtitles.push(...data.subtitleReferences.map((s) => s.url));
+    // subtitles.push(...data.subtitleReferences.map((s) => s.url));
     for (const sub of data.subtitleReferences) {
-      const option = document.createElement('option');
-      option.value = sub.url;
-      option.appendChild(document.createTextNode(extractFilename(sub.label ?? sub.language)));
-      subtitleDropdown.appendChild(option)
+      popoulateSubtitlePopup(sub.url, sub.label ?? sub.language, subtitleDropdown);
     }
   }
 

@@ -3,6 +3,7 @@
 
 import {
   options,
+  popoulateSubtitlePopup,
   subtitles,
   updateCommand,
   updateFilename,
@@ -16,7 +17,7 @@ import {
 
 function callback(streams) {
   const dropdown = $('#streams');
-  const subtitleDropdown = $('#subtitles');
+  const subtitleDropdown = $('#subtitle-selector');
 
   for (const stream of streams) {
     const option = document.createElement('option');
@@ -29,12 +30,9 @@ function callback(streams) {
 
   for (const stream of streams) {
     if (stream.subtitles) {
-      subtitles.push(...stream.subtitles.map((sub) => sub.link));
+      // subtitles.push(...stream.subtitles.map((sub) => sub.link));
       for (const sub of stream.subtitles) {
-        const option = document.createElement('option');
-        option.value = sub.link;
-        option.appendChild(document.createTextNode(extractFilename(sub.label ?? sub.language)));
-        subtitleDropdown.appendChild(option);
+        popoulateSubtitlePopup(sub.link, sub.label ?? sub.language, subtitleDropdown);
       }
     }
   }

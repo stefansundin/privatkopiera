@@ -95,7 +95,6 @@ function download_info(program) {
 export function updateCommand(e) {
   const filename = $('#filename');
   const streams = $('#streams');
-  const subtitlesDropdown = $('#subtitles')
   const stream = streams.selectedOptions[0];
   if (!stream) {
     info('Hittade ingen video. Har programmet sänts än?');
@@ -116,16 +115,14 @@ export function updateCommand(e) {
 
   const cmd = $('#cmd');
   const url = streams.value;
-  const selectedSubs = [];
-  if (subtitlesDropdown.children.length > 0) {
-    if (!subtitlesDropdown.dataInitDone) {
-      subtitlesDropdown[0].selected = true;
-      subtitlesDropdown.dataInitDone = "true"
-    }
-    for (let index = 0; index < subtitlesDropdown.selectedOptions.length; index++) {
-      selectedSubs.push(subtitlesDropdown.selectedOptions[index].value);
-    }
+  const subtitleSelectsContainer = $('#subtitle-selector');
+  if (subtitleSelectsContainer.dataset.initDone === "false") {
+    $('[data-sub-checkbox]')[0].checked = true;
+    subtitles.push($('[data-sub-checkbox]')[0].id);
+    subtitleSelectsContainer.dataset.initDone = "true";
   }
+
+  $('#open-subtitle-selector').innerText = `Valt ${subtitles.length}`;
 
   if (isAndroid) {
     cmd.value = url;
@@ -167,25 +164,25 @@ export function updateCommand(e) {
     }
     cmd.value = `${options.ffmpeg_command} -i "${url}" "${output_path}"`;
   } else if (
-    selectedSubs.length > 0 &&
-    (extension === 'srt' || extension === 'vtt' || url === selectedSubs[0])
+    subtitles.length > 0 &&
+    (extension === 'srt' || extension === 'vtt' || url === subtitles[0])
   ) {
     if (extension === 'mkv') {
       output_path = output_path.replace(/\.mkv$/, '.srt');
     }
-    cmd.value = `${options.ffmpeg_command} -i "${selectedSubs[0]}" "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${output_path}"`;
   } else {
     const inputs = [url];
     if (audio_stream) {
       inputs.push(audio_stream);
     }
-    inputs.push(...selectedSubs);
+    inputs.push(...subtitles);
 
     const command = [
       options.ffmpeg_command,
       ...inputs.map((url) => `-i "${url}"`),
     ];
-    if (selectedSubs.length > 1) {
+    if (subtitles.length > 1) {
       // Adding -map arguments to ffmpeg makes it select all the streams from that input. https://trac.ffmpeg.org/wiki/Map
       command.push(...inputs.map((v, i) => `-map ${i}`));
     }
@@ -436,7 +433,6 @@ document.addEventListener('DOMContentLoaded', async () => {
 
   $('#streams').addEventListener('input', updateCommand);
   $('#filename').addEventListener('input', updateCommand);
-  $('#subtitles').addEventListener('input', updateCommand);
 
   if (isFirefox && !isAndroid) {
     document
@@ -482,3 +478,29 @@ document.addEventListener('DOMContentLoaded', async () => {
     info('Fel: Den här hemsidan stöds ej.');
   }
 });
+
+export function popoulateSubtitlePopup(id, innerText, dropdown) {
+  const option = document.createElement('div');
+  option.classList.add('input-group-text');
+  const label = document.createElement('label');
+  label.innerText = innerText;
+  label.classList.add("d-flex");
+  option.append(label);
+  const input = document.createElement('input');
+  input.type = 'checkbox';
+  input.id = id;
+  input.name = innerText;
+  input.classList.add('me-2');
+  input.addEventListener('change', function (e) {
+    if (!e.target.checked) {
+      const index = subtitles.findIndex(item => item === e.target.id)
+      subtitles.splice(index, 1);
+    } else {
+      subtitles.push(e.target.id);
+    }
+    updateCommand();
+  });
+  input.setAttribute('data-sub-checkbox', 'true');
+  label.insertBefore(input, label.firstChild);
+  dropdown.insertBefore(option, dropdown.firstChild);
+}

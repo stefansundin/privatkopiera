@@ -67,3 +67,7 @@ body.mobile #cmd {
   right: 0.5em;
   user-select: none;
 }
+
+:popover-open {
+  left: 10rem;
+}
