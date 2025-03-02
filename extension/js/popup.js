@@ -100,7 +100,7 @@ export function updateCommand(e) {
     info('Hittade ingen video. Har programmet sänts än?');
     return;
   }
-  const audio_stream = stream.getAttribute('data-audio-stream');
+  const audioStream = stream.getAttribute('data-audio-stream');
 
   if (
     (e && e.target === streams) ||
@@ -124,61 +124,68 @@ export function updateCommand(e) {
     return;
   }
 
-  let output_path = options.output_path + filename.value;
+  let outputPath = options.output_path + filename.value;
   const extension = extractExtension(filename.value);
   const streamFilename = extractFilename(url);
   const streamExtension = extractExtension(url);
   streams.title = streamFilename;
+
   if (streamExtension === 'f4m') {
-    cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${output_path}"`;
+    cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${outputPath}"`;
   } else if (streamExtension === 'm4a' || streamExtension === 'mp3') {
     cmd.value = url;
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
     const label = $("label[for='cmd']")[0];
     label.textContent = 'URL';
-  } else if (streamFilename.endsWith('_a.m3u8') || extension === 'mka' || extension === 'aac') {
-    if (extension === 'mkv') {
-      output_path = output_path.replace(/\.mkv$/, '.mka');
-    } else if (extension === 'mp4') {
-      output_path = output_path.replace(/\.mp4$/, '.m4a');
-    }
-    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn -c:a copy "${output_path}"`;
-  } else if (extension === 'm4a') {
-    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn -c:a copy -bsf:a aac_adtstoasc "${output_path}"`;
-  } else if (extension === 'mp3' || extension === 'ogg') {
-    cmd.value = `${options.ffmpeg_command} -i "${audio_stream || url}" -vn "${output_path}"`;
   } else if (streamExtension === 'vtt') {
     if (extension === 'mkv' || extension === 'mp4') {
-      output_path = output_path.replace(/\.(mkv|mp4)$/, '.srt');
+      outputPath = outputPath.replace(/\.(mkv|mp4)$/, '.srt');
     } else if (extension !== 'srt') {
-      output_path += '.srt';
+      outputPath += '.srt';
     }
-    cmd.value = `${options.ffmpeg_command} -i "${url}" "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${url}" "${outputPath}"`;
   } else if (
     subtitles.length > 0 &&
     (extension === 'srt' || extension === 'vtt' || url === subtitles[0])
   ) {
     if (extension === 'mkv') {
-      output_path = output_path.replace(/\.mkv$/, '.srt');
+      outputPath = outputPath.replace(/\.mkv$/, '.srt');
     }
-    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${output_path}"`;
+    cmd.value = `${options.ffmpeg_command} -i "${subtitles[0]}" "${outputPath}"`;
   } else {
-    const inputs = [url];
-    if (audio_stream) {
-      inputs.push(audio_stream);
+    const wantAudioOnly = ['mka', 'aac', 'm4a', 'mp3', 'ogg'].includes(extension);
+    const inputs = [];
+    if (wantAudioOnly) {
+      inputs.push(audioStream ?? url);
+    } else {
+      inputs.push(url);
+      if (audioStream) {
+        inputs.push(audioStream);
+      }
+      inputs.push(...subtitles);
     }
-    inputs.push(...subtitles);
 
     const command = [
       options.ffmpeg_command,
       ...inputs.map((url) => `-i "${url}"`),
     ];
-    command.push('-c:v copy -c:a copy');
-    if (extension === 'mp4') {
-      command.push('-c:s mov_text -bsf:a aac_adtstoasc');
+    if (wantAudioOnly) {
+      command.push('-vn');
+    } else {
+      command.push('-c:v copy');
     }
-    command.push(`"${output_path}"`);
+    if (extension !== 'mp3' && extension !== 'ogg') {
+      // m4a can contain many different codecs, but mp3 and ogg must be transcoded
+      command.push('-c:a copy');
+    }
+    if (extension === 'mp4') {
+      command.push('-c:s mov_text');
+      if (audioStream?.includes('-aac-')) {
+        command.push('-bsf:a aac_adtstoasc');
+      }
+    }
+    command.push(`"${outputPath}"`);
 
     cmd.value = command.join(' ');
   }
