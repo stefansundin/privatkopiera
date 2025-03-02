@@ -130,8 +130,11 @@ function callback(data, fetchPlaylist = true) {
   }
 
   if (data.subtitleReferences) {
-    subtitles.push(...data.subtitleReferences.map((s) => s.url));
-    for (const sub of data.subtitleReferences) {
+    const subs = [...data.subtitleReferences];
+    // Just do an alphabetical sort as a quick way to make text-closed subtitles appear before text-open (the order from the API is not consistent)
+    subs.sort((a, b) => a.url.localeCompare(b.url));
+    subtitles.push(...subs.map((s) => s.url));
+    for (const sub of subs) {
       const option = document.createElement('option');
       option.value = sub.url;
       option.appendChild(document.createTextNode(extractFilename(sub.url)));
