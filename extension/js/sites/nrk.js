@@ -158,7 +158,6 @@ export default [
       }
       const episodePrfId = pageData?.initialState?.selectedEpisodePrfId;
       const filmPrfId = pageData?.initialState?.program?.prfId;
-
       const prfId = episodePrfId || filmPrfId;
 
       if (!prfId) {
