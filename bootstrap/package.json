@@ -1,6 +1,6 @@
 {
   "dependencies": {
-    "bootstrap": "^5.3.3",
+    "bootstrap": "^5.3.6",
     "sass": "~1.78.0"
   },
   "scripts": {
