@@ -156,7 +156,10 @@ export default [
       if (!pageData) {
         throw new Error(`Hittade ingen sidoinformation.`);
       }
-      const prfId = pageData?.initialState?.selectedEpisodePrfId;
+      const episodePrfId = pageData?.initialState?.selectedEpisodePrfId;
+      const filmPrfId = pageData?.initialState?.program?.prfId;
+      const prfId = episodePrfId || filmPrfId;
+
       if (!prfId) {
         throw new Error(`Hittade inte prfId.`);
       }
