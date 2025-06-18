@@ -27,6 +27,7 @@ import {
 import {
   $,
   extractFilename,
+  fetchAccessToken,
   fetchJson,
   fetchPageData,
   getDocumentTitle,
@@ -164,16 +165,27 @@ export default [
         throw new Error(`Hittade inte prfId.`);
       }
 
-      const dataUrl = `https://psapi.nrk.no/playback/manifest/program/${prfId}`;
+      const dataUrl = new URL(`https://psapi.nrk.no/playback/manifest/program/${prfId}`);
       console.log(dataUrl);
       updateFilename(`${prfId}.${options.default_video_file_extension}`);
 
-      const data = await fetchJson(dataUrl, {
-        headers: {
-          accept: 'application/json',
-          // This is what the website normally sends:
-          // accept: '*/*',
-        },
+      const headers = new Headers();
+
+      headers.set('accept', 'application/vnd.nrk.psapi+json; version=9; player=tv-player; device=player-core');
+
+      if (options.add_authentication_to_nrk_requests) {
+        const accessToken = await fetchAccessToken();
+
+        if (accessToken) {
+          headers.set('Authorization', `Bearer ${accessToken}`);
+          dataUrl.searchParams.set('eea-portability', 'true');
+          dataUrl.searchParams.set('contentGroup', 'adults');
+          dataUrl.searchParams.set('ageRestriction', 'None');
+        }
+      }
+
+      const data = await fetchJson(dataUrl.toString(), {
+        headers: Object.fromEntries(headers)
       });
       await callback(data);
     },

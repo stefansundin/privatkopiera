@@ -6,6 +6,7 @@ const options = {
   default_audio_file_extension: localStorage.default_audio_file_extension || defaultOptions.default_audio_file_extension,
   svt_video_format: localStorage.svt_video_format?.split(',') || defaultOptions.svt_video_format,
   add_source_id_to_filename: localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
+  add_authentication_to_nrk_requests: localStorage.add_authentication_to_nrk_requests ? localStorage.add_authentication_to_nrk_requests === 'true' : defaultOptions.add_authentication_to_nrk_requests,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };
@@ -51,6 +52,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   const svt_video_format_input = document.getElementById('svt_video_format');
   const ffmpeg_command_input = document.getElementById('ffmpeg_command');
   const add_source_id_to_filename_input = document.getElementById('add_source_id_to_filename');
+  const add_authentication_to_nrk_requests = document.getElementById('add_authentication_to_nrk_requests');
   const output_path_input = document.getElementById('output_path');
   const save_button = document.getElementById('save');
 
@@ -58,6 +60,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   default_audio_file_extension_input.value = options.default_audio_file_extension;
   svt_video_format_input.value = options.svt_video_format.join(',');
   add_source_id_to_filename_input.checked = options.add_source_id_to_filename;
+  add_authentication_to_nrk_requests.checked = options.add_authentication_to_nrk_requests;
   ffmpeg_command_input.value = options.ffmpeg_command;
   output_path_input.value = options.output_path;
 
@@ -85,6 +88,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     localStorage.default_video_file_extension = default_video_file_extension_input.value.trim();
     localStorage.default_audio_file_extension = default_audio_file_extension_input.value.trim();
     localStorage.add_source_id_to_filename = add_source_id_to_filename_input.checked;
+    localStorage.add_authentication_to_nrk_requests = add_authentication_to_nrk_requests.checked;
     localStorage.svt_video_format = dedupe(svt_video_format_input.value.split(',').map(format => format.trim())).join(',');
     localStorage.ffmpeg_command = ffmpeg_command_input.value;
 
@@ -123,6 +127,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     delete localStorage.default_audio_file_extension;
     delete localStorage.svt_video_format;
     delete localStorage.add_source_id_to_filename;
+    delete localStorage.add_authentication_to_nrk_requests;
     delete localStorage.ffmpeg_command;
     delete localStorage.output_path;
 
@@ -130,6 +135,7 @@ document.addEventListener('DOMContentLoaded', async () => {
     default_audio_file_extension_input.value = defaultOptions.default_audio_file_extension;
     svt_video_format_input.value = defaultOptions.svt_video_format.join(',');
     add_source_id_to_filename_input.checked = defaultOptions.add_source_id_to_filename;
+    add_authentication_to_nrk_requests.checked = defaultOptions.add_authentication_to_nrk_requests;
     ffmpeg_command_input.value = defaultOptions.ffmpeg_command;
     output_path_input.value = defaultOptions.output_path;
   });
@@ -142,6 +148,8 @@ document.addEventListener('DOMContentLoaded', async () => {
     default_audio_file_extension_input.parentElement.nextElementSibling.classList.add('d-none');
     add_source_id_to_filename_input.parentElement.classList.add('d-none');
     add_source_id_to_filename_input.parentElement.nextElementSibling.classList.add('d-none');
+    add_authentication_to_nrk_requests.parentElement.classList.add('d-none');
+    add_authentication_to_nrk_requests.parentElement.nextElementSibling.classList.add('d-none');
     ffmpeg_command_input.parentElement.classList.add('d-none');
     ffmpeg_command_input.parentElement.nextElementSibling.classList.add('d-none');
     output_path_input.parentElement.classList.add('d-none');

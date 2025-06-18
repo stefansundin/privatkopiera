@@ -24,6 +24,7 @@ export const options = {
   default_audio_file_extension: localStorage.default_audio_file_extension || defaultOptions.default_audio_file_extension,
   svt_video_format: localStorage.svt_video_format?.split(',') || defaultOptions.svt_video_format,
   add_source_id_to_filename: localStorage.add_source_id_to_filename ? localStorage.add_source_id_to_filename === 'true' : defaultOptions.add_source_id_to_filename,
+  add_authentication_to_nrk_requests: localStorage.add_authentication_to_nrk_requests ? localStorage.add_authentication_to_nrk_requests === 'true' : defaultOptions.add_authentication_to_nrk_requests,
   ffmpeg_command: localStorage.ffmpeg_command || defaultOptions.ffmpeg_command,
   output_path: localStorage.output_path || defaultOptions.output_path,
 };

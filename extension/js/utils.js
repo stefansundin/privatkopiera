@@ -145,6 +145,31 @@ export async function fetchText(...args) {
   return injectionResult[0].result.result;
 }
 
+export async function fetchAccessToken() {
+  const tab = await getTab();
+  const injectionResult = await chrome.scripting.executeScript({
+    target: { tabId: tab.id },
+    func: async () => {
+      try {
+        const clientState = JSON.parse(localStorage.getItem('nrk-login-client-state'));
+
+        return clientState?.sessionData?.accessToken ?? null;
+      } catch (err) {
+        return { error: err.message };
+      }
+    },
+  });
+  console.debug('injectionResult', injectionResult);
+  if (injectionResult[0].error) {
+    throw injectionResult[0].error;
+  } else if (injectionResult[0].result === null) {
+    throw new Error('Script error.');
+  } else if (injectionResult[0].result.error) {
+    throw new Error(injectionResult[0].result.error);
+  }
+  return injectionResult[0].result;
+}
+
 export async function fetchJson(...args) {
   const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
