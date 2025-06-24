@@ -57,14 +57,14 @@ export async function getDocumentTitle() {
   const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({
     target: { tabId: tab.id },
-    func: () => document.title,
+    func: () => ({ result: document.title }),
   });
   if (injectionResult[0].error) {
     throw injectionResult[0].error;
   } else if (injectionResult[0].result === null) {
     throw new Error('Script error.');
   }
-  return injectionResult[0].result;
+  return injectionResult[0].result.result;
 }
 
 export async function fetchDOM(url, ...args) {
