@@ -177,6 +177,12 @@ export default [
     },
   },
   {
+    re: /^https?:\/\/(?:www\.)?svtplay\.se\.?\//,
+    func: () => {
+      info('Navigera till ett avsnitt för att använda Privatkopiera.');
+    },
+  },
+  {
     re: /^https?:\/\/(?:www\.)?svt\.se\.?\/videoplayer-embed\/([^/?]+)/,
     func: (ret) => {
       // https://www.svt.se/videoplayer-embed/jXApWXa
