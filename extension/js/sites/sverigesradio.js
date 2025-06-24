@@ -1,11 +1,14 @@
-// Example URL:
+// New stream URLs serve a URL that redirects (and thus do not have a file extension):
+// https://www.sverigesradio.se/avsnitt/del-10-av-10-dockradio-med-birgitta-kjell-gloria-co
+// Older page:
 // https://www.sverigesradio.se/artikel/6411195
-// Example URL with multiple streams:
+// Page with multiple streams:
 // https://www.sverigesradio.se/artikel/6412615
 // Live:
 // https://www.sverigesradio.se/tabla.aspx?programid=132
 //
 // Metadata URL:
+// https://www.sverigesradio.se/playerajax/getaudiourl?id=1749537&type=episode&quality=high&format=iis
 // https://www.sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
 // https://www.sverigesradio.se/sida/playerajax/getaudiourl?id=5678841&type=clip&quality=high&format=iis
@@ -29,6 +32,7 @@ function callback(stream, data) {
   option.appendChild(document.createTextNode(stream.title));
   dropdown.appendChild(option);
   option.value = data.audioUrl;
+  option.setAttribute('data-force-download', 'true');
   let filename = stream.title;
   if (options.add_source_id_to_filename) {
     filename += ` [SR ${stream.id}]`;

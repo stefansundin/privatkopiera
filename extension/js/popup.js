@@ -102,6 +102,7 @@ export function updateCommand(e) {
     return;
   }
   const audioStream = stream.getAttribute('data-audio-stream');
+  const forceDownload = stream.getAttribute('data-force-download') === 'true';
 
   if (
     (e && e.target === streams) ||
@@ -133,7 +134,7 @@ export function updateCommand(e) {
 
   if (streamExtension === 'f4m') {
     cmd.value = `php AdobeHDS.php --delete --manifest "${url}" --outfile "${outputPath}"`;
-  } else if (streamExtension === 'm4a' || streamExtension === 'mp3') {
+  } else if (forceDownload || streamExtension === 'm4a' || streamExtension === 'mp3') {
     cmd.value = url;
     $('#copy').classList.add('d-none');
     $('#download').classList.remove('d-none');
