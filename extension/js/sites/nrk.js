@@ -40,8 +40,7 @@ async function fetchAccessToken() {
     func: async () => {
       try {
         const clientState = JSON.parse(localStorage.getItem('nrk-login-client-state'));
-
-        return clientState?.sessionData?.accessToken ?? null;
+        return { result: clientState?.sessionData?.accessToken ?? null };
       } catch (err) {
         return { error: err.message };
       }
@@ -55,7 +54,7 @@ async function fetchAccessToken() {
   } else if (injectionResult[0].result.error) {
     throw new Error(injectionResult[0].result.error);
   }
-  return injectionResult[0].result;
+  return injectionResult[0].result.result;
 }
 
 async function callback(data) {
@@ -199,7 +198,7 @@ export default [
       headers.set('accept', 'application/vnd.nrk.psapi+json; version=9; player=tv-player; device=player-core');
 
       if (options.add_authentication_to_nrk_requests) {
-        const accessToken = await fetchAccessToken();
+        const accessToken = await fetchAccessToken().catch(console.error);
 
         if (accessToken) {
           headers.set('Authorization', `Bearer ${accessToken}`);
