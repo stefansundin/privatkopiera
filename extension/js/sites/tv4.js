@@ -91,7 +91,7 @@ export default [
                   return { error: 'no refresh token' };
                 }
                 const response = await fetch(
-                  'https://avod-auth-alb.a2d.tv/oauth/refresh',
+                  'https://auth.tv4.a2d.tv/v2/auth/token',
                   {
                     method: 'POST',
                     credentials: 'omit',
@@ -99,10 +99,13 @@ export default [
                     headers: {
                       accept: 'application/json',
                       'content-type': 'application/json',
+                      'client-name': 'tv4-web',
                     },
                     body: JSON.stringify({
-                      refresh_token: refreshToken,
-                      client_id: 'tv4-web',
+                      "refresh_token": refreshToken,
+                      "grant_type": "refresh_token",
+                      "is_child": false,
+                      "profile_id": "default",
                     }),
                   },
                 );
