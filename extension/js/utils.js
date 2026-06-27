@@ -117,6 +117,25 @@ export async function fetchPageData(url, id = '__NEXT_DATA__') {
   return data;
 }
 
+export async function fetchNextData(url, doc = null) {
+  const result = [];
+  if (!doc) {
+    doc = await fetchDOM(url);
+  }
+  for (const element of doc.getElementsByTagName('script')) {
+    const text = element.textContent.trim();
+    const startCode = 'self.__next_f.push(';
+    const endCode = ')';
+    if (text.startsWith(startCode) && text.endsWith(endCode)) {
+      const jsonString = text.substring(startCode.length, text.length - endCode.length);
+      const data = JSON.parse(jsonString);
+      result.push(data);
+    }
+  }
+  console.debug(result);
+  return result;
+}
+
 export async function fetchText(...args) {
   const tab = await getTab();
   const injectionResult = await chrome.scripting.executeScript({

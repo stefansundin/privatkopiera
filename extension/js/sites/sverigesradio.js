@@ -7,7 +7,7 @@
 // Live:
 // https://www.sverigesradio.se/tabla.aspx?programid=132
 //
-// Metadata URL:
+// Metadata URL: (no longer used)
 // https://www.sverigesradio.se/playerajax/getaudiourl?id=1749537&type=episode&quality=high&format=iis
 // https://www.sverigesradio.se/sida/playerajax/AudioMetadata?id=5678841&type=clip
 // Get audio URL:
@@ -21,20 +21,19 @@ import {
 import {
   $,
   extractExtension,
-  fetchJson,
-  tab
+  fetchNextData
 } from '../utils.js';
 
-function callback(stream, data) {
+function callback(stream) {
   const dropdown = $('#streams');
-  const extension = extractExtension(data.audioUrl) || 'mp3';
+  const extension = extractExtension(stream.audioUrl) || 'mp3';
   const option = document.createElement('option');
   option.appendChild(document.createTextNode(stream.title));
   dropdown.appendChild(option);
-  option.value = data.audioUrl;
+  option.value = stream.audioUrl;
   option.setAttribute('data-force-download', 'true');
   let filename = stream.title;
-  if (options.add_source_id_to_filename) {
+  if (stream.id && options.add_source_id_to_filename) {
     filename += ` [SR ${stream.id}]`;
   }
   filename += `.${extension}`;
@@ -45,70 +44,36 @@ function callback(stream, data) {
 export default [
   {
     re: [/^https?:\/\/(?:www\.)?sverigesradio\.se\.?(\/.*)/],
-    func: async () => {
-      // Find audio streams by looking for data-audio-id attributes
-      const injectionResult = await chrome.scripting.executeScript({
-        target: { tabId: tab.id },
-        func: () => {
-          try {
-            const ids = [];
-            const streams = [];
-            const related = document.getElementsByTagName('article')[0]?.querySelectorAll('[data-audio-id]') ?? [];
-            for (let i = 0; i < related.length; i++) {
-              const link = related[i];
-              const id = link.getAttribute('data-audio-id');
-              if (ids.includes(id)) {
-                continue;
-              }
-              ids.push(id);
-              let header = link;
-              while (header.children.length < 2) {
-                header = header.parentNode;
-              }
-              let title = document.title;
-              const titleElement =
-                header.getElementsByClassName('main-audio-new__title')[0] ||
-                header.getElementsByClassName('related-audio__title')[0] ||
-                header.getElementsByClassName('article-audio-details__header-title')[0];
-              if (titleElement) {
-                title = titleElement.textContent.trim();
-              } else {
-                const dash = title.lastIndexOf('-');
-                if (dash !== -1) {
-                  title = title.substring(0, dash).trim();
-                }
-              }
-              streams.push({
-                id: id,
-                type: link.getAttribute('data-audio-type'),
-                title: title,
-              });
-            }
-            return { result: streams };
-          } catch (err) {
-            return { error: err.message };
-          }
-        },
-      });
-      console.debug('injectionResult', injectionResult);
-      if (injectionResult[0].error) {
-        throw injectionResult[0].error;
-      } else if (injectionResult[0].result === null) {
-        throw new Error('Script error.');
-      } else if (injectionResult[0].result.error) {
-        throw new Error(injectionResult[0].result.error);
-      }
-      const streams = injectionResult[0].result.result;
+    func: async (_, url) => {
+      const streams = [];
+      const data = await fetchNextData(url);
+      for (const componentData of data) {
+        const text = componentData[1];
+        const idString = /"id":(\d+)/.exec(text)?.at(1);
+        if (!idString) {
+          continue;
+        }
+        const id = parseInt(idString, 10);
+        if (id == 0) {
+          console.log(text);
+        }
+        const title = /"title":"([^"]+)"/.exec(text)?.at(1)?.trim();
 
-      for (const stream of streams) {
-        const dataUrl = `/playerajax/getaudiourl?id=${stream.id}&type=${stream.type}&quality=high&format=iis`;
-        const data = await fetchJson(dataUrl, {
-          headers: {
-            accept: 'application/json',
-          },
-        });
-        callback(stream, data);
+        const qualitiesRegEx = /"([^"]+)":{"url":"(https:\/\/[^"]+)"/g;
+        const qualities = {};
+        let urlResult;
+        while ((urlResult = qualitiesRegEx.exec(text)) !== null) {
+          const quality = urlResult[1];
+          const audioUrl = urlResult[2];
+          qualities[quality] = audioUrl;
+        }
+        const audioUrl = qualities['high'] || qualities['standard'] || qualities['low'] || Object.values(qualities)[0];
+        if (title && audioUrl) {
+          streams.push({ id, title, audioUrl });
+          callback({ id, title, audioUrl });
+        }
       }
+      console.log(streams);
 
       if (streams.length === 0) {
         info('Hittade ingenting. Försök från en artikel.');
