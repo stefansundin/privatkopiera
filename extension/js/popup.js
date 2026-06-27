@@ -101,8 +101,11 @@ export function updateCommand(e) {
     info('Hittade ingen video. Har programmet sänts än?');
     return;
   }
-  const audioStream = stream.getAttribute('data-audio-stream');
+  const audioStreams = $('#audioStreams');
+  const audioStreamUrl = audioStreams.selectedOptions[0]?.value;
+  const isMasterPlaylist = stream.getAttribute('data-is-master-playlist') === 'true';
   const forceDownload = stream.getAttribute('data-force-download') === 'true';
+  audioStreams.disabled = isMasterPlaylist;
 
   if (
     (e && e.target === streams) ||
@@ -159,11 +162,11 @@ export function updateCommand(e) {
     const wantAudioOnly = ['mka', 'aac', 'm4a', 'mp3', 'ogg'].includes(extension);
     const inputs = [];
     if (wantAudioOnly) {
-      inputs.push(audioStream ?? url);
+      inputs.push(audioStreamUrl ?? url);
     } else {
       inputs.push(url);
-      if (audioStream) {
-        inputs.push(audioStream);
+      if (audioStreamUrl && !isMasterPlaylist) {
+        inputs.push(audioStreamUrl);
       }
       inputs.push(...subtitles);
     }
@@ -183,7 +186,7 @@ export function updateCommand(e) {
     }
     if (extension === 'mp4') {
       command.push('-c:s mov_text');
-      if (audioStream?.includes('-aac-')) {
+      if (audioStreamUrl?.includes('-aac-')) {
         command.push('-bsf:a aac_adtstoasc');
       }
     }
@@ -212,8 +215,10 @@ export async function processPlaylist(url) {
   const text = await fetchText(url);
   console.debug(text);
 
-  const ext_x_media = {};
   const streams = [];
+  const audioStreams = [];
+
+  const ext_x_media = {};
   let params;
   for (const line of text.split('\n')) {
     if (line.length === 0) {
@@ -241,14 +246,8 @@ export async function processPlaylist(url) {
       }));
       console.debug(obj);
       if (type === 'EXT-X-MEDIA') {
-        // This probably needs to be rewritten...
         if (obj['TYPE'] === 'AUDIO') {
-          if (obj['DEFAULT'] === 'YES' && obj['GROUP-ID']) {
-            if (!ext_x_media[obj['TYPE']]) {
-              ext_x_media[obj['TYPE']] = {};
-            }
-            ext_x_media[obj['TYPE']][obj['GROUP-ID']] = obj;
-          }
+          audioStreams.push(obj);
         } else {
           ext_x_media[obj['TYPE']] = obj;
         }
@@ -270,7 +269,8 @@ export async function processPlaylist(url) {
   console.debug(streams);
 
   const dropdown = $('#streams');
-  const default_option = dropdown.getElementsByTagName('option')[0];
+  const audioDropdown = $('#audioStreams');
+  const defaultOption = dropdown.getElementsByTagName('option')[0];
 
   for (const stream of streams.sort((a, b) => b.bitrate - a.bitrate)) {
     const kbps = Math.round(stream.bitrate / 1000);
@@ -281,31 +281,51 @@ export async function processPlaylist(url) {
       label.push(stream.params['RESOLUTION']);
     }
     label.push(`${kbps} kbps`);
-    if (stream.params['AUDIO']) {
-      label.push(stream.params['AUDIO']);
+    let text = label.shift();
+    if (label.length > 0) {
+      text += ` (${label.join(', ')})`;
+    }
+    option.appendChild(document.createTextNode(text));
+    dropdown.insertBefore(option, defaultOption);
+  }
+  dropdown.getElementsByTagName('option')[0].selected = true;
+
+  for (const stream of audioStreams) {
+    const option = document.createElement('option');
+    let url = stream['URI'];
+    if (!/^https?:\/\//.test(url)) {
+      url = baseUrl + url;
+    }
+    option.value = url;
+    const label = [];
+    if (stream['NAME'] !== 'Undetermined' || (!stream['CHANNELS'] && !stream['GROUP-ID'])) {
+      label.push(stream['NAME']);
+    }
+    if (stream['CHANNELS']) {
+      label.push(`${stream['CHANNELS']} kanaler`);
+    }
+    if (stream['GROUP-ID']) {
+      label.push(stream['GROUP-ID']);
+    }
+    if (label.length === 0) {
+      if (stream['NAME']) {
+        label.push(stream['NAME']);
+      } else {
+        label.push('Ljudspår');
+      }
     }
     let text = label.shift();
     if (label.length > 0) {
       text += ` (${label.join(', ')})`;
     }
     option.appendChild(document.createTextNode(text));
-    if (ext_x_media['AUDIO'] && stream.params['AUDIO']) {
-      const audio = ext_x_media['AUDIO'][stream.params['AUDIO']];
-      option.setAttribute('data-audio-stream', baseUrl + audio['URI']);
-    }
-    dropdown.insertBefore(option, default_option);
+    audioDropdown.appendChild(option);
   }
-  if (ext_x_media['AUDIO']) {
-    for (const [group, audio] of Object.entries(ext_x_media['AUDIO'])) {
-      const option = document.createElement('option');
-      option.value = baseUrl + audio['URI'];
-      option.appendChild(
-        document.createTextNode(`AUDIO: ${audio['NAME']} (${group})`),
-      );
-      dropdown.insertBefore(option, default_option);
-    }
+  audioDropdown.getElementsByTagName('option')[0].selected = true;
+  if (audioStreams.length > 1) {
+    document.getElementById('audioStreamsContainer').classList.remove('d-none');
   }
-  dropdown.getElementsByTagName('option')[0].selected = true;
+
   updateCommand();
 }
 
@@ -433,6 +453,7 @@ document.addEventListener('DOMContentLoaded', async () => {
   }
 
   $('#streams').addEventListener('input', updateCommand);
+  $('#audioStreams').addEventListener('input', updateCommand);
   $('#filename').addEventListener('input', updateCommand);
 
   if (isFirefox && !isAndroid) {

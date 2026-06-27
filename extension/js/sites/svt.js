@@ -125,6 +125,7 @@ function callback(data, fetchPlaylist = true) {
     }
     option.appendChild(document.createTextNode(label || extractFilename(stream.url)));
     option.setAttribute('data-filename', filename);
+    option.setAttribute('data-is-master-playlist', 'true');
     streams.appendChild(option);
 
     if ($('#filename').value === '') {
