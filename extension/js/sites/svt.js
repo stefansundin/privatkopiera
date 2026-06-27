@@ -69,6 +69,10 @@ import {
 function callback(data, fetchPlaylist = true) {
   console.log(data);
 
+  if (data.videoReferences.length === 0) {
+    throw new Error(`Finns inga video-referenser.`);
+  }
+
   let title;
   if (
     data.programTitle &&
