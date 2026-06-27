@@ -3,8 +3,10 @@
 
 // https://urplay.se/program/175841-ur-samtiden-boy-s-own-den-brittiska-kulturrevolutionen
 // https://urplay.se/program/202840-smasagor-piraterna-och-regnbagsskatten
+// https://urplay.se/serie/242479-folkets-ai
 
 import {
+  info,
   options,
   updateCommand,
   updateFilename
@@ -61,21 +63,29 @@ export default [
     },
   },
   {
+    re: [/^https?:\/\/(?:www\.)?urplay\.se\.?\/serie\/(\d+)/],
+    func: async (ret, url) => {
+      const serieId = ret[1];
+      const dataUrl = `https://urplay.se/api/v1/season_episodes?seriesId=${serieId}`;
+      console.log(dataUrl);
+      const data = await fetchJson(dataUrl, {
+        headers: {
+          accept: 'application/json',
+        },
+      });
+      console.log(data);
+      const episode = data?.accessibleEpisodes?.at(0);
+      console.log(episode);
+      if (!episode) {
+        throw new Error(`Hittade inget tillgängligt avsnitt.`);
+      }
+      await fetchProgram(episode.id, episode.title);
+    },
+  },
+  {
     re: [/^https?:\/\/(?:www\.)?urplay\.se\.?\//],
-    func: async (_, url) => {
-      const nextData = await fetchPageData(url);
-      if (!nextData) {
-        throw new Error(`Hittade ingen sidoinformation.`);
-      }
-      const program = nextData?.props?.pageProps?.program;
-      if (!program) {
-        throw new Error(`Hittade ingen programinformation.`);
-      }
-      let title = program.title;
-      if (program.seriesTitle) {
-        title = `${program.seriesTitle} - ${title}`;
-      }
-      await fetchProgram(program.id, title);
+    func: async () => {
+      info(`Gå in till ett avsnitt.`);
     },
   },
 ];
